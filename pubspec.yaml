@@ -1,5 +1,5 @@
 name: teachers_timetable
-description: "A new Flutter project."
+description: "A timetable for 5 days with 5 blocks each day."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: ^3.10.4
@@ -37,10 +37,32 @@ dependencies:
   pdf: ^3.10.7
   printing: ^5.12.0
   shared_preferences: ^2.2.2
+  file_picker: ^8.0.0
+  share_plus: ^9.0.0
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.14.4
   flutter_test:
     sdk: flutter
+
+# Generate all icons out of an Master‑Icon automatically
+# Important: The Master‑Icon should have 1024×1024 pixel with .PNG format
+# For more information, see https://pub.dev/packages/flutter_launcher_icons
+# Run the following command to create app icons:
+# dart run flutter_launcher_icons:main
+flutter_launcher_icons:
+  image_path: "lib/master_resources/AppIcon.png"
+  android: true 
+  ios: true 
+  windows:
+    generate: true 
+    icon_size: 256 
+  web:
+    generate: true 
+  macos:
+    generate: true 
+  linux:
+    generate: true
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
