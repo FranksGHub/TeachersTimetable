@@ -26,11 +26,19 @@ class _TimetablePageState extends State<TimetablePage> {
   List<String> times = ['   1', '   2', '   3', '   4', '   5', '   6'];
   String title = 'Teachers Timetable';
   late SharedPreferences prefs;
+  late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
+    _focusNode = FocusNode();
     loadData();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
   Future<void> loadData() async {
@@ -261,28 +269,85 @@ class _TimetablePageState extends State<TimetablePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('      ' + title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: _editTitle,
+    return KeyboardListener(
+      focusNode: _focusNode,
+      onKeyEvent: (KeyEvent event) {
+        // Consume the event to prevent duplicate key press errors
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('      ' + title),
+        ),
+        endDrawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              SizedBox(
+                height: 80, // Reduced height to 50% of typical DrawerHeader height
+                child: const DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple,
+                  ),
+                  child: Text(
+                    'Menu',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text('Edit Title'),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _editTitle();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text('Edit Days'),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _editDays();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text('Edit Times'),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _editTimes();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.print),
+                title: const Text('Print PDF'),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _generatePdf();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.file_download),
+                title: const Text('Export Data'),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _exportData();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.file_upload),
+                title: const Text('Import Data'),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _importData();
+                },
+              ),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: _editDays,
-          ),
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: _editTimes,
-          ),
-          IconButton(
-            icon: const Icon(Icons.print),
-            onPressed: _generatePdf,
-          ),
-        ],
-      ),
+        ),
       body: Column(
         children: [
           Row(
@@ -329,6 +394,7 @@ class _TimetablePageState extends State<TimetablePage> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
