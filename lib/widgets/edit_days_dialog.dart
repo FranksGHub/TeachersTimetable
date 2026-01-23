@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class EditDaysDialog extends StatefulWidget {
   final List<String> days;
@@ -22,13 +23,13 @@ class _EditDaysDialogState extends State<EditDaysDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit Days'),
+      title: Text(AppLocalizations.of(context)!.editDays),
       content: TextField(
         controller: daysController,
-        decoration: const InputDecoration(labelText: 'Days'),
+        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.days),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
         TextButton(
           onPressed: () {
             widget.onSave(daysController.text.split(', '));

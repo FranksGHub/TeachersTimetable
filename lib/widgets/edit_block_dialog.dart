@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/lesson_block.dart';
+import '../l10n/app_localizations.dart';
 
 class EditBlockDialog extends StatefulWidget {
   final LessonBlock block;
@@ -40,12 +41,12 @@ class _EditBlockDialogState extends State<EditBlockDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit Block'),
+      title: Text(AppLocalizations.of(context)!.editBlock),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Color:'),
+            Text(AppLocalizations.of(context)!.color),
             Wrap(
               children: colors.map((color) {
                 return GestureDetector(
@@ -62,14 +63,14 @@ class _EditBlockDialogState extends State<EditBlockDialog> {
                 );
               }).toList(),
             ),
-            TextField(controller: lessonController, decoration: const InputDecoration(labelText: 'Lesson Name')),
-            TextField(controller: schoolController, decoration: const InputDecoration(labelText: 'Class Name')),
-            TextField(controller: roomController, decoration: const InputDecoration(labelText: 'School Name')),
+            TextField(controller: lessonController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.lessonName)),
+            TextField(controller: schoolController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.className)),
+            TextField(controller: roomController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.schoolNameLabel)),
           ],
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
         TextButton(
           onPressed: () {
             widget.onSave(LessonBlock(
@@ -80,7 +81,7 @@ class _EditBlockDialogState extends State<EditBlockDialog> {
             ));
             Navigator.pop(context);
           },
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.save),
         ),
       ],
     );

@@ -7,14 +7,19 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
+import '../l10n/app_localizations.dart';
 import '../models/lesson_block.dart';
 import 'edit_block_dialog.dart';
 import 'edit_title_dialog.dart';
 import 'edit_days_dialog.dart';
+import 'edit_days_dialog.dart';
 import 'edit_times_dialog.dart';
 
 class TimetablePage extends StatefulWidget {
-  const TimetablePage({super.key});
+  const TimetablePage({super.key, this.onLocaleChange, this.currentLocale});
+
+  final Function(Locale)? onLocaleChange;
+  final Locale? currentLocale;
 
   @override
   State<TimetablePage> createState() => _TimetablePageState();
@@ -231,12 +236,57 @@ class _TimetablePageState extends State<TimetablePage> {
         File file = File(outputFile);
         await file.writeAsString(jsonData);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Data exported to $outputFile')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.dataExported(outputFile))),
         );
       }
     }
   }
 
+  void _showLanguageDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.language),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(AppLocalizations.of(context)!.english),
+              leading: Radio<Locale>(
+                value: const Locale('en'),
+                groupValue: widget.currentLocale ?? const Locale('en'),
+                onChanged: (value) {
+                  if (value != null && widget.onLocaleChange != null) {
+                    widget.onLocaleChange!(value);
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      SnackBar(content: Text(AppLocalizations.of(this.context)!.restartToApply)),
+                    );
+                  }
+                },
+              ),
+            ),
+            ListTile(
+              title: Text(AppLocalizations.of(context)!.german),
+              leading: Radio<Locale>(
+                value: const Locale('de'),
+                groupValue: widget.currentLocale ?? const Locale('en'),
+                onChanged: (value) {
+                  if (value != null && widget.onLocaleChange != null) {
+                    widget.onLocaleChange!(value);
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      SnackBar(content: Text(AppLocalizations.of(this.context)!.restartToApply)),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
   void _importData() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -262,7 +312,7 @@ class _TimetablePageState extends State<TimetablePage> {
       }
       loadData(); // Reload data
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Data imported successfully')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.dataImported)),
       );
     }
   }
@@ -284,12 +334,12 @@ class _TimetablePageState extends State<TimetablePage> {
             children: [
               SizedBox(
                 height: 80, // Reduced height to 50% of typical DrawerHeader height
-                child: const DrawerHeader(
+                child: DrawerHeader(
                   decoration: BoxDecoration(
                     color: Colors.deepPurple,
                   ),
                   child: Text(
-                    'Menu',
+                    AppLocalizations.of(context)!.menu,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -299,7 +349,7 @@ class _TimetablePageState extends State<TimetablePage> {
               ),
               ListTile(
                 leading: const Icon(Icons.edit),
-                title: const Text('Edit Title'),
+                title: Text(AppLocalizations.of(context)!.editTitle),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
                   _editTitle();
@@ -307,7 +357,7 @@ class _TimetablePageState extends State<TimetablePage> {
               ),
               ListTile(
                 leading: const Icon(Icons.edit),
-                title: const Text('Edit Days'),
+                title: Text(AppLocalizations.of(context)!.editDays),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
                   _editDays();
@@ -315,7 +365,7 @@ class _TimetablePageState extends State<TimetablePage> {
               ),
               ListTile(
                 leading: const Icon(Icons.edit),
-                title: const Text('Edit Times'),
+                title: Text(AppLocalizations.of(context)!.editTimes),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
                   _editTimes();
@@ -323,7 +373,7 @@ class _TimetablePageState extends State<TimetablePage> {
               ),
               ListTile(
                 leading: const Icon(Icons.print),
-                title: const Text('Print PDF'),
+                title: Text(AppLocalizations.of(context)!.printPdf),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
                   _generatePdf();
@@ -331,7 +381,7 @@ class _TimetablePageState extends State<TimetablePage> {
               ),
               ListTile(
                 leading: const Icon(Icons.file_download),
-                title: const Text('Export Data'),
+                title: Text(AppLocalizations.of(context)!.exportData),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
                   _exportData();
@@ -339,10 +389,18 @@ class _TimetablePageState extends State<TimetablePage> {
               ),
               ListTile(
                 leading: const Icon(Icons.file_upload),
-                title: const Text('Import Data'),
+                title: Text(AppLocalizations.of(context)!.importData),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
                   _importData();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.language),
+                title: Text(AppLocalizations.of(context)!.language),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _showLanguageDialog();
                 },
               ),
             ],

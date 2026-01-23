@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class EditTitleDialog extends StatefulWidget {
   final String currentTitle;
@@ -22,19 +23,19 @@ class _EditTitleDialogState extends State<EditTitleDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit Title'),
+      title: Text(AppLocalizations.of(context)!.editTitle),
       content: TextField(
         controller: titleController,
-        decoration: const InputDecoration(labelText: 'Title'),
+        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.title),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
         TextButton(
           onPressed: () {
             widget.onSave(titleController.text);
             Navigator.pop(context);
           },
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.save),
         ),
       ],
     );
