@@ -22,10 +22,10 @@ class LessonDetailPage extends StatefulWidget {
 class _LessonDetailPageState extends State<LessonDetailPage> {
   late SharedPreferences prefs;
   late String dataPath;
-  List<LessonItem> leftItems = [];
-  List<LessonItem> rightItems = [];
-  List<bool> leftExpanded = [];
-  List<bool> rightExpanded = [];
+  List<LessonItem> leftItems = <LessonItem>[];
+  List<LessonItem> rightItems = <LessonItem>[];
+  List<bool> leftExpanded = <bool>[];
+  List<bool> rightExpanded = <bool>[];
   int? selectedLeftIndex;
   int? selectedRightIndex;
   int? selectedRightSubIndex;
@@ -56,8 +56,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
         setState(() {
-          rightItems = data.map((e) => LessonItem.fromJson(e)).toList();
-          rightExpanded = List.filled(rightItems.length, false);
+          rightItems = List<LessonItem>.from(
+            data.map((e) => LessonItem.fromJson(e))
+          );
+          rightExpanded = rightItems.map((_) => false).toList();
         });
       } catch (e) {
         // Handle error
@@ -74,7 +76,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
         setState(() {
-          leftItems = data.map((e) => LessonItem.fromJson(e)).toList();
+          leftItems = List<LessonItem>.from(
+            data.map((e) => LessonItem.fromJson(e))
+          );
           leftExpanded = leftItems.map((item) => !item.subitems.every((s) => s.status == 'F')).toList();
         });
       } catch (e) {
@@ -159,8 +163,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
             children: [
               ElevatedButton(
                 onPressed: () {
+                  final newItemText = AppLocalizations.of(context)!.newItem;
                   setState(() {
-                    leftItems.add(LessonItem(text: AppLocalizations.of(context)!.newItem));
+                    leftItems.add(LessonItem(text: newItemText));
                     leftExpanded.add(true);
                   });
                   saveLeftData();
@@ -169,8 +174,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               ),
               ElevatedButton(
                 onPressed: selectedLeftIndex != null ? () {
+                  final newSubitemText = AppLocalizations.of(context)!.newSubitem;
                   setState(() {
-                    leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: AppLocalizations.of(context)!.newSubitem));
+                    leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: newSubitemText));
                   });
                   saveLeftData();
                 } : null,
@@ -215,9 +221,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               const Spacer(),
               ElevatedButton(
                 onPressed: () {
+                  final newItemText = AppLocalizations.of(context)!.newItem;
                   setState(() {
-                    rightItems.add(LessonItem(text: AppLocalizations.of(context)!.newItem));
-                    rightExpanded.add(false);
+                    rightItems.add(LessonItem(text: newItemText));
+                    rightExpanded.add(true);
                   });
                   saveRightData();
                 },
@@ -225,8 +232,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               ),
               ElevatedButton(
                 onPressed: selectedRightIndex != null ? () {
+                  final newSubitemText = AppLocalizations.of(context)!.newSubitem;
                   setState(() {
-                    rightItems[selectedRightIndex!].subitems.add(LessonItem(text: AppLocalizations.of(context)!.newSubitem));
+                    rightItems[selectedRightIndex!].subitems.add(LessonItem(text: newSubitemText));
                   });
                   saveRightData();
                 } : null,
@@ -249,6 +257,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                             var item = leftItems[index];
                             return ExpansionTile(
                               initiallyExpanded: leftExpanded[index],
+                              backgroundColor: selectedLeftIndex == index ? Colors.grey[300] : null,
                               title: GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -264,6 +273,17 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 child: Row(
                                   children: [
                                     Expanded(child: Text(item.text)),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () {
+                                        setState(() {
+                                          leftItems.removeAt(index);
+                                          leftExpanded.removeAt(index);
+                                          if (selectedLeftIndex == index) selectedLeftIndex = null;
+                                        });
+                                        saveLeftData();
+                                      },
+                                    ),
                                     IconButton(
                                       icon: const Icon(Icons.keyboard_arrow_up),
                                       onPressed: index > 0 ? () {
@@ -298,6 +318,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 ),
                               ),
                               children: item.subitems.map((sub) => ListTile(
+                                tileColor: selectedLeftIndex == index && selectedRightIndex == null ? Colors.grey[200] : null,
                                 title: Row(
                                   children: [
                                     IconButton(
@@ -334,6 +355,16 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () {
+                                        int subIndex = item.subitems.indexOf(sub);
+                                        setState(() {
+                                          item.subitems.removeAt(subIndex);
+                                        });
+                                        saveLeftData();
+                                      },
+                                    ),
                                     IconButton(
                                       icon: const Icon(Icons.keyboard_arrow_up),
                                       onPressed: () {
@@ -383,8 +414,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                           itemBuilder: (context, index) {
                             var item = rightItems[index];
                             return ExpansionTile(
-                              initiallyExpanded: rightExpanded[index],
-                              title: GestureDetector(
+                             title: GestureDetector(
                                 onTap: () {
                                   setState(() {
                                     selectedRightIndex = index;
@@ -396,9 +426,55 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   setState(() => item.text = newText);
                                   saveRightData();
                                 }),
-                                child: Text(item.text),
+                                child: Row(
+                                  children: [
+                                    Expanded(child: Text(item.text)),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () {
+                                        setState(() {
+                                          rightItems.removeAt(index);
+                                          rightExpanded.removeAt(index);
+                                          if (selectedRightIndex == index) selectedRightIndex = null;
+                                        });
+                                        saveRightData();
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.keyboard_arrow_up),
+                                      onPressed: index > 0 ? () {
+                                        setState(() {
+                                          var temp = rightItems[index];
+                                          rightItems[index] = rightItems[index - 1];
+                                          rightItems[index - 1] = temp;
+                                          var tempExp = rightExpanded[index];
+                                          rightExpanded[index] = rightExpanded[index - 1];
+                                          rightExpanded[index - 1] = tempExp;
+                                          selectedRightIndex = index - 1;
+                                        });
+                                        saveRightData();
+                                      } : null,
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.keyboard_arrow_down),
+                                      onPressed: index < rightItems.length - 1 ? () {
+                                        setState(() {
+                                          var temp = rightItems[index];
+                                          rightItems[index] = rightItems[index + 1];
+                                          rightItems[index + 1] = temp;
+                                          var tempExp = rightExpanded[index];
+                                          rightExpanded[index] = rightExpanded[index + 1];
+                                          rightExpanded[index + 1] = tempExp;
+                                          selectedRightIndex = index + 1;
+                                        });
+                                        saveRightData();
+                                      } : null,
+                                    ),
+                                  ],
+                                ),
                               ),
                               children: item.subitems.map((sub) => ListTile(
+                                tileColor: selectedRightIndex == index ? Colors.grey[200] : null,
                                 title: GestureDetector(
                                   onDoubleTap: () => _editText(sub.text, (newText) {
                                     setState(() => sub.text = newText);
@@ -416,6 +492,16 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () {
+                                        int subIndex = item.subitems.indexOf(sub);
+                                        setState(() {
+                                          item.subitems.removeAt(subIndex);
+                                        });
+                                        saveRightData();
+                                      },
+                                    ),
                                     IconButton(
                                       icon: const Icon(Icons.keyboard_arrow_up),
                                       onPressed: () {

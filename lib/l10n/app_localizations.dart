@@ -353,7 +353,7 @@ abstract class AppLocalizations {
   /// No description provided for @newSubitem.
   ///
   /// In en, this message translates to:
-  /// **'  - New Task Step'**
+  /// **'- New Task Step'**
   String get newSubitem;
 }
 

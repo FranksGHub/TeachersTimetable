@@ -41,5 +41,5 @@
   "setDataPath": "Datenpfad festlegen",
   "dataPathSet": "Datenpfad gesetzt auf {path}",
   "newItem": "Neue Aufgabe",
-  "newSubitem": "  - Neuer Arbeitsschritt"
+  "newSubitem": "- Neuer Arbeitsschritt"
 }

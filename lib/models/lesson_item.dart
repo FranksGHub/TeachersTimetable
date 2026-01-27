@@ -13,7 +13,9 @@ class LessonItem {
 
   factory LessonItem.fromJson(Map<String, dynamic> json) => LessonItem(
     text: json['text'],
-    subitems: (json['subitems'] as List<dynamic>? ?? []).map((e) => LessonItem.fromJson(e)).toList(),
+    subitems: List<LessonItem>.from(
+      (json['subitems'] as List<dynamic>? ?? []).map((e) => LessonItem.fromJson(e))
+    ),
     status: json['status'],
   );
 }

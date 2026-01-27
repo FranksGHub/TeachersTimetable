@@ -140,5 +140,5 @@ class AppLocalizationsDe extends AppLocalizations {
   String get newItem => 'Neue Aufgabe';
 
   @override
-  String get newSubitem => '  - Neuer Arbeitsschritt';
+  String get newSubitem => '- Neuer Arbeitsschritt';
 }

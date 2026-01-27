@@ -139,5 +139,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newItem => 'New Task';
 
   @override
-  String get newSubitem => '  - New Task Step';
+  String get newSubitem => '- New Task Step';
 }

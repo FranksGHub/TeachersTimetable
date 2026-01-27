@@ -41,5 +41,5 @@
   "setDataPath": "Set Data Path",
   "dataPathSet": "Data path set to {path}",
   "newItem": "New Task",
-  "newSubitem": "  - New Task Step"
+  "newSubitem": "- New Task Step"
 }
