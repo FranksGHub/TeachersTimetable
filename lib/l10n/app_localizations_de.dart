@@ -100,4 +100,39 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get saveTimetableData => 'Speichern der Stundenplan Daten';
+
+  @override
+  String get editText => 'Text bearbeiten';
+
+  @override
+  String get addItemLeft => 'Element links hinzufügen';
+
+  @override
+  String get addSubitemLeft => 'Unterelement links hinzufügen';
+
+  @override
+  String get addItemRight => 'Element rechts hinzufügen';
+
+  @override
+  String get addSubitemRight => 'Unterelement rechts hinzufügen';
+
+  @override
+  String get copyItemToLeft => 'Element nach links kopieren';
+
+  @override
+  String get copySubitemToLeft => 'Unterelement nach links kopieren';
+
+  @override
+  String get leftList => 'Linke Liste';
+
+  @override
+  String get rightList => 'Rechte Liste';
+
+  @override
+  String get setDataPath => 'Datenpfad festlegen';
+
+  @override
+  String dataPathSet(Object path) {
+    return 'Datenpfad gesetzt auf $path';
+  }
 }

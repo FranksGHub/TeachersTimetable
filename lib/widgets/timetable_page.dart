@@ -9,10 +9,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../models/lesson_block.dart';
-import 'edit_block_dialog.dart';
 import 'edit_title_dialog.dart';
 import 'edit_days_dialog.dart';
 import 'edit_times_dialog.dart';
+import 'lesson_detail_page.dart';
 
 class TimetablePage extends StatefulWidget {
   const TimetablePage({super.key, this.onLocaleChange, this.currentLocale});
@@ -106,16 +106,20 @@ class _TimetablePageState extends State<TimetablePage> {
   }
 
   void _editBlock(int row, int col) {
-    showDialog(
-      context: context,
-      builder: (context) => EditBlockDialog(
-        block: timetable[row][col],
-        onSave: (updatedBlock) {
-          setState(() {
-            timetable[row][col] = updatedBlock;
-          });
-          saveData();
-        },
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LessonDetailPage(
+          block: timetable[row][col],
+          row: row,
+          col: col,
+          onSave: (updatedBlock) {
+            setState(() {
+              timetable[row][col] = updatedBlock;
+            });
+            saveData();
+          },
+        ),
       ),
     );
   }
@@ -283,6 +287,16 @@ class _TimetablePageState extends State<TimetablePage> {
     }
   }
 
+  void _setDataPath() async {
+    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+    if (selectedDirectory != null) {
+      prefs.setString('dataPath', selectedDirectory);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data path set to $selectedDirectory')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return KeyboardListener(
@@ -359,6 +373,14 @@ class _TimetablePageState extends State<TimetablePage> {
                 onTap: () {
                   Navigator.pop(context); // Close drawer
                   _importData();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.folder),
+                title: Text(AppLocalizations.of(context)!.setDataPath),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _setDataPath();
                 },
               ),
               ListTile(

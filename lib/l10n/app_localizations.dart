@@ -277,6 +277,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save Timetable Data'**
   String get saveTimetableData;
+
+  /// No description provided for @editText.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Text'**
+  String get editText;
+
+  /// No description provided for @addItemLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Item Left'**
+  String get addItemLeft;
+
+  /// No description provided for @addSubitemLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Subitem Left'**
+  String get addSubitemLeft;
+
+  /// No description provided for @addItemRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Item Right'**
+  String get addItemRight;
+
+  /// No description provided for @addSubitemRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Subitem Right'**
+  String get addSubitemRight;
+
+  /// No description provided for @copyItemToLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Item to Left'**
+  String get copyItemToLeft;
+
+  /// No description provided for @copySubitemToLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Subitem to Left'**
+  String get copySubitemToLeft;
+
+  /// No description provided for @leftList.
+  ///
+  /// In en, this message translates to:
+  /// **'Left List'**
+  String get leftList;
+
+  /// No description provided for @rightList.
+  ///
+  /// In en, this message translates to:
+  /// **'Right List'**
+  String get rightList;
+
+  /// No description provided for @setDataPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Data Path'**
+  String get setDataPath;
+
+  /// No description provided for @dataPathSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Data path set to {path}'**
+  String dataPathSet(Object path);
 }
 
 class _AppLocalizationsDelegate

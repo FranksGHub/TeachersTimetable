@@ -28,5 +28,16 @@
   "english": "Englisch",
   "german": "Deutsch",
   "restartToApply": "Starten Sie die App neu, um die Sprachänderung anzuwenden.",
-  "saveTimetableData": "Speichern der Stundenplan Daten"
+  "saveTimetableData": "Speichern der Stundenplan Daten",
+  "editText": "Text bearbeiten",
+  "addItemLeft": "Element links hinzufügen",
+  "addSubitemLeft": "Unterelement links hinzufügen",
+  "addItemRight": "Element rechts hinzufügen",
+  "addSubitemRight": "Unterelement rechts hinzufügen",
+  "copyItemToLeft": "Element nach links kopieren",
+  "copySubitemToLeft": "Unterelement nach links kopieren",
+  "leftList": "Linke Liste",
+  "rightList": "Rechte Liste",
+  "setDataPath": "Datenpfad festlegen",
+  "dataPathSet": "Datenpfad gesetzt auf {path}"
 }

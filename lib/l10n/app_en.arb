@@ -28,5 +28,16 @@
   "english": "English",
   "german": "German",
   "restartToApply": "Restart the app to apply the language change.",
-  "saveTimetableData": "Save Timetable Data"
+  "saveTimetableData": "Save Timetable Data",
+  "editText": "Edit Text",
+  "addItemLeft": "Add Item Left",
+  "addSubitemLeft": "Add Subitem Left",
+  "addItemRight": "Add Item Right",
+  "addSubitemRight": "Add Subitem Right",
+  "copyItemToLeft": "Copy Item to Left",
+  "copySubitemToLeft": "Copy Subitem to Left",
+  "leftList": "Left List",
+  "rightList": "Right List",
+  "setDataPath": "Set Data Path",
+  "dataPathSet": "Data path set to {path}"
 }

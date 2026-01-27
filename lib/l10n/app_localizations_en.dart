@@ -99,4 +99,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveTimetableData => 'Save Timetable Data';
+
+  @override
+  String get editText => 'Edit Text';
+
+  @override
+  String get addItemLeft => 'Add Item Left';
+
+  @override
+  String get addSubitemLeft => 'Add Subitem Left';
+
+  @override
+  String get addItemRight => 'Add Item Right';
+
+  @override
+  String get addSubitemRight => 'Add Subitem Right';
+
+  @override
+  String get copyItemToLeft => 'Copy Item to Left';
+
+  @override
+  String get copySubitemToLeft => 'Copy Subitem to Left';
+
+  @override
+  String get leftList => 'Left List';
+
+  @override
+  String get rightList => 'Right List';
+
+  @override
+  String get setDataPath => 'Set Data Path';
+
+  @override
+  String dataPathSet(Object path) {
+    return 'Data path set to $path';
+  }
 }
