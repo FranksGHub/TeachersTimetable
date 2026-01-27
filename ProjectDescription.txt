@@ -8,3 +8,6 @@ The text of each item and subitem must be editable by the user, with another cli
 
 Step 3
 The status button and text of the left list must be located at the subitem. Insert a space between the status text and the sub item text. Let the button color be green if the status is finished and otherwise yellow. The default after loading the list on the left side should be collapsed if all subitems of a item are on green and otherwise expanded. On the right side list, after loading, all items must be collapsed. Please move the copy buttons to the right list and make all the button and page strings translatable. Thank you!
+
+Step 4
+Please add a delete button to each line of the left and right list items. Good position is on the left side of the move up and down buttons. The right list is missing the up and down buttons at the item lines, only the sub item have this buttons. The current selected line is not realy visible in all cases, can we paint the selected line with a light gray background?

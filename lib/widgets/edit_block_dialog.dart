@@ -14,9 +14,9 @@ class EditBlockDialog extends StatefulWidget {
 
 class _EditBlockDialogState extends State<EditBlockDialog> {
   late Color selectedColor;
-  late TextEditingController lessonController;
-  late TextEditingController schoolController;
-  late TextEditingController roomController;
+  late TextEditingController lessonNameController;
+  late TextEditingController classNameController;
+  late TextEditingController schoolNameController;
 
   final List<Color> colors = [
     Colors.white,
@@ -33,9 +33,9 @@ class _EditBlockDialogState extends State<EditBlockDialog> {
   void initState() {
     super.initState();
     selectedColor = widget.block.color;
-    lessonController = TextEditingController(text: widget.block.lessonName);
-    schoolController = TextEditingController(text: widget.block.schoolName);
-    roomController = TextEditingController(text: widget.block.roomNumber);
+    lessonNameController = TextEditingController(text: widget.block.lessonName);
+    classNameController = TextEditingController(text: widget.block.className);
+    schoolNameController = TextEditingController(text: widget.block.schoolName);
   }
 
   @override
@@ -63,9 +63,9 @@ class _EditBlockDialogState extends State<EditBlockDialog> {
                 );
               }).toList(),
             ),
-            TextField(controller: lessonController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.lessonName)),
-            TextField(controller: schoolController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.className)),
-            TextField(controller: roomController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.schoolNameLabel)),
+            TextField(controller: lessonNameController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.lessonName)),
+            TextField(controller: classNameController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.className)),
+            TextField(controller: schoolNameController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.schoolNameLabel)),
           ],
         ),
       ),
@@ -75,9 +75,9 @@ class _EditBlockDialogState extends State<EditBlockDialog> {
           onPressed: () {
             widget.onSave(LessonBlock(
               color: selectedColor,
-              lessonName: lessonController.text,
-              schoolName: schoolController.text,
-              roomNumber: roomController.text,
+              lessonName: lessonNameController.text,
+              className: classNameController.text,
+              schoolName: schoolNameController.text,
             ));
             Navigator.pop(context);
           },

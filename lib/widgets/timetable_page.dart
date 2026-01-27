@@ -79,8 +79,8 @@ class _TimetablePageState extends State<TimetablePage> {
         timetable = timetableData.map((row) => (row as List).map((block) => LessonBlock(
           color: Color((block as Map)['color']),
           lessonName: block['lessonName'],
-          roomNumber: block['roomNumber'],
-          schoolName: block['schoolName'],
+          schoolName: block['roomNumber'],
+          className: block['schoolName'],
         )).toList()).toList();
       });
     }
@@ -95,8 +95,8 @@ class _TimetablePageState extends State<TimetablePage> {
     prefs.setString('timetable', jsonEncode(timetable.map((row) => row.map((block) => {
       'color': block.color.toARGB32(),
       'lessonName': block.lessonName,
-      'schoolName': block.schoolName,
-      'roomNumber': block.roomNumber,
+      'schoolName': block.className,
+      'roomNumber': block.schoolName,
     }).toList()).toList()));
   }
 
@@ -199,8 +199,8 @@ class _TimetablePageState extends State<TimetablePage> {
                           crossAxisAlignment: pw.CrossAxisAlignment.start,
                           children: [
                             pw.Text(block.lessonName, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
+                            pw.Text(block.className, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
                             pw.Text(block.schoolName, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
-                            pw.Text(block.roomNumber, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
                           ],
                         ),
                       );
@@ -433,8 +433,8 @@ class _TimetablePageState extends State<TimetablePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(block.lessonName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                                Text(block.schoolName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                                Text(block.roomNumber, style: const TextStyle(fontSize: 16)),
+                                Text(block.className, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                Text(block.schoolName, style: const TextStyle(fontSize: 16)),
                               ],
                             ),
                           ),

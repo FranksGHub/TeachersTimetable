@@ -287,49 +287,49 @@ abstract class AppLocalizations {
   /// No description provided for @addItemLeft.
   ///
   /// In en, this message translates to:
-  /// **'Add Item Left'**
+  /// **'Add Task'**
   String get addItemLeft;
 
   /// No description provided for @addSubitemLeft.
   ///
   /// In en, this message translates to:
-  /// **'Add Subitem Left'**
+  /// **'Add Task Step'**
   String get addSubitemLeft;
 
   /// No description provided for @addItemRight.
   ///
   /// In en, this message translates to:
-  /// **'Add Item Right'**
+  /// **'Add Task'**
   String get addItemRight;
 
   /// No description provided for @addSubitemRight.
   ///
   /// In en, this message translates to:
-  /// **'Add Subitem Right'**
+  /// **'Add Task Step'**
   String get addSubitemRight;
 
   /// No description provided for @copyItemToLeft.
   ///
   /// In en, this message translates to:
-  /// **'Copy Item to Left'**
+  /// **'Copy selected Task to Left'**
   String get copyItemToLeft;
 
   /// No description provided for @copySubitemToLeft.
   ///
   /// In en, this message translates to:
-  /// **'Copy Subitem to Left'**
+  /// **'Copy selected Step to Left'**
   String get copySubitemToLeft;
 
   /// No description provided for @leftList.
   ///
   /// In en, this message translates to:
-  /// **'Left List'**
+  /// **'Current Tasks'**
   String get leftList;
 
   /// No description provided for @rightList.
   ///
   /// In en, this message translates to:
-  /// **'Right List'**
+  /// **'Suggestions from the curriculum'**
   String get rightList;
 
   /// No description provided for @setDataPath.
@@ -343,6 +343,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Data path set to {path}'**
   String dataPathSet(Object path);
+
+  /// No description provided for @newItem.
+  ///
+  /// In en, this message translates to:
+  /// **'New Task'**
+  String get newItem;
+
+  /// No description provided for @newSubitem.
+  ///
+  /// In en, this message translates to:
+  /// **'  - New Task Step'**
+  String get newSubitem;
 }
 
 class _AppLocalizationsDelegate

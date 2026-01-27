@@ -49,6 +49,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void loadRightData() {
     String fileName = '${widget.block.lessonName}.json';
+    fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
     String filePath = '$dataPath/$fileName';
     if (File(filePath).existsSync()) {
       try {
@@ -65,7 +66,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   }
 
   void loadLeftData() {
-    String fileName = '${widget.block.lessonName}${widget.block.schoolName}.json';
+    String fileName = '${widget.block.lessonName}${widget.block.className}${widget.block.schoolName}.json';
+    fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
     String filePath = '$dataPath/$fileName';
     if (File(filePath).existsSync()) {
       try {
@@ -83,13 +85,15 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void saveRightData() {
     String fileName = '${widget.block.lessonName}.json';
+    fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
     String filePath = '$dataPath/$fileName';
     String json = jsonEncode(rightItems.map((e) => e.toJson()).toList());
     File(filePath).writeAsStringSync(json);
   }
 
   void saveLeftData() {
-    String fileName = '${widget.block.lessonName}${widget.block.schoolName}.json';
+    String fileName = '${widget.block.lessonName}${widget.block.className}${widget.block.schoolName}.json';
+    fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
     String filePath = '$dataPath/$fileName';
     String json = jsonEncode(leftItems.map((e) => e.toJson()).toList());
     File(filePath).writeAsStringSync(json);
@@ -141,7 +145,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.block.lessonName),
+        title: Text(widget.block.lessonName + ' - ' + widget.block.className + ' - ' + widget.block.schoolName),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -156,7 +160,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    leftItems.add(LessonItem(text: 'New Item'));
+                    leftItems.add(LessonItem(text: AppLocalizations.of(context)!.newItem));
                     leftExpanded.add(true);
                   });
                   saveLeftData();
@@ -166,7 +170,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               ElevatedButton(
                 onPressed: selectedLeftIndex != null ? () {
                   setState(() {
-                    leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: 'New Subitem'));
+                    leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: AppLocalizations.of(context)!.newSubitem));
                   });
                   saveLeftData();
                 } : null,
@@ -175,8 +179,44 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               const Spacer(),
               ElevatedButton(
                 onPressed: () {
+                  if (selectedRightIndex != null && selectedRightSubIndex == null) {
+                    var item = rightItems[selectedRightIndex!];
+                    var newItem = LessonItem(
+                      text: item.text,
+                      subitems: item.subitems.map((s) => LessonItem(text: s.text)).toList(),
+                      status: 'P',
+                    );
+                    setState(() {
+                      if (selectedLeftIndex != null) {
+                        leftItems.insert(selectedLeftIndex!, newItem);
+                        leftExpanded.insert(selectedLeftIndex!, true);
+                      } else {
+                        leftItems.add(newItem);
+                        leftExpanded.add(true);
+                      }
+                    });
+                    saveLeftData();
+                  }
+                },
+                child: Text(AppLocalizations.of(context)!.copyItemToLeft),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (selectedRightIndex != null && selectedRightSubIndex != null && selectedLeftIndex != null) {
+                    var sub = rightItems[selectedRightIndex!].subitems[selectedRightSubIndex!];
+                    setState(() {
+                      leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: sub.text));
+                    });
+                    saveLeftData();
+                  }
+                },
+                child: Text(AppLocalizations.of(context)!.copySubitemToLeft),
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: () {
                   setState(() {
-                    rightItems.add(LessonItem(text: 'New Item'));
+                    rightItems.add(LessonItem(text: AppLocalizations.of(context)!.newItem));
                     rightExpanded.add(false);
                   });
                   saveRightData();
@@ -186,7 +226,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               ElevatedButton(
                 onPressed: selectedRightIndex != null ? () {
                   setState(() {
-                    rightItems[selectedRightIndex!].subitems.add(LessonItem(text: 'New Subitem'));
+                    rightItems[selectedRightIndex!].subitems.add(LessonItem(text: AppLocalizations.of(context)!.newSubitem));
                   });
                   saveRightData();
                 } : null,
@@ -200,7 +240,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                 Expanded(
                   child: Column(
                     children: [
-                      Text(AppLocalizations.of(context)!.leftList),
+                      Text(' ', style: const TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context)!.leftList, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                       Expanded(
                         child: ListView.builder(
                           itemCount: leftItems.length,
@@ -334,46 +375,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                 Expanded(
                   child: Column(
                     children: [
-                      Text(AppLocalizations.of(context)!.rightList),
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              if (selectedRightIndex != null && selectedRightSubIndex == null) {
-                                var item = rightItems[selectedRightIndex!];
-                                var newItem = LessonItem(
-                                  text: item.text,
-                                  subitems: item.subitems.map((s) => LessonItem(text: s.text)).toList(),
-                                  status: 'P',
-                                );
-                                setState(() {
-                                  if (selectedLeftIndex != null) {
-                                    leftItems.insert(selectedLeftIndex!, newItem);
-                                    leftExpanded.insert(selectedLeftIndex!, true);
-                                  } else {
-                                    leftItems.add(newItem);
-                                    leftExpanded.add(true);
-                                  }
-                                });
-                                saveLeftData();
-                              }
-                            },
-                            child: Text(AppLocalizations.of(context)!.copyItemToLeft),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (selectedRightIndex != null && selectedRightSubIndex != null && selectedLeftIndex != null) {
-                                var sub = rightItems[selectedRightIndex!].subitems[selectedRightSubIndex!];
-                                setState(() {
-                                  leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: sub.text));
-                                });
-                                saveLeftData();
-                              }
-                            },
-                            child: Text(AppLocalizations.of(context)!.copySubitemToLeft),
-                          ),
-                        ],
-                      ),
+                      Text(' ', style: const TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context)!.rightList, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                       Expanded(
                         child: ListView.builder(
                           itemCount: rightItems.length,

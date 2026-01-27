@@ -104,28 +104,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editText => 'Edit Text';
 
   @override
-  String get addItemLeft => 'Add Item Left';
+  String get addItemLeft => 'Add Task';
 
   @override
-  String get addSubitemLeft => 'Add Subitem Left';
+  String get addSubitemLeft => 'Add Task Step';
 
   @override
-  String get addItemRight => 'Add Item Right';
+  String get addItemRight => 'Add Task';
 
   @override
-  String get addSubitemRight => 'Add Subitem Right';
+  String get addSubitemRight => 'Add Task Step';
 
   @override
-  String get copyItemToLeft => 'Copy Item to Left';
+  String get copyItemToLeft => 'Copy selected Task to Left';
 
   @override
-  String get copySubitemToLeft => 'Copy Subitem to Left';
+  String get copySubitemToLeft => 'Copy selected Step to Left';
 
   @override
-  String get leftList => 'Left List';
+  String get leftList => 'Current Tasks';
 
   @override
-  String get rightList => 'Right List';
+  String get rightList => 'Suggestions from the curriculum';
 
   @override
   String get setDataPath => 'Set Data Path';
@@ -134,4 +134,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String dataPathSet(Object path) {
     return 'Data path set to $path';
   }
+
+  @override
+  String get newItem => 'New Task';
+
+  @override
+  String get newSubitem => '  - New Task Step';
 }
