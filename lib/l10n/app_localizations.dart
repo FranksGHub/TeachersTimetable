@@ -242,6 +242,18 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language;
 
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'Language English'**
+  String get languageEnglish;
+
+  /// No description provided for @languageGerman.
+  ///
+  /// In en, this message translates to:
+  /// **'Language German'**
+  String get languageGerman;
+
   /// No description provided for @english.
   ///
   /// In en, this message translates to:
@@ -259,6 +271,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Restart the app to apply the language change.'**
   String get restartToApply;
+
+  /// No description provided for @saveTimetableData.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Timetable Data'**
+  String get saveTimetableData;
 }
 
 class _AppLocalizationsDelegate

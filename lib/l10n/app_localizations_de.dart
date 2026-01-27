@@ -83,6 +83,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get language => 'Sprache';
 
   @override
+  String get languageEnglish => 'Sprache Englisch';
+
+  @override
+  String get languageGerman => 'Sprache Deutsch';
+
+  @override
   String get english => 'Englisch';
 
   @override
@@ -91,4 +97,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get restartToApply =>
       'Starten Sie die App neu, um die Sprachänderung anzuwenden.';
+
+  @override
+  String get saveTimetableData => 'Speichern der Stundenplan Daten';
 }

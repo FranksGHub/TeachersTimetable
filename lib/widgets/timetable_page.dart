@@ -12,7 +12,6 @@ import '../models/lesson_block.dart';
 import 'edit_block_dialog.dart';
 import 'edit_title_dialog.dart';
 import 'edit_days_dialog.dart';
-import 'edit_days_dialog.dart';
 import 'edit_times_dialog.dart';
 
 class TimetablePage extends StatefulWidget {
@@ -27,9 +26,9 @@ class TimetablePage extends StatefulWidget {
 
 class _TimetablePageState extends State<TimetablePage> {
   List<List<LessonBlock>> timetable = List.generate(6, (_) => List.generate(5, (_) => LessonBlock()));
-  List<String> days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  List<String> days = ['Mo', 'Di', 'Mi', 'Do', 'Fr'];
   List<String> times = ['   1', '   2', '   3', '   4', '   5', '   6'];
-  String title = 'Teachers Timetable';
+  String title = 'Lehrer Stundenplan';
   late SharedPreferences prefs;
   late FocusNode _focusNode;
 
@@ -54,11 +53,11 @@ class _TimetablePageState extends State<TimetablePage> {
         title = titleJson;
       });
     }
-    days[0] = prefs.getString('mon') != null ? prefs.getString('mon')! : 'Mon';
-    days[1] = prefs.getString('tue') != null ? prefs.getString('tue')! : 'Tue';
-    days[2] = prefs.getString('wed') != null ? prefs.getString('wed')! : 'Wed';
-    days[3] = prefs.getString('thu') != null ? prefs.getString('thu')! : 'Thu';
-    days[4] = prefs.getString('fri') != null ? prefs.getString('fri')! : 'Fri';
+    days[0] = prefs.getString('mon') != null ? prefs.getString('mon')! : 'Mo';
+    days[1] = prefs.getString('tue') != null ? prefs.getString('tue')! : 'Di';
+    days[2] = prefs.getString('wed') != null ? prefs.getString('wed')! : 'Mi';
+    days[3] = prefs.getString('thu') != null ? prefs.getString('thu')! : 'Do';
+    days[4] = prefs.getString('fri') != null ? prefs.getString('fri')! : 'Fr';
     setState(() {
       days = days;
     });
@@ -223,11 +222,11 @@ class _TimetablePageState extends State<TimetablePage> {
 
     if (Platform.isAndroid) {
       // Share on Android
-      await Share.share(jsonData, subject: 'Timetable Data');
+      await Share.share(jsonData, subject: AppLocalizations.of(context)!.saveTimetableData);
     } else {
       // Save to file on Windows/Web
       String? outputFile = await FilePicker.platform.saveFile(
-        dialogTitle: 'Save Timetable Data',
+        dialogTitle: AppLocalizations.of(context)!.saveTimetableData,
         fileName: 'timetable_data.json',
         type: FileType.custom,
         allowedExtensions: ['json'],
@@ -242,51 +241,17 @@ class _TimetablePageState extends State<TimetablePage> {
     }
   }
 
-  void _showLanguageDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.language),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: Text(AppLocalizations.of(context)!.english),
-              leading: Radio<Locale>(
-                value: const Locale('en'),
-                groupValue: widget.currentLocale ?? const Locale('en'),
-                onChanged: (value) {
-                  if (value != null && widget.onLocaleChange != null) {
-                    widget.onLocaleChange!(value);
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(this.context).showSnackBar(
-                      SnackBar(content: Text(AppLocalizations.of(this.context)!.restartToApply)),
-                    );
-                  }
-                },
-              ),
-            ),
-            ListTile(
-              title: Text(AppLocalizations.of(context)!.german),
-              leading: Radio<Locale>(
-                value: const Locale('de'),
-                groupValue: widget.currentLocale ?? const Locale('en'),
-                onChanged: (value) {
-                  if (value != null && widget.onLocaleChange != null) {
-                    widget.onLocaleChange!(value);
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(this.context).showSnackBar(
-                      SnackBar(content: Text(AppLocalizations.of(this.context)!.restartToApply)),
-                    );
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  void _showLanguage(String langCode) {
+    Locale newLocale = langCode == 'en' ? const Locale('en') : const Locale('de');
+    if(widget.currentLocale == newLocale){
+      return; // No change needed
+    }
+    if (widget.onLocaleChange != null) {
+      widget.onLocaleChange!(newLocale);
+      //Navigator.pop(context);
+    }
   }
+
   void _importData() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -310,6 +275,7 @@ class _TimetablePageState extends State<TimetablePage> {
           prefs.setStringList(key, value.cast<String>());
         }
       }
+
       loadData(); // Reload data
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.dataImported)),
@@ -397,10 +363,18 @@ class _TimetablePageState extends State<TimetablePage> {
               ),
               ListTile(
                 leading: const Icon(Icons.language),
-                title: Text(AppLocalizations.of(context)!.language),
+                title: Text(AppLocalizations.of(context)!.languageGerman),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
-                  _showLanguageDialog();
+                  _showLanguage('de');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.language),
+                title: Text(AppLocalizations.of(context)!.languageEnglish),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _showLanguage('en');
                 },
               ),
             ],
@@ -455,4 +429,5 @@ class _TimetablePageState extends State<TimetablePage> {
     ),
   );
 }
+
 }

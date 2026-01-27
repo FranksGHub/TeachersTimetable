@@ -35,7 +35,7 @@ class _EditTimesDialogState extends State<EditTimesDialog> {
             widget.onSave(timesController.text.split(', '));
             Navigator.pop(context);
           },
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.save),
         ),
       ],
     );

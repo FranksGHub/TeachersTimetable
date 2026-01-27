@@ -35,7 +35,7 @@ class _EditDaysDialogState extends State<EditDaysDialog> {
             widget.onSave(daysController.text.split(', '));
             Navigator.pop(context);
           },
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.save),
         ),
       ],
     );

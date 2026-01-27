@@ -23,7 +23,10 @@
   "className": "Klassenname",
   "schoolNameLabel": "Schulname",
   "language": "Sprache",
+  "languageEnglish": "Sprache Englisch",
+  "languageGerman": "Sprache Deutsch",
   "english": "Englisch",
   "german": "Deutsch",
-  "restartToApply": "Starten Sie die App neu, um die Sprachänderung anzuwenden."
+  "restartToApply": "Starten Sie die App neu, um die Sprachänderung anzuwenden.",
+  "saveTimetableData": "Speichern der Stundenplan Daten"
 }

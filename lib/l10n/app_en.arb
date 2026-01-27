@@ -23,7 +23,10 @@
   "className": "Class Name",
   "schoolNameLabel": "School Name",
   "language": "Language",
+  "languageEnglish": "Language English",
+  "languageGerman": "Language German",
   "english": "English",
   "german": "German",
-  "restartToApply": "Restart the app to apply the language change."
+  "restartToApply": "Restart the app to apply the language change.",
+  "saveTimetableData": "Save Timetable Data"
 }

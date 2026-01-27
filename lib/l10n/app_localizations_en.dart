@@ -83,6 +83,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language => 'Language';
 
   @override
+  String get languageEnglish => 'Language English';
+
+  @override
+  String get languageGerman => 'Language German';
+
+  @override
   String get english => 'English';
 
   @override
@@ -90,4 +96,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restartToApply => 'Restart the app to apply the language change.';
+
+  @override
+  String get saveTimetableData => 'Save Timetable Data';
 }

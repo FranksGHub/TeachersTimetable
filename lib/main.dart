@@ -7,7 +7,7 @@ import 'widgets/timetable_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
-  final localeString = prefs.getString('locale') ?? 'en';
+  final localeString = prefs.getString('locale') ?? 'de';
   final locale = Locale(localeString);
   runApp(MyApp(initialLocale: locale));
 }
@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: AppLocalizations.of(context)?.appTitle ?? 'Teachers Timetable',
+      title: AppLocalizations.of(context)?.appTitle ?? 'Lehrer Stundenplan',
       locale: _locale,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
