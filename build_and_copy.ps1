@@ -1,6 +1,6 @@
 # --- Configuration ---
 Write-Host "---- change the version in pubspec.yaml before running this script! ----" -ForegroundColor Magenta
-$projectName = "Teachers-Timetable" # insert your project name
+$projectName = "Teachers_Timetable" # insert your project name
 $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm"
 $releaseDir = "D:\Projekte_Flutter\Releases\$projectName\_$timestamp"
 
@@ -17,7 +17,7 @@ Write-Host "---- Generate all icons (uncomment if new changes to master icon!) -
 # dart run flutter_launcher_icons
 
 Write-Host "Build Web (CanvasKit)..." -ForegroundColor Yellow
-flutter build web --release --base-href "/timetable/"
+flutter build web --release --base-href "/stundenplan/"
 
 Write-Host "Build Android APK..." -ForegroundColor Yellow
 flutter build apk --release
@@ -38,11 +38,11 @@ Write-Host "Copy files into the release folder..." -ForegroundColor Green
 Copy-Item -Path "build\web\*" -Destination "$releaseDir\Web" -Recurse
 
 # Android
-Copy-Item -Path "build\app\outputs\flutter-apk\app-release.apk" -Destination "$releaseDir\Android\$projectName-release.apk"
+Copy-Item -Path "build\app\outputs\flutter-apk\app-release.apk" -Destination "$releaseDir\Android\$projectName.apk"
 
 # Windows (Kopiert den gesamten Release-Ordner inkl. DLLs)
 Copy-Item -Path "build\windows\x64\runner\Release\*" -Destination "$releaseDir\Windows" -Recurse
-Compress-Archive -Path "$releaseDir\Windows" -DestinationPath "$releaseDir\Windows\TeachersTimetable.zip" -Force
+Compress-Archive -Path "$releaseDir\Windows" -DestinationPath "$releaseDir\Windows\Teachers_Timetable.zip" -Force
 
 Write-Host "`n--- FERTIG! ---" -ForegroundColor Green
 Write-Host "Find your files here: $releaseDir"

@@ -257,7 +257,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                             var item = leftItems[index];
                             return ExpansionTile(
                               initiallyExpanded: leftExpanded[index],
-                              backgroundColor: selectedLeftIndex == index ? Colors.grey[300] : null,
+                              backgroundColor: selectedLeftIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
                               title: GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -318,7 +318,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 ),
                               ),
                               children: item.subitems.map((sub) => ListTile(
-                                tileColor: selectedLeftIndex == index && selectedRightIndex == null ? Colors.grey[200] : null,
+                                tileColor: selectedLeftIndex == index && selectedRightIndex == null ? Color.fromARGB(255, 136, 134, 121) : null,
                                 title: Row(
                                   children: [
                                     IconButton(
@@ -474,7 +474,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 ),
                               ),
                               children: item.subitems.map((sub) => ListTile(
-                                tileColor: selectedRightIndex == index ? Colors.grey[200] : null,
+                                tileColor: selectedRightIndex == index ? Color.fromARGB(255, 136, 134, 121) : null,
                                 title: GestureDetector(
                                   onDoubleTap: () => _editText(sub.text, (newText) {
                                     setState(() => sub.text = newText);
