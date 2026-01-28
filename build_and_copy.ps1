@@ -16,8 +16,9 @@ Write-Host "---- Generate all icons (uncomment if new changes to master icon!) -
 # dart --disable-analytics
 # dart run flutter_launcher_icons
 
-Write-Host "Build Web (CanvasKit)..." -ForegroundColor Yellow
-flutter build web --release --base-href "/stundenplan/"
+Write-Host "---- Build web is disabled, not possible to store data files yet. ----" -ForegroundColor Magenta
+# Write-Host "Build Web (CanvasKit)..." -ForegroundColor Yellow
+# flutter build web --release --base-href "/stundenplan/"
 
 Write-Host "Build Android APK..." -ForegroundColor Yellow
 flutter build apk --release
@@ -27,7 +28,7 @@ flutter build windows --release
 
 # 3. Create output folder
 Write-Host "Create release folder..." -ForegroundColor Cyan
-New-Item -ItemType Directory -Force -Path "$releaseDir\Web"
+# New-Item -ItemType Directory -Force -Path "$releaseDir\Web"
 New-Item -ItemType Directory -Force -Path "$releaseDir\Android"
 New-Item -ItemType Directory -Force -Path "$releaseDir\Windows"
 
@@ -35,7 +36,7 @@ New-Item -ItemType Directory -Force -Path "$releaseDir\Windows"
 Write-Host "Copy files into the release folder..." -ForegroundColor Green
 
 # Web
-Copy-Item -Path "build\web\*" -Destination "$releaseDir\Web" -Recurse
+# Copy-Item -Path "build\web\*" -Destination "$releaseDir\Web" -Recurse
 
 # Android
 Copy-Item -Path "build\app\outputs\flutter-apk\app-release.apk" -Destination "$releaseDir\Android\$projectName.apk"

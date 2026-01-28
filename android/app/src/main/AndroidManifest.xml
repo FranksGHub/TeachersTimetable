@@ -41,6 +41,13 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- Queries for file picker -->
+        <intent>
+            <action android:name="android.intent.action.OPEN_DOCUMENT"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.OPEN_DOCUMENT_TREE"/>
+        </intent>
     </queries>
     <!-- Permissions for file access -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
