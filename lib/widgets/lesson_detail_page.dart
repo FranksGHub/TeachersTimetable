@@ -48,11 +48,14 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   }
 
   void loadRightData() {
-    String fileName = '${widget.block.lessonName}.json';
-    fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
-    String filePath = '$dataPath/$fileName';
-    if (File(filePath).existsSync()) {
-      try {
+    try {
+      if (dataPath.isEmpty) {
+        return; // Silent fail on load if path not set
+      }
+      String fileName = '${widget.block.lessonName}.json';
+      fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+      String filePath = '$dataPath/$fileName';
+      if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
         setState(() {
@@ -61,18 +64,21 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           );
           rightExpanded = rightItems.map((_) => false).toList();
         });
-      } catch (e) {
-        // Handle error
       }
+    } catch (e) {
+      _showError('Failed to load right data: $e');
     }
   }
 
   void loadLeftData() {
-    String fileName = '${widget.block.lessonName}${widget.block.className}${widget.block.schoolName}.json';
-    fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
-    String filePath = '$dataPath/$fileName';
-    if (File(filePath).existsSync()) {
-      try {
+    try {
+      if (dataPath.isEmpty) {
+        return; // Silent fail on load if path not set
+      }
+      String fileName = '${widget.block.lessonName}${widget.block.className}${widget.block.schoolName}.json';
+      fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+      String filePath = '$dataPath/$fileName';
+      if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
         setState(() {
@@ -81,26 +87,52 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           );
           leftExpanded = leftItems.map((item) => !item.subitems.every((s) => s.status == 'F')).toList();
         });
-      } catch (e) {
-        // Handle error
       }
+    } catch (e) {
+      _showError('Failed to load left data: $e');
     }
   }
 
   void saveRightData() {
-    String fileName = '${widget.block.lessonName}.json';
-    fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
-    String filePath = '$dataPath/$fileName';
-    String json = jsonEncode(rightItems.map((e) => e.toJson()).toList());
-    File(filePath).writeAsStringSync(json);
+    try {
+      if (dataPath.isEmpty) {
+        _showError('Data path not set. Please set it in the menu.');
+        return;
+      }
+      String fileName = '${widget.block.lessonName}.json';
+      fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+      String filePath = '$dataPath/$fileName';
+      String json = jsonEncode(rightItems.map((e) => e.toJson()).toList());
+      File(filePath).writeAsStringSync(json);
+    } catch (e) {
+      _showError('Failed to save right data: $e');
+    }
   }
 
   void saveLeftData() {
-    String fileName = '${widget.block.lessonName}${widget.block.className}${widget.block.schoolName}.json';
-    fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
-    String filePath = '$dataPath/$fileName';
-    String json = jsonEncode(leftItems.map((e) => e.toJson()).toList());
-    File(filePath).writeAsStringSync(json);
+    try {
+      if (dataPath.isEmpty) {
+        _showError('Data path not set. Please set it in the menu.');
+        return;
+      }
+      String fileName = '${widget.block.lessonName}${widget.block.className}${widget.block.schoolName}.json';
+      fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+      String filePath = '$dataPath/$fileName';
+      String json = jsonEncode(leftItems.map((e) => e.toJson()).toList());
+      File(filePath).writeAsStringSync(json);
+    } catch (e) {
+      _showError('Failed to save left data: $e');
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 4),
+      ),
+    );
   }
 
   void _editText(String currentText, Function(String) onSave) {

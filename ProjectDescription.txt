@@ -11,3 +11,18 @@ The status button and text of the left list must be located at the subitem. Inse
 
 Step 4
 Please add a delete button to each line of the left and right list items. Good position is on the left side of the move up and down buttons. The right list is missing the up and down buttons at the item lines, only the sub item have this buttons. The current selected line is not realy visible in all cases, can we paint the selected line with a light gray background?
+
+Web Version?
+In the web version, I can't execute "setDataPath," and the edit_block_dialog doesn't close when I save. The settings are saved somewhere, but only for this browser. In another browser, the settings are gone. Where can the user settings be saved in the web version? Is that even possible in the web version? How does it work in the Android version?
+Answer: "Since localStorage is browser-specific, consider:  
+Cloud Sync (best solution):
+            Add Firebase Firestore or similar backend
+            Users can sync data across browsers and devices
+Export/Import (current approach):
+            Your app already has this! The user can export and import data
+Use isar or hive package (local database):
+            Better than SharedPreferences for web
+            Still browser-specific, but more reliable
+
+Android version?
+On Android I choose a sub path from Documents for the data path, but automatic load / save for the both lists in lesson_detail_page.dart is not possible. Manuell export / import of the user settings data is possible.

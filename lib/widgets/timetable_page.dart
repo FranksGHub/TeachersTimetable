@@ -226,7 +226,7 @@ class _TimetablePageState extends State<TimetablePage> {
 
     if (Platform.isAndroid) {
       // Share on Android
-      await Share.share(jsonData, subject: AppLocalizations.of(context)!.saveTimetableData);
+      await SharePlus.instance.share(ShareParams(text: jsonData, title: AppLocalizations.of(context)!.saveTimetableData, subject: AppLocalizations.of(context)!.saveTimetableData));
     } else {
       // Save to file on Windows/Web
       String? outputFile = await FilePicker.platform.saveFile(
@@ -288,11 +288,25 @@ class _TimetablePageState extends State<TimetablePage> {
   }
 
   void _setDataPath() async {
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-    if (selectedDirectory != null) {
-      prefs.setString('dataPath', selectedDirectory);
+    try {
+      String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+      if (selectedDirectory != null) {
+        await prefs.setString('dataPath', selectedDirectory);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.dataPathSet(selectedDirectory)),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Data path set to $selectedDirectory')),
+        SnackBar(
+          content: Text('Failed to set data path: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+        ),
       );
     }
   }
