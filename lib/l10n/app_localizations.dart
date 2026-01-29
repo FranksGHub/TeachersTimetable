@@ -355,6 +355,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'- New Task Step'**
   String get newSubitem;
+
+  /// No description provided for @failedToLoadLeftData.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load curent task data'**
+  String get failedToLoadLeftData;
+
+  /// No description provided for @failedToLoadRightData.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load suggestions data'**
+  String get failedToLoadRightData;
+
+  /// No description provided for @failedToSaveLeftData.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save curent task data'**
+  String get failedToSaveLeftData;
+
+  /// No description provided for @failedToSaveRightData.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save suggestions data'**
+  String get failedToSaveRightData;
+
+  /// No description provided for @failedToCreateZipFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create zip file'**
+  String get failedToCreateZipFile;
+
+  /// No description provided for @timetableBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup all files into a zip file'**
+  String get timetableBackup;
+
+  /// No description provided for @timetableBackupImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import all files from a backup zip file'**
+  String get timetableBackupImport;
+
+  /// No description provided for @failedToBackupInZipFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to export files'**
+  String get failedToBackupInZipFile;
+
+  /// No description provided for @backupInZipFileOk.
+  ///
+  /// In en, this message translates to:
+  /// **'All files exported as ZIP'**
+  String get backupInZipFileOk;
+
+  /// No description provided for @failedToImportZipFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to import files'**
+  String get failedToImportZipFile;
+
+  /// No description provided for @importbackupZipFileOk.
+  ///
+  /// In en, this message translates to:
+  /// **'All files imported successfully'**
+  String get importbackupZipFileOk;
+
+  /// No description provided for @importAllFilesZip.
+  ///
+  /// In en, this message translates to:
+  /// **'Import all files from a backup'**
+  String get importAllFilesZip;
+
+  /// No description provided for @exportAllFilesZip.
+  ///
+  /// In en, this message translates to:
+  /// **'Export all files as a backup (ZIP)'**
+  String get exportAllFilesZip;
+
+  /// No description provided for @noFilesToExportYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No files to backup yet'**
+  String get noFilesToExportYet;
 }
 
 class _AppLocalizationsDelegate

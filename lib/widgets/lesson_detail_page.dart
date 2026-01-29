@@ -69,7 +69,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         });
       }
     } catch (e) {
-      _showError('Failed to load right data: $e');
+      _showError(AppLocalizations.of(context)!.failedToLoadRightData + ': $e');
     }
   }
 
@@ -89,7 +89,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         });
       }
     } catch (e) {
-      _showError('Failed to load left data: $e');
+      _showError(AppLocalizations.of(context)!.failedToLoadLeftData + ': $e');
     }
   }
 
@@ -101,7 +101,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       String json = jsonEncode(rightItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
     } catch (e) {
-      _showError('Failed to save right data: $e');
+      _showError(AppLocalizations.of(context)!.failedToSaveRightData + ': $e');
     }
   }
 
@@ -113,7 +113,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       String json = jsonEncode(leftItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
     } catch (e) {
-      _showError('Failed to save left data: $e');
+      _showError(AppLocalizations.of(context)!.failedToSaveLeftData + ': $e');
     }
   }
 

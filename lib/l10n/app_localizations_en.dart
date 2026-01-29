@@ -140,4 +140,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newSubitem => '- New Task Step';
+
+  @override
+  String get failedToLoadLeftData => 'Failed to load curent task data';
+
+  @override
+  String get failedToLoadRightData => 'Failed to load suggestions data';
+
+  @override
+  String get failedToSaveLeftData => 'Failed to save curent task data';
+
+  @override
+  String get failedToSaveRightData => 'Failed to save suggestions data';
+
+  @override
+  String get failedToCreateZipFile => 'Failed to create zip file';
+
+  @override
+  String get timetableBackup => 'Backup all files into a zip file';
+
+  @override
+  String get timetableBackupImport => 'Import all files from a backup zip file';
+
+  @override
+  String get failedToBackupInZipFile => 'Failed to export files';
+
+  @override
+  String get backupInZipFileOk => 'All files exported as ZIP';
+
+  @override
+  String get failedToImportZipFile => 'Failed to import files';
+
+  @override
+  String get importbackupZipFileOk => 'All files imported successfully';
+
+  @override
+  String get importAllFilesZip => 'Import all files from a backup';
+
+  @override
+  String get exportAllFilesZip => 'Export all files as a backup (ZIP)';
+
+  @override
+  String get noFilesToExportYet => 'No files to backup yet';
 }

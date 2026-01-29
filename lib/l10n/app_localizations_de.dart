@@ -141,4 +141,50 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get newSubitem => '- Neuer Arbeitsschritt';
+
+  @override
+  String get failedToLoadLeftData =>
+      'Laden der aktuellen Aufgaben ist fehlgeschlagen';
+
+  @override
+  String get failedToLoadRightData => 'Laden der Vorschläge ist fehlgeschlagen';
+
+  @override
+  String get failedToSaveLeftData =>
+      'Speichern der aktuellen Aufgaben ist fehlgeschlagen';
+
+  @override
+  String get failedToSaveRightData =>
+      'Speichern der Vorschläge ist fehlgeschlagen';
+
+  @override
+  String get failedToCreateZipFile => 'Fehler beim erzeugen der ZIP-Datei';
+
+  @override
+  String get timetableBackup => 'Backup alle Dateien in eine ZIP-Datei';
+
+  @override
+  String get timetableBackupImport =>
+      'Importiere alle Dateien aus einer Backup ZIP-Datei';
+
+  @override
+  String get failedToBackupInZipFile => 'Fehler beim Backup der Dateien';
+
+  @override
+  String get backupInZipFileOk => 'Alle Dateien wurden gesichert';
+
+  @override
+  String get failedToImportZipFile => 'Fehler beim Import der Dateien';
+
+  @override
+  String get importbackupZipFileOk => 'Alle Dateien wurden importiert';
+
+  @override
+  String get importAllFilesZip => 'Importiere alle Dateien aus einem Backup';
+
+  @override
+  String get exportAllFilesZip => 'Exportiere alle Dateien als Backup (ZIP)';
+
+  @override
+  String get noFilesToExportYet => 'Keine Dateien zum Backup gefunden';
 }

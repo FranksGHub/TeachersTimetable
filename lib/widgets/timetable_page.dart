@@ -3,6 +3,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:archive/archive_io.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -287,6 +289,104 @@ class _TimetablePageState extends State<TimetablePage> {
     }
   }
 
+  void _exportAllFilesAsZip() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final timetableDir = Directory('${directory.path}/Timetable');
+
+      if (!await timetableDir.exists()) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.noFilesToExportYet), backgroundColor: Colors.orange));
+        return;
+      }
+
+      // Get all files in the Timetable directory
+      final files = timetableDir.listSync();
+      if (files.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.noFilesToExportYet), backgroundColor: Colors.orange));
+        return;
+      }
+
+      // Create archive
+      final archive = Archive();
+      for (var file in files) {
+        if (file is File) {
+          final bytes = await file.readAsBytes();
+          final fileName = file.path.split('/').last;
+          archive.addFile(ArchiveFile(fileName, bytes.length, bytes));
+        }
+      }
+
+      // Encode the archive as zip
+      final zipData = ZipEncoder().encode(archive);
+      if (zipData == null) {
+        throw Exception(AppLocalizations.of(context)!.failedToCreateZipFile);
+      }
+
+      // Save zip file
+      final tempDir = Directory.systemTemp;
+      final zipFile = File('${tempDir.path}/teachers_timetable_backup.zip');
+      await zipFile.writeAsBytes(zipData);
+
+      // Share the zip file
+      await SharePlus.instance.share(ShareParams(files: [XFile(zipFile.path)], subject: AppLocalizations.of(context)!.timetableBackup, title: AppLocalizations.of(context)!.timetableBackup));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.backupInZipFileOk), backgroundColor: Colors.green));
+      } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.failedToBackupInZipFile + ': $e'), backgroundColor: Colors.red) );
+    }
+  }
+
+  void _importAllFilesFromZip() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['zip'],
+      );
+
+      if (result == null) return;
+
+      final zipFilePath = result.files.single.path!;
+      final zipFile = File(zipFilePath);
+      final zipBytes = await zipFile.readAsBytes();
+
+      // Decode the archive
+      final archive = ZipDecoder().decodeBytes(zipBytes);
+
+      // Get target directory
+      final directory = await getApplicationDocumentsDirectory();
+      final timetableDir = Directory('${directory.path}/Timetable');
+
+      // Create directory if it doesn't exist
+      if (!await timetableDir.exists()) {
+        await timetableDir.create(recursive: true);
+      }
+
+      // Extract all files
+      for (final file in archive) {
+        if (!file.isFile) continue;
+
+        final filePath = '${timetableDir.path}/${file.name}';
+        final outputFile = File(filePath);
+
+        // Create parent directory if needed
+        await outputFile.parent.create(recursive: true);
+
+        // Write the file
+        await outputFile.writeAsBytes(file.content as List<int>);
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.importbackupZipFileOk), backgroundColor: Colors.green));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.failedToImportZipFile + ': $e'), backgroundColor: Colors.red));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return KeyboardListener(
@@ -341,6 +441,7 @@ class _TimetablePageState extends State<TimetablePage> {
                   _editTimes();
                 },
               ),
+              const Divider(),
               ListTile(
                 leading: const Icon(Icons.print),
                 title: Text(AppLocalizations.of(context)!.printPdf),
@@ -349,6 +450,7 @@ class _TimetablePageState extends State<TimetablePage> {
                   _generatePdf();
                 },
               ),
+              const Divider(),
               ListTile(
                 leading: const Icon(Icons.file_download),
                 title: Text(AppLocalizations.of(context)!.exportData),
@@ -365,6 +467,23 @@ class _TimetablePageState extends State<TimetablePage> {
                   _importData();
                 },
               ),
+              ListTile(
+                leading: const Icon(Icons.archive),
+                title: Text(AppLocalizations.of(context)!.exportAllFilesZip),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _exportAllFilesAsZip();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.unarchive),
+                title: Text(AppLocalizations.of(context)!.importAllFilesZip),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _importAllFilesFromZip();
+                },
+              ),
+              const Divider(),
               ListTile(
                 leading: const Icon(Icons.language),
                 title: Text(AppLocalizations.of(context)!.languageGerman),
