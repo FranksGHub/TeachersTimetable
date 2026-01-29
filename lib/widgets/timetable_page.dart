@@ -287,30 +287,6 @@ class _TimetablePageState extends State<TimetablePage> {
     }
   }
 
-  void _setDataPath() async {
-    try {
-      String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-      if (selectedDirectory != null) {
-        await prefs.setString('dataPath', selectedDirectory);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.dataPathSet(selectedDirectory)),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to set data path: $e'),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 4),
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return KeyboardListener(
@@ -387,14 +363,6 @@ class _TimetablePageState extends State<TimetablePage> {
                 onTap: () {
                   Navigator.pop(context); // Close drawer
                   _importData();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.folder),
-                title: Text(AppLocalizations.of(context)!.setDataPath),
-                onTap: () {
-                  Navigator.pop(context); // Close drawer
-                  _setDataPath();
                 },
               ),
               ListTile(

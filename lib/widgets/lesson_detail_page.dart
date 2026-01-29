@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 import 'dart:io';
 import '../models/lesson_block.dart';
@@ -38,22 +39,24 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   Future<void> loadPrefsAndData() async {
     prefs = await SharedPreferences.getInstance();
-    dataPath = prefs.getString('dataPath') ?? '';
-    if (dataPath.isEmpty) {
-      // Default to current directory or something, but for now, assume set
-      dataPath = Directory.current.path;
+    // Use app documents directory instead of user-selected path
+    final directory = await getApplicationDocumentsDirectory();
+    dataPath = directory.path + '/Timetable';
+    
+    // Create the directory if it doesn't exist
+    final timetableDir = Directory(dataPath);
+    if (!await timetableDir.exists()) {
+      await timetableDir.create(recursive: true);
     }
+    
     loadRightData();
     loadLeftData();
   }
 
   void loadRightData() {
     try {
-      if (dataPath.isEmpty) {
-        return; // Silent fail on load if path not set
-      }
       String fileName = '${widget.block.lessonName}.json';
-      fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+      fileName = fileName.replaceAll(RegExp(r'[\\/:*?" <>|]'), '_');
       String filePath = '$dataPath/$fileName';
       if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
@@ -72,11 +75,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void loadLeftData() {
     try {
-      if (dataPath.isEmpty) {
-        return; // Silent fail on load if path not set
-      }
       String fileName = '${widget.block.lessonName}${widget.block.className}${widget.block.schoolName}.json';
-      fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+      fileName = fileName.replaceAll(RegExp(r'[\\/:*?" <>|]'), '_');
       String filePath = '$dataPath/$fileName';
       if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
@@ -95,12 +95,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void saveRightData() {
     try {
-      if (dataPath.isEmpty) {
-        _showError('Data path not set. Please set it in the menu.');
-        return;
-      }
       String fileName = '${widget.block.lessonName}.json';
-      fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+      fileName = fileName.replaceAll(RegExp(r'[\\/:*?" <>|]'), '_');
       String filePath = '$dataPath/$fileName';
       String json = jsonEncode(rightItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
@@ -111,12 +107,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void saveLeftData() {
     try {
-      if (dataPath.isEmpty) {
-        _showError('Data path not set. Please set it in the menu.');
-        return;
-      }
       String fileName = '${widget.block.lessonName}${widget.block.className}${widget.block.schoolName}.json';
-      fileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+      fileName = fileName.replaceAll(RegExp(r'[\\/:*?" <>|]'), '_');
       String filePath = '$dataPath/$fileName';
       String json = jsonEncode(leftItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);

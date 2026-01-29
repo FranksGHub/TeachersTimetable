@@ -26,3 +26,74 @@ Use isar or hive package (local database):
 
 Android version?
 On Android I choose a sub path from Documents for the data path, but automatic load / save for the both lists in lesson_detail_page.dart is not possible. Manuell export / import of the user settings data is possible.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+https://developer.android.com/training/data-storage/manage-all-files?hl=de
+Zugriff auf alle Dateien anfordern
+Eine App kann den Zugriff auf alle Dateien vom Nutzer anfordern, indem sie Folgendes tut:
+
+Deklarieren Sie die Berechtigung MANAGE_EXTERNAL_STORAGE im Manifest.
+Verwende die Intent-Aktion ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION, um Nutzer zu einer Seite mit Systemeinstellungen weiterzuleiten, auf der sie die folgende Option für deine App aktivieren können: Zugriff zum Verwalten aller Dateien zulassen.
+Rufen Sie Environment.isExternalStorageManager() auf, um festzustellen, ob Ihrer App die Berechtigung MANAGE_EXTERNAL_STORAGE erteilt wurde.
+
+Die Berechtigung MANAGE_EXTERNAL_STORAGE gewährt Folgendes:
+
+Lese- und Schreibzugriff auf alle Dateien im gemeinsamen Speicher.
+
+Hinweis :Das Verzeichnis /sdcard/Android/media⁠ ist Teil des gemeinsam genutzten Speichers.
+Zugriff auf die Inhalte der Tabelle MediaStore.Files.
+
+Zugriff auf das Stammverzeichnis des USB-OTG-Laufwerks und der SD-Karte.
+
+Schreibzugriff auf alle internen Speicherverzeichnisse mit Ausnahme von /Android/data/, /sdcard/Android und den meisten Unterverzeichnissen von /sdcard/Android. Dieser Schreibzugriff umfasst den Zugriff über den direkten Dateipfad.
+
+Apps, denen diese Berechtigung erteilt wurde, können weiterhin nicht auf die app-spezifischen Verzeichnisse anderer Apps zugreifen, da diese Verzeichnisse als Unterverzeichnisse von Android/data/ auf einem Speichermedium angezeigt werden.
+
+Wenn eine App die Berechtigung MANAGE_EXTERNAL_STORAGE hat, kann sie über die MediaStore API oder direkte Dateipfade auf diese zusätzlichen Dateien und Verzeichnisse zugreifen. Wenn Sie jedoch das Storage Access Framework verwenden, können Sie nur dann auf eine Datei oder ein Verzeichnis zugreifen, wenn Sie dies ohne die Berechtigung MANAGE_EXTERNAL_STORAGE tun können.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+https://developer.android.com/training/data-storage/app-specific?hl=de#internal-access-files
+Auf app-spezifische Dateien zugreifen
+
+
+
+In vielen Fällen erstellt Ihre App Dateien, auf die andere Apps nicht zugreifen müssen oder sollten. Das System bietet die folgenden Speicherorte zum Speichern solcher app-spezifischen Dateien:
+
+Verzeichnisse für internen Speicher:Diese Verzeichnisse umfassen sowohl einen dedizierten Speicherort für persistente Dateien als auch einen weiteren Speicherort für Cache-Daten. Das System verhindert, dass andere Apps auf diese Speicherorte zugreifen. Unter Android 10 (API‑Level 29) und höher werden diese Speicherorte verschlüsselt. Aufgrund dieser Eigenschaften eignen sich diese Speicherorte gut zum Speichern vertraulicher Daten, auf die nur Ihre App selbst zugreifen kann.
+
+Externe Speicherverzeichnisse:Diese Verzeichnisse enthalten sowohl einen dedizierten Speicherort für persistente Dateien als auch einen weiteren Speicherort für Cache-Daten. Obwohl eine andere App mit den entsprechenden Berechtigungen auf diese Verzeichnisse zugreifen kann, sind die darin gespeicherten Dateien nur für die Verwendung durch Ihre App vorgesehen. Wenn Sie Dateien erstellen möchten, auf die andere Apps zugreifen können, sollte Ihre App diese Dateien stattdessen im gemeinsamen Speicher des externen Speichers speichern.
+
+Wenn der Nutzer Ihre App deinstalliert, werden die im App-spezifischen Speicher gespeicherten Dateien entfernt. Aus diesem Grund sollten Sie diesen Speicher nicht verwenden, um Inhalte zu speichern, die der Nutzer unabhängig von Ihrer App behalten möchte. Wenn Ihre App beispielsweise Nutzern ermöglicht, Fotos aufzunehmen, erwarten sie, dass sie auch nach der Deinstallation Ihrer App auf diese Fotos zugreifen können. Daher sollten Sie stattdessen den freigegebenen Speicher verwenden, um diese Arten von Dateien in der entsprechenden Mediensammlung zu speichern.
+
+In den folgenden Abschnitten wird beschrieben, wie Sie Dateien in appspezifischen Verzeichnissen speichern und darauf zugreifen.
+Zugriff über den internen Speicher
+Für jede App stellt das System Verzeichnisse im internen Speicher bereit, in denen eine App ihre Dateien organisieren kann. Ein Verzeichnis ist für die persistenten Dateien Ihrer App vorgesehen, das andere enthält die im Cache gespeicherten Dateien Ihrer App. Ihre App benötigt keine Systemberechtigungen, um Dateien in diesen Verzeichnissen zu lesen und zu schreiben.
+
+Andere Apps können nicht auf Dateien zugreifen, die im internen Speicher abgelegt sind. Daher ist der interne Speicher ein guter Ort für App-Daten, auf die andere Apps nicht zugreifen sollten.
+
+Diese Verzeichnisse sind jedoch in der Regel klein. Bevor Ihre App app-spezifische Dateien in den internen Speicher schreibt, sollte sie den freien Speicherplatz auf dem Gerät abfragen.
+
+Auf persistente Dateien zugreifen
+Die normalen, persistenten Dateien Ihrer App befinden sich in einem Verzeichnis, auf das Sie mit dem Attribut filesDir eines Kontextobjekts zugreifen können. Das Framework bietet mehrere Methoden, mit denen Sie auf Dateien in diesem Verzeichnis zugreifen und sie dort speichern können.
+
+Auf Dateien zugreifen und Dateien speichern
+Sie können die File API verwenden, um auf Dateien zuzugreifen und sie zu speichern.
+
+Um die Leistung Ihrer App zu erhalten, sollten Sie dieselbe Datei nicht mehrmals öffnen und schließen.
+
+Das folgende Code-Snippet zeigt, wie die File API verwendet wird:
+
+Kotlin
+Java
+
+val file = File(context.filesDir, filename)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+https://stackoverflow.com/questions/78692611/file-permission-for-android-14-and-higher
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Step 5
+Let's forget about freely choosing a directory for file storage. Instead, let's use the shared directory for Android apps via "getApplicationDocumentsDirectory". On Windows, files can also be automatically stored and read in the AppData directory with the program name.
+
+
+
