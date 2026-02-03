@@ -105,22 +105,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editText => 'Text bearbeiten';
 
   @override
-  String get addItemLeft => 'Neue Aufgabe';
+  String get addItemLeft => '+ Aufgabe';
 
   @override
-  String get addSubitemLeft => 'Neuer Arbeitsschritt';
+  String get addSubitemLeft => '+ Arbeitsschritt';
 
   @override
-  String get addItemRight => 'Neue Aufgabe';
+  String get addItemRight => '+ Aufgabe';
 
   @override
-  String get addSubitemRight => 'Neuer Arbeitsschritt';
+  String get addSubitemRight => '+ Arbeitsschritt';
 
   @override
-  String get copyItemToLeft => 'Kopiere selektierte Aufgabe nach links';
+  String get copyItemToLeft => '<= Aufgabe';
 
   @override
-  String get copySubitemToLeft => 'Kopiere selektierten Schritt nach links';
+  String get copySubitemToLeft => '<= Schritt';
 
   @override
   String get leftList => 'Aktuelle Aufgaben';
@@ -129,18 +129,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rightList => 'Vorschläge aus dem Lehrplan';
 
   @override
-  String get setDataPath => 'Datenpfad festlegen';
+  String get newItem => 'Aufgabe';
 
   @override
-  String dataPathSet(Object path) {
-    return 'Datenpfad gesetzt auf $path';
-  }
-
-  @override
-  String get newItem => 'Neue Aufgabe';
-
-  @override
-  String get newSubitem => '- Neuer Arbeitsschritt';
+  String get newSubitem => '- Arbeitsschritt';
 
   @override
   String get failedToLoadLeftData =>

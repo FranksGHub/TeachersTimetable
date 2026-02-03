@@ -287,37 +287,37 @@ abstract class AppLocalizations {
   /// No description provided for @addItemLeft.
   ///
   /// In en, this message translates to:
-  /// **'Add Task'**
+  /// **'+ Task'**
   String get addItemLeft;
 
   /// No description provided for @addSubitemLeft.
   ///
   /// In en, this message translates to:
-  /// **'Add Task Step'**
+  /// **'+ Step'**
   String get addSubitemLeft;
 
   /// No description provided for @addItemRight.
   ///
   /// In en, this message translates to:
-  /// **'Add Task'**
+  /// **'+ Task'**
   String get addItemRight;
 
   /// No description provided for @addSubitemRight.
   ///
   /// In en, this message translates to:
-  /// **'Add Task Step'**
+  /// **'+ Step'**
   String get addSubitemRight;
 
   /// No description provided for @copyItemToLeft.
   ///
   /// In en, this message translates to:
-  /// **'Copy selected Task to Left'**
+  /// **'<= Task'**
   String get copyItemToLeft;
 
   /// No description provided for @copySubitemToLeft.
   ///
   /// In en, this message translates to:
-  /// **'Copy selected Step to Left'**
+  /// **'<= Step'**
   String get copySubitemToLeft;
 
   /// No description provided for @leftList.
@@ -332,18 +332,6 @@ abstract class AppLocalizations {
   /// **'Suggestions from the curriculum'**
   String get rightList;
 
-  /// No description provided for @setDataPath.
-  ///
-  /// In en, this message translates to:
-  /// **'Set Data Path'**
-  String get setDataPath;
-
-  /// No description provided for @dataPathSet.
-  ///
-  /// In en, this message translates to:
-  /// **'Data path set to {path}'**
-  String dataPathSet(Object path);
-
   /// No description provided for @newItem.
   ///
   /// In en, this message translates to:
@@ -353,7 +341,7 @@ abstract class AppLocalizations {
   /// No description provided for @newSubitem.
   ///
   /// In en, this message translates to:
-  /// **'- New Task Step'**
+  /// **'- New Step'**
   String get newSubitem;
 
   /// No description provided for @failedToLoadLeftData.

@@ -95,5 +95,11 @@ https://stackoverflow.com/questions/78692611/file-permission-for-android-14-and-
 Step 5
 Let's forget about freely choosing a directory for file storage. Instead, let's use the shared directory for Android apps via "getApplicationDocumentsDirectory". On Windows, files can also be automatically stored and read in the AppData directory with the program name.
 
+Step 6
+My only problem now is that I can no longer copy files between Android and Windows. I need two menu items in the hamburger menu: "Export all files" and "Import all files." Ideally, a zip file should be able to be saved and read there. The zip file should contain all files in the dataPath directory, and when imported, the zip should be extracted back into that directory. Existing files will be overwritten in the process.
+
+Step 7
+Just one more small thing: the line spacing in the two lists of `lesson_details_page.dart` is too large; it could be halved. This applies to both the items and the sub-items. A separator line appears between the items; this could also be removed.
+
 
 

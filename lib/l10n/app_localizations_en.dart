@@ -104,22 +104,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editText => 'Edit Text';
 
   @override
-  String get addItemLeft => 'Add Task';
+  String get addItemLeft => '+ Task';
 
   @override
-  String get addSubitemLeft => 'Add Task Step';
+  String get addSubitemLeft => '+ Step';
 
   @override
-  String get addItemRight => 'Add Task';
+  String get addItemRight => '+ Task';
 
   @override
-  String get addSubitemRight => 'Add Task Step';
+  String get addSubitemRight => '+ Step';
 
   @override
-  String get copyItemToLeft => 'Copy selected Task to Left';
+  String get copyItemToLeft => '<= Task';
 
   @override
-  String get copySubitemToLeft => 'Copy selected Step to Left';
+  String get copySubitemToLeft => '<= Step';
 
   @override
   String get leftList => 'Current Tasks';
@@ -128,18 +128,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rightList => 'Suggestions from the curriculum';
 
   @override
-  String get setDataPath => 'Set Data Path';
-
-  @override
-  String dataPathSet(Object path) {
-    return 'Data path set to $path';
-  }
-
-  @override
   String get newItem => 'New Task';
 
   @override
-  String get newSubitem => '- New Task Step';
+  String get newSubitem => '- New Step';
 
   @override
   String get failedToLoadLeftData => 'Failed to load curent task data';

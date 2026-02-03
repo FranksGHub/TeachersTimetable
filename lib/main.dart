@@ -45,6 +45,8 @@ class _MyAppState extends State<MyApp> {
       locale: _locale,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        dividerColor: Colors.transparent, 
+        dividerTheme: DividerThemeData(color: Colors.transparent, thickness: 0),
       ),
       localizationsDelegates: const [
         AppLocalizations.delegate,

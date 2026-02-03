@@ -208,38 +208,25 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               ),
               const Spacer(),
               ElevatedButton(
-                onPressed: () {
-                  if (selectedRightIndex != null && selectedRightSubIndex == null) {
-                    var item = rightItems[selectedRightIndex!];
-                    var newItem = LessonItem(
-                      text: item.text,
-                      subitems: item.subitems.map((s) => LessonItem(text: s.text)).toList(),
-                      status: 'P',
-                    );
-                    setState(() {
-                      if (selectedLeftIndex != null) {
-                        leftItems.insert(selectedLeftIndex!, newItem);
-                        leftExpanded.insert(selectedLeftIndex!, true);
-                      } else {
-                        leftItems.add(newItem);
-                        leftExpanded.add(true);
-                      }
-                    });
-                    saveLeftData();
-                  }
-                },
+                onPressed: selectedRightIndex != null ? () {
+                  var item = rightItems[selectedRightIndex!];
+                  var newItem = LessonItem(text: item.text, subitems: item.subitems.map((s) => LessonItem(text: s.text)).toList(), status: '(P)');
+                  setState(() {
+                    leftItems.add(newItem);
+                    leftExpanded.add(true);
+                  });
+                  saveLeftData();
+                } : null,
                 child: Text(AppLocalizations.of(context)!.copyItemToLeft),
               ),
               ElevatedButton(
-                onPressed: () {
-                  if (selectedRightIndex != null && selectedRightSubIndex != null && selectedLeftIndex != null) {
-                    var sub = rightItems[selectedRightIndex!].subitems[selectedRightSubIndex!];
+                onPressed: selectedRightIndex != null && selectedRightSubIndex != null && selectedLeftIndex != null ? () {
+                  final sub = rightItems[selectedRightIndex!].subitems[selectedRightSubIndex!];
                     setState(() {
                       leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: sub.text));
                     });
                     saveLeftData();
-                  }
-                },
+                  } : null,
                 child: Text(AppLocalizations.of(context)!.copySubitemToLeft),
               ),
               const Spacer(),
@@ -273,7 +260,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   child: Column(
                     children: [
                       Text(' ', style: const TextStyle(fontSize: 12)),
-                      Text(AppLocalizations.of(context)!.leftList, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(AppLocalizations.of(context)!.leftList, style: const TextStyle(height: 1.5, fontSize: 20, fontWeight: FontWeight.bold)),
                       Expanded(
                         child: ListView.builder(
                           itemCount: leftItems.length,
@@ -282,12 +269,16 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                             return ExpansionTile(
                               initiallyExpanded: leftExpanded[index],
                               backgroundColor: selectedLeftIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
+                              collapsedBackgroundColor: selectedLeftIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
+                              tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                              childrenPadding: EdgeInsets.zero,
+                              visualDensity: VisualDensity(vertical: -4),
                               title: GestureDetector(
                                 onTap: () {
                                   setState(() {
                                     selectedLeftIndex = index;
-                                    selectedRightIndex = null;
-                                    selectedRightSubIndex = null;
+                                    // selectedRightIndex = null;
+                                    // selectedRightSubIndex = null;
                                   });
                                 },
                                 onDoubleTap: () => _editText(item.text, (newText) {
@@ -296,9 +287,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 }),
                                 child: Row(
                                   children: [
-                                    Expanded(child: Text(item.text)),
+                                    Expanded(child: Text(item.text, style: const TextStyle(height: 1.0, fontSize: 16, fontWeight: FontWeight.bold))),
                                     IconButton(
-                                      icon: const Icon(Icons.delete),
+                                      icon: const Icon(Icons.remove_circle_outline_rounded, size: 22, color: Colors.red),
                                       onPressed: () {
                                         setState(() {
                                           leftItems.removeAt(index);
@@ -309,7 +300,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       },
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.keyboard_arrow_up),
+                                      icon: const Icon(Icons.arrow_upward, size: 22),
                                       onPressed: index > 0 ? () {
                                         setState(() {
                                           var temp = leftItems[index];
@@ -324,7 +315,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       } : null,
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.keyboard_arrow_down),
+                                      icon: const Icon(Icons.arrow_downward, size: 22),
                                       onPressed: index < leftItems.length - 1 ? () {
                                         setState(() {
                                           var temp = leftItems[index];
@@ -342,45 +333,54 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 ),
                               ),
                               children: item.subitems.map((sub) => ListTile(
-                                tileColor: selectedLeftIndex == index && selectedRightIndex == null ? Color.fromARGB(255, 136, 134, 121) : null,
+                                tileColor: null,  // selectedLeftIndex == index ? Color.fromARGB(255, 136, 134, 121) : null,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+                                visualDensity: VisualDensity(vertical: -4),
                                 title: Row(
                                   children: [
                                     IconButton(
-                                      icon: Icon(Icons.circle, color: sub.status == 'F' ? Colors.green : Colors.yellow),
+                                      icon: Icon(Icons.circle, size: 16, color: sub.status == '(F)' ? Colors.green : Colors.yellow),
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(minWidth: 24, minHeight: 24),  // reduziert die Mindestgröße
+                                      splashRadius: 48,
                                       onPressed: () {
                                         setState(() {
-                                          if (sub.status == 'P') sub.status = 'W';
-                                          else if (sub.status == 'W') sub.status = 'F';
-                                          else sub.status = 'P';
+                                          if (sub.status == '(F)') {
+                                            sub.status = '(P)';
+                                          } else {
+                                            sub.status = '(F)';
+                                          }
                                         });
                                         saveLeftData();
                                       },
                                     ),
-                                    Text(sub.status ?? 'P'),
-                                    const SizedBox(width: 8),
+                                    
+                                    Text(sub.status ?? '(P)', style: const TextStyle(height: 1.0, fontSize: 14)),
+                                    const SizedBox(width: 8, height: 8),
                                     Expanded(
                                       child: GestureDetector(
                                         onDoubleTap: () => _editText(sub.text, (newText) {
                                           setState(() => sub.text = newText);
                                           saveLeftData();
                                         }),
-                                        child: Text(sub.text),
+                                        child: Text(sub.text, style: const TextStyle(height: 1.0, fontSize: 16)),
                                       ),
                                     ),
                                   ],
                                 ),
+
                                 onTap: () {
                                   setState(() {
-                                    selectedLeftIndex = index;
-                                    selectedRightIndex = null;
-                                    selectedRightSubIndex = null;
+                                  selectedLeftIndex = index;
+                                  // selectedRightIndex = null;
+                                  // selectedRightSubIndex = null;
                                   });
                                 },
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     IconButton(
-                                      icon: const Icon(Icons.delete),
+                                      icon: const Icon(Icons.remove_circle_outline_rounded, size: 20, color: Colors.red),
                                       onPressed: () {
                                         int subIndex = item.subitems.indexOf(sub);
                                         setState(() {
@@ -390,7 +390,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       },
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.keyboard_arrow_up),
+                                      icon: const Icon(Icons.arrow_upward, size: 20),
                                       onPressed: () {
                                         int subIndex = item.subitems.indexOf(sub);
                                         if (subIndex > 0) {
@@ -404,7 +404,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       },
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.keyboard_arrow_down),
+                                      icon: const Icon(Icons.arrow_downward, size: 20),
                                       onPressed: () {
                                         int subIndex = item.subitems.indexOf(sub);
                                         if (subIndex < item.subitems.length - 1) {
@@ -417,6 +417,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         }
                                       },
                                     ),
+                                    const SizedBox(width: 31, height: 8), 
                                   ],
                                 ),
                               )).toList(),
@@ -427,23 +428,31 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                     ],
                   ),
                 ),
+
+
                 Expanded(
                   child: Column(
                     children: [
                       Text(' ', style: const TextStyle(fontSize: 12)),
-                      Text(AppLocalizations.of(context)!.rightList, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(AppLocalizations.of(context)!.rightList, style: const TextStyle(height: 1.5, fontSize: 20, fontWeight: FontWeight.bold)),
                       Expanded(
                         child: ListView.builder(
                           itemCount: rightItems.length,
                           itemBuilder: (context, index) {
                             var item = rightItems[index];
                             return ExpansionTile(
-                             title: GestureDetector(
+                              initiallyExpanded: rightExpanded[index],
+                              backgroundColor: selectedRightIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
+                              collapsedBackgroundColor: selectedRightIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
+                              tilePadding: const EdgeInsets.symmetric(horizontal: 50, vertical: 0),
+                              childrenPadding: EdgeInsets.zero,
+                              visualDensity: VisualDensity(vertical: -4),
+                              title: GestureDetector(
                                 onTap: () {
                                   setState(() {
                                     selectedRightIndex = index;
                                     selectedRightSubIndex = null;
-                                    selectedLeftIndex = null;
+                                    // selectedLeftIndex = null;
                                   });
                                 },
                                 onDoubleTap: () => _editText(item.text, (newText) {
@@ -452,9 +461,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 }),
                                 child: Row(
                                   children: [
-                                    Expanded(child: Text(item.text)),
+                                    Expanded(child: Text(item.text, style: const TextStyle(height: 1.0, fontSize: 16, fontWeight: FontWeight.bold))),
                                     IconButton(
-                                      icon: const Icon(Icons.delete),
+                                      icon: const Icon(Icons.remove_circle_outline_rounded, size: 22, color: Colors.red),
                                       onPressed: () {
                                         setState(() {
                                           rightItems.removeAt(index);
@@ -465,7 +474,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       },
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.keyboard_arrow_up),
+                                      icon: const Icon(Icons.arrow_upward, size: 22),
                                       onPressed: index > 0 ? () {
                                         setState(() {
                                           var temp = rightItems[index];
@@ -480,7 +489,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       } : null,
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.keyboard_arrow_down),
+                                      icon: const Icon(Icons.arrow_downward, size: 22),
                                       onPressed: index < rightItems.length - 1 ? () {
                                         setState(() {
                                           var temp = rightItems[index];
@@ -498,26 +507,28 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 ),
                               ),
                               children: item.subitems.map((sub) => ListTile(
-                                tileColor: selectedRightIndex == index ? Color.fromARGB(255, 136, 134, 121) : null,
+                                tileColor: selectedRightIndex == index && selectedRightSubIndex == item.subitems.indexOf(sub) ? Color.fromARGB(255, 136, 134, 121) : null,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 70, vertical: 0),
+                                visualDensity: VisualDensity(vertical: -4),
                                 title: GestureDetector(
                                   onDoubleTap: () => _editText(sub.text, (newText) {
                                     setState(() => sub.text = newText);
                                     saveRightData();
                                   }),
-                                  child: Text(sub.text),
+                                  child: Text(sub.text, style: const TextStyle(height: 1.0, fontSize: 16)),
                                 ),
                                 onTap: () {
                                   setState(() {
                                     selectedRightIndex = index;
                                     selectedRightSubIndex = item.subitems.indexOf(sub);
-                                    selectedLeftIndex = null;
+                                    // selectedLeftIndex = null;
                                   });
                                 },
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     IconButton(
-                                      icon: const Icon(Icons.delete),
+                                      icon: const Icon(Icons.remove_circle_outline_rounded, size: 20, color: Colors.red),
                                       onPressed: () {
                                         int subIndex = item.subitems.indexOf(sub);
                                         setState(() {
@@ -527,7 +538,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       },
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.keyboard_arrow_up),
+                                      icon: const Icon(Icons.arrow_upward, size: 20),
                                       onPressed: () {
                                         int subIndex = item.subitems.indexOf(sub);
                                         if (subIndex > 0) {
@@ -541,7 +552,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       },
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.keyboard_arrow_down),
+                                      icon: const Icon(Icons.arrow_downward, size: 20),
                                       onPressed: () {
                                         int subIndex = item.subitems.indexOf(sub);
                                         if (subIndex < item.subitems.length - 1) {
@@ -554,6 +565,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         }
                                       },
                                     ),
+                                    const SizedBox(width: 20, height: 8), 
                                   ],
                                 ),
                               )).toList(),
