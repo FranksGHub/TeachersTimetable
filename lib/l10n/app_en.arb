@@ -8,7 +8,9 @@
   "exportData": "Export Data",
   "importData": "Import Data",
   "dataImported": "Data imported successfully",
+  "failedToImportData": "Data import failed",
   "dataExported": "Data exported to {path}",
+  "dataExportedError": "Failed to export data to {path}!",
   "time": "Time",
   "lessonName": "Lesson Name",
   "schoolName": "School Name",
@@ -29,6 +31,7 @@
   "german": "German",
   "restartToApply": "Restart the app to apply the language change.",
   "saveTimetableData": "Save Timetable Data",
+  "saveTimetableDataSubject": "Timetable Data Backup",
   "editText": "Edit Text",
   "addItemLeft": "+ Task",
   "addSubitemLeft": "+ Step",
@@ -53,5 +56,6 @@
   "importbackupZipFileOk": "All files imported successfully",
   "importAllFilesZip": "Import all files from a backup",
   "exportAllFilesZip": "Export all files as a backup (ZIP)",
-  "noFilesToExportYet": "No files to backup yet"
+  "noFilesToExportYet": "No files to backup yet",
+  "fileNotFound": "Source file not found"
 }

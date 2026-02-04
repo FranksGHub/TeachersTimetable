@@ -1,9 +1,9 @@
 class LessonItem {
   String text;
   List<LessonItem> subitems;
-  String? status; // 'P', 'W', 'F' for left, null for right
+  String? status; // '(P)', '(W)', '(F)' for left, null for right
 
-  LessonItem({required this.text, List<LessonItem>? subitems, this.status = 'P'}) : subitems = List<LessonItem>.from(subitems ?? []);
+  LessonItem({required this.text, List<LessonItem>? subitems, this.status = '(P)'}) : subitems = List<LessonItem>.from(subitems ?? []);
 
   Map<String, dynamic> toJson() => {
     'text': text,

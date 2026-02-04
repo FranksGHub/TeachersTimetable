@@ -36,8 +36,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dataImported => 'Data imported successfully';
 
   @override
+  String get failedToImportData => 'Data import failed';
+
+  @override
   String dataExported(Object path) {
     return 'Data exported to $path';
+  }
+
+  @override
+  String dataExportedError(Object path) {
+    return 'Failed to export data to $path!';
   }
 
   @override
@@ -99,6 +107,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveTimetableData => 'Save Timetable Data';
+
+  @override
+  String get saveTimetableDataSubject => 'Timetable Data Backup';
 
   @override
   String get editText => 'Edit Text';
@@ -174,4 +185,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noFilesToExportYet => 'No files to backup yet';
+
+  @override
+  String get fileNotFound => 'Source file not found';
 }

@@ -1,8 +1,9 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:convert';
-import 'dart:io';
+import 'package:path/path.dart' as p;
+import '../models/export_import_files.dart';
 import '../models/lesson_block.dart';
 import '../models/lesson_item.dart';
 import '../l10n/app_localizations.dart';
@@ -39,25 +40,24 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   Future<void> loadPrefsAndData() async {
     prefs = await SharedPreferences.getInstance();
-    // Use app documents directory instead of user-selected path
-    final directory = await getApplicationDocumentsDirectory();
-    dataPath = directory.path + '/Timetable';
+    // get or create data path
+    dataPath = await ExportImportFiles.GetPrivateDirectoryPath();
     
-    // Create the directory if it doesn't exist
-    final timetableDir = Directory(dataPath);
-    if (!await timetableDir.exists()) {
-      await timetableDir.create(recursive: true);
+    if(widget.block.className.isEmpty && widget.block.schoolName.isEmpty && widget.block.lessonName.isEmpty) {
+      _editBlock();
     }
-    
+
     loadRightData();
     loadLeftData();
   }
 
+  String getFilePath(String fileName) {
+    return p.join(dataPath, ExportImportFiles.GetSaveFilename(fileName));
+  }
+
   void loadRightData() {
     try {
-      String fileName = '${widget.block.lessonName}.json';
-      fileName = fileName.replaceAll(RegExp(r'[\\/:*?" <>|]'), '_');
-      String filePath = '$dataPath/$fileName';
+      String filePath = getFilePath('${widget.block.lessonName}.json');
       if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
@@ -75,9 +75,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void loadLeftData() {
     try {
-      String fileName = '${widget.block.lessonName}${widget.block.className}${widget.block.schoolName}.json';
-      fileName = fileName.replaceAll(RegExp(r'[\\/:*?" <>|]'), '_');
-      String filePath = '$dataPath/$fileName';
+      String filePath = getFilePath('${widget.block.lessonName}_${widget.block.className}_${widget.block.schoolName}.json');
       if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
@@ -85,7 +83,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           leftItems = List<LessonItem>.from(
             data.map((e) => LessonItem.fromJson(e))
           );
-          leftExpanded = leftItems.map((item) => !item.subitems.every((s) => s.status == 'F')).toList();
+          leftExpanded = leftItems.map((item) => !item.subitems.every((s) => s.status == '(F)')).toList();
         });
       }
     } catch (e) {
@@ -95,9 +93,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void saveRightData() {
     try {
-      String fileName = '${widget.block.lessonName}.json';
-      fileName = fileName.replaceAll(RegExp(r'[\\/:*?" <>|]'), '_');
-      String filePath = '$dataPath/$fileName';
+      String filePath = getFilePath('${widget.block.lessonName}.json');
       String json = jsonEncode(rightItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
     } catch (e) {
@@ -107,9 +103,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void saveLeftData() {
     try {
-      String fileName = '${widget.block.lessonName}${widget.block.className}${widget.block.schoolName}.json';
-      fileName = fileName.replaceAll(RegExp(r'[\\/:*?" <>|]'), '_');
-      String filePath = '$dataPath/$fileName';
+      String filePath = getFilePath('${widget.block.lessonName}_${widget.block.className}_${widget.block.schoolName}.json');
       String json = jsonEncode(leftItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
     } catch (e) {
@@ -118,13 +112,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 4),
-      ),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red, duration: const Duration(seconds: 4)));
   }
 
   void _editText(String currentText, Function(String) onSave) {
@@ -162,8 +150,17 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         onSave: (updatedBlock) {
           widget.onSave(updatedBlock);
           // Reload if names changed
-          loadRightData();
-          loadLeftData();
+          if( widget.block.lessonName != updatedBlock.lessonName || 
+              widget.block.className != updatedBlock.className || 
+              widget.block.schoolName != updatedBlock.schoolName) {
+            setState(() {
+              widget.block.lessonName = updatedBlock.lessonName;
+              widget.block.className = updatedBlock.className;
+              widget.block.schoolName = updatedBlock.schoolName;              
+            });
+            loadRightData();
+            loadLeftData();
+          }
         },
       ),
     );
@@ -345,10 +342,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       splashRadius: 48,
                                       onPressed: () {
                                         setState(() {
-                                          if (sub.status == '(F)') {
-                                            sub.status = '(P)';
-                                          } else {
+                                          if (sub.status == '(P)') {
+                                            sub.status = '(W)';
+                                          } else if (sub.status == '(W)') {
                                             sub.status = '(F)';
+                                          } else {
+                                            sub.status = '(P)';
                                           }
                                         });
                                         saveLeftData();

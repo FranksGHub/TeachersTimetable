@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:archive/archive_io.dart';
 import 'dart:convert';
-import 'dart:io';
-import 'package:file_picker/file_picker.dart';
-import 'package:share_plus/share_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../models/lesson_block.dart';
+import '../models/export_import_files.dart';
 import 'edit_title_dialog.dart';
 import 'edit_days_dialog.dart';
 import 'edit_times_dialog.dart';
 import 'lesson_detail_page.dart';
+import 'version_menu.dart';
 
 class TimetablePage extends StatefulWidget {
   const TimetablePage({super.key, this.onLocaleChange, this.currentLocale});
@@ -100,6 +94,9 @@ class _TimetablePageState extends State<TimetablePage> {
       'schoolName': block.className,
       'roomNumber': block.schoolName,
     }).toList()).toList()));
+
+    // save into file as well
+    ExportImportFiles().SavePrefsData(context, prefs, true);
   }
 
   bool isDark(Color color) {
@@ -171,82 +168,6 @@ class _TimetablePageState extends State<TimetablePage> {
     );
   }
 
-  void _generatePdf() async {
-    final pdf = pw.Document();
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Table(
-            border: pw.TableBorder.all(color: PdfColors.grey300, width: 0.5),
-            children: [
-              pw.TableRow(
-                children: [
-                  pw.Text('Time'),
-                  ...days.map((day) => pw.Text(day)),
-                ],
-              ),
-              ...List.generate(6, (row) {
-                return pw.TableRow(
-                  children: [
-                    pw.Text(times[row]),
-                    ...List.generate(5, (col) {
-                      final block = timetable[row][col];
-                      return pw.Container(
-                        decoration: pw.BoxDecoration(
-                          color: PdfColor(block.color.r / 255, block.color.g / 255, block.color.b / 255),
-                          border: pw.Border.all(color: PdfColors.grey300, width: 0.5),
-                        ),
-                        padding: const pw.EdgeInsets.all(4),
-                        child: pw.Column(
-                          crossAxisAlignment: pw.CrossAxisAlignment.start,
-                          children: [
-                            pw.Text(block.lessonName, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
-                            pw.Text(block.className, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
-                            pw.Text(block.schoolName, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
-                          ],
-                        ),
-                      );
-                    }),
-                  ],
-                );
-              }),
-            ],
-          );
-        },
-      ),
-    );
-    await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf.save());
-  }
-
-  void _exportData() async {
-    Map<String, dynamic> data = {};
-    Set<String> keys = prefs.getKeys();
-    for (String key in keys) {
-      data[key] = prefs.get(key);
-    }
-    String jsonData = jsonEncode(data);
-
-    if (Platform.isAndroid) {
-      // Share on Android
-      await SharePlus.instance.share(ShareParams(text: jsonData, title: AppLocalizations.of(context)!.saveTimetableData, subject: AppLocalizations.of(context)!.saveTimetableData));
-    } else {
-      // Save to file on Windows/Web
-      String? outputFile = await FilePicker.platform.saveFile(
-        dialogTitle: AppLocalizations.of(context)!.saveTimetableData,
-        fileName: 'timetable_data.json',
-        type: FileType.custom,
-        allowedExtensions: ['json'],
-      );
-      if (outputFile != null) {
-        File file = File(outputFile);
-        await file.writeAsString(jsonData);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.dataExported(outputFile))),
-        );
-      }
-    }
-  }
-
   void _showLanguage(String langCode) {
     Locale newLocale = langCode == 'en' ? const Locale('en') : const Locale('de');
     if(widget.currentLocale == newLocale){
@@ -258,132 +179,16 @@ class _TimetablePageState extends State<TimetablePage> {
     }
   }
 
-  void _importData() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['json'],
-    );
-    if (result != null) {
-      File file = File(result.files.single.path!);
-      String jsonData = await file.readAsString();
-      Map<String, dynamic> data = jsonDecode(jsonData);
-      for (String key in data.keys) {
-        var value = data[key];
-        if (value is String) {
-          prefs.setString(key, value);
-        } else if (value is int) {
-          prefs.setInt(key, value);
-        } else if (value is double) {
-          prefs.setDouble(key, value);
-        } else if (value is bool) {
-          prefs.setBool(key, value);
-        } else if (value is List) {
-          prefs.setStringList(key, value.cast<String>());
-        }
+  Future<void> _importData() async {
+    if(await ExportImportFiles().ImportAllFilesFromZip(context)) {
+      if( await ExportImportFiles().ImportPrefsData(context, prefs)) {
+        await loadData(); // Reload data
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.importbackupZipFileOk), backgroundColor: Colors.green));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToImportData), backgroundColor: Colors.red));
       }
-
-      loadData(); // Reload data
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.dataImported)),
-      );
-    }
-  }
-
-  void _exportAllFilesAsZip() async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final timetableDir = Directory('${directory.path}/Timetable');
-
-      if (!await timetableDir.exists()) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.noFilesToExportYet), backgroundColor: Colors.orange));
-        return;
-      }
-
-      // Get all files in the Timetable directory
-      final files = timetableDir.listSync();
-      if (files.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.noFilesToExportYet), backgroundColor: Colors.orange));
-        return;
-      }
-
-      // Create archive
-      final archive = Archive();
-      for (var file in files) {
-        if (file is File) {
-          final bytes = await file.readAsBytes();
-          final fileName = file.path.split('/').last;
-          archive.addFile(ArchiveFile(fileName, bytes.length, bytes));
-        }
-      }
-
-      // Encode the archive as zip
-      final zipData = ZipEncoder().encode(archive);
-      if (zipData == null) {
-        throw Exception(AppLocalizations.of(context)!.failedToCreateZipFile);
-      }
-
-      // Save zip file
-      final tempDir = Directory.systemTemp;
-      final zipFile = File('${tempDir.path}/teachers_timetable_backup.zip');
-      await zipFile.writeAsBytes(zipData);
-
-      // Share the zip file
-      await SharePlus.instance.share(ShareParams(files: [XFile(zipFile.path)], subject: AppLocalizations.of(context)!.timetableBackup, title: AppLocalizations.of(context)!.timetableBackup));
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.backupInZipFileOk), backgroundColor: Colors.green));
-      } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.failedToBackupInZipFile + ': $e'), backgroundColor: Colors.red) );
-    }
-  }
-
-  void _importAllFilesFromZip() async {
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['zip'],
-      );
-
-      if (result == null) return;
-
-      final zipFilePath = result.files.single.path!;
-      final zipFile = File(zipFilePath);
-      final zipBytes = await zipFile.readAsBytes();
-
-      // Decode the archive
-      final archive = ZipDecoder().decodeBytes(zipBytes);
-
-      // Get target directory
-      final directory = await getApplicationDocumentsDirectory();
-      final timetableDir = Directory('${directory.path}/Timetable');
-
-      // Create directory if it doesn't exist
-      if (!await timetableDir.exists()) {
-        await timetableDir.create(recursive: true);
-      }
-
-      // Extract all files
-      for (final file in archive) {
-        if (!file.isFile) continue;
-
-        final filePath = '${timetableDir.path}/${file.name}';
-        final outputFile = File(filePath);
-
-        // Create parent directory if needed
-        await outputFile.parent.create(recursive: true);
-
-        // Write the file
-        await outputFile.writeAsBytes(file.content as List<int>);
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.importbackupZipFileOk), backgroundColor: Colors.green));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.failedToImportZipFile + ': $e'), backgroundColor: Colors.red));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToImportZipFile), backgroundColor: Colors.red));
     }
   }
 
@@ -417,6 +222,7 @@ class _TimetablePageState extends State<TimetablePage> {
                   ),
                 ),
               ),
+              VersionMenu(),
               ListTile(
                 leading: const Icon(Icons.edit),
                 title: Text(AppLocalizations.of(context)!.editTitle),
@@ -450,29 +256,12 @@ class _TimetablePageState extends State<TimetablePage> {
                   _generatePdf();
                 },
               ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.file_download),
-                title: Text(AppLocalizations.of(context)!.exportData),
-                onTap: () {
-                  Navigator.pop(context); // Close drawer
-                  _exportData();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.file_upload),
-                title: Text(AppLocalizations.of(context)!.importData),
-                onTap: () {
-                  Navigator.pop(context); // Close drawer
-                  _importData();
-                },
-              ),
               ListTile(
                 leading: const Icon(Icons.archive),
                 title: Text(AppLocalizations.of(context)!.exportAllFilesZip),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
-                  _exportAllFilesAsZip();
+                  ExportImportFiles().ExportAllFilesAsZip(context, prefs);
                 },
               ),
               ListTile(
@@ -480,7 +269,7 @@ class _TimetablePageState extends State<TimetablePage> {
                 title: Text(AppLocalizations.of(context)!.importAllFilesZip),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
-                  _importAllFilesFromZip();
+                  _importData();
                 },
               ),
               const Divider(),

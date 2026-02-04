@@ -152,11 +152,23 @@ abstract class AppLocalizations {
   /// **'Data imported successfully'**
   String get dataImported;
 
+  /// No description provided for @failedToImportData.
+  ///
+  /// In en, this message translates to:
+  /// **'Data import failed'**
+  String get failedToImportData;
+
   /// No description provided for @dataExported.
   ///
   /// In en, this message translates to:
   /// **'Data exported to {path}'**
   String dataExported(Object path);
+
+  /// No description provided for @dataExportedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to export data to {path}!'**
+  String dataExportedError(Object path);
 
   /// No description provided for @time.
   ///
@@ -277,6 +289,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save Timetable Data'**
   String get saveTimetableData;
+
+  /// No description provided for @saveTimetableDataSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Timetable Data Backup'**
+  String get saveTimetableDataSubject;
 
   /// No description provided for @editText.
   ///
@@ -427,6 +445,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No files to backup yet'**
   String get noFilesToExportYet;
+
+  /// No description provided for @fileNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Source file not found'**
+  String get fileNotFound;
 }
 
 class _AppLocalizationsDelegate

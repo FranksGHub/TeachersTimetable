@@ -8,7 +8,9 @@
   "exportData": "Daten exportieren",
   "importData": "Daten importieren",
   "dataImported": "Daten erfolgreich importiert",
+  "failedToImportData": "Fehler beim Daten Import",
   "dataExported": "Daten exportiert nach {path}",
+  "dataExportedError": "Fehler beim Daten Export nach {path}!",
   "time": "Zeit",
   "lessonName": "Unterrichtsname",
   "schoolName": "Schulname",
@@ -29,6 +31,7 @@
   "german": "Deutsch",
   "restartToApply": "Starten Sie die App neu, um die Sprachänderung anzuwenden.",
   "saveTimetableData": "Speichern der Stundenplan Daten",
+  "saveTimetableDataSubject": "Stundenplan Daten Backup",
   "editText": "Text bearbeiten",
   "addItemLeft": "+ Aufgabe",
   "addSubitemLeft": "+ Arbeitsschritt",
@@ -53,5 +56,6 @@
   "importbackupZipFileOk": "Alle Dateien wurden importiert",
   "importAllFilesZip": "Importiere alle Dateien aus einem Backup",
   "exportAllFilesZip": "Exportiere alle Dateien als Backup (ZIP)",
-  "noFilesToExportYet": "Keine Dateien zum Backup gefunden"
+  "noFilesToExportYet": "Keine Dateien zum Backup gefunden",
+  "fileNotFound": "Quelldatei existiert nicht"
 }
