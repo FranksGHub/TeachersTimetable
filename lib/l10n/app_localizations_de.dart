@@ -193,4 +193,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get fileNotFound => 'Quelldatei existiert nicht';
+
+  @override
+  String get appNameWithSpaces => 'Teachers Timetable App';
+
+  @override
+  String printingFooter(Object date) {
+    return 'Erstellt mit der Teachers Timetable App am $date';
+  }
 }

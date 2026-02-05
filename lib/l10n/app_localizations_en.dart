@@ -188,4 +188,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fileNotFound => 'Source file not found';
+
+  @override
+  String get appNameWithSpaces => 'Teachers Timetable App';
+
+  @override
+  String printingFooter(Object date) {
+    return 'Created with the teachers_timetable app at $date';
+  }
 }

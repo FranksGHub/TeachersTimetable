@@ -1,8 +1,8 @@
-Block Setting automatisch öffnen, wenn noch keine Daten im Block eingetragen wurden
 Block Dateinamen in Settings
 Notizen pro Klasse
 
 ~~~~ OK ~~~~~~~~~~~~~~~~
+Block Setting automatisch öffnen, wenn noch keine Daten im Block eingetragen wurden
 Auch die Settings ins Backup
 Settings auch als Datei speichern im privaten Directory
 Autom. Backup der Settings beim (Beenden) Speichern in den Prefs

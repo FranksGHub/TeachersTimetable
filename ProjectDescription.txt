@@ -102,4 +102,5 @@ Step 7
 Just one more small thing: the line spacing in the two lists of `lesson_details_page.dart` is too large; it could be halved. This applies to both the items and the sub-items. A separator line appears between the items; this could also be removed.
 
 
-
+Step 8 printing
+Ich möchte aus meiner flutter / dart app ein pdf zum Drucker schicken. Die Seite besteht aus einer Überschrift, einer Tabelle aus 5 Spalten mit 6 Zeilen die jeweils einen farbigen Block mit 3 Zeilen Text enthalten. Über den Spalten gibt es jeweils einen zentrierten Text und links von den Zeilen gibt es ebenfalls einen Text. Die Infos für die Überschrift kommt aus dem "title" parameter, die Texte oberhalb der Spalten aus dem "days" parameter, die Texte vor den Zeilen aus dem "times" parameter und die Block Infos aus dem "LessonBlock" parameter. Lesson Block hat variablen für Color und 3 Strings für die Textzeilen. Anfangen würde ich mit: "  Future<bool> PrintTimetable(BuildContext context, String title, List<String> days, List<String> times, List<List<LessonBlock>> timetable) async {    final pdf = pw.Document();    pdf.addPage(" 

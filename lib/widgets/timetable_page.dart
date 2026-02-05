@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:teachers_timetable/models/print.dart';
 import 'dart:convert';
 import '../l10n/app_localizations.dart';
 import '../models/lesson_block.dart';
@@ -253,7 +254,7 @@ class _TimetablePageState extends State<TimetablePage> {
                 title: Text(AppLocalizations.of(context)!.printPdf),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
-                  _generatePdf();
+                  PrintPdf().PrintTimetable(context, title, days, times, timetable);
                 },
               ),
               ListTile(

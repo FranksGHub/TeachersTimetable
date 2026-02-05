@@ -57,5 +57,7 @@
   "importAllFilesZip": "Import all files from a backup",
   "exportAllFilesZip": "Export all files as a backup (ZIP)",
   "noFilesToExportYet": "No files to backup yet",
-  "fileNotFound": "Source file not found"
+  "fileNotFound": "Source file not found",
+  "appNameWithSpaces": "Teachers Timetable App",
+  "printingFooter": "Created with the Teachers Timetable app at {date}"
 }

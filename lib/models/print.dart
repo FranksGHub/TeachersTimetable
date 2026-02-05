@@ -1,126 +1,129 @@
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
-import 'dart:io';
-import 'dart:convert';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as p;
-import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:archive/archive_io.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/src/shared_preferences_legacy.dart';
-import '../l10n/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 import '../l10n/app_localizations.dart';
 import '../models/lesson_block.dart';
 
 class PrintPdf {
-  List<List<LessonBlock>> timetable = List.generate(6, (_) => List.generate(5, (_) => LessonBlock()));
-  late List<String> days;
-  late List<String> times;
-  late String title;
-  late SharedPreferences prefs;
 
-  Future<void> loadData() async {
-    prefs = await SharedPreferences.getInstance();
-    title = prefs.getString('title') != null ? prefs.getString('title')! : 'Lehrer Stundenplan';
-    days[0] = prefs.getString('mon') != null ? prefs.getString('mon')! : 'Mo';
-    days[1] = prefs.getString('tue') != null ? prefs.getString('tue')! : 'Di';
-    days[2] = prefs.getString('wed') != null ? prefs.getString('wed')! : 'Mi';
-    days[3] = prefs.getString('thu') != null ? prefs.getString('thu')! : 'Do';
-    days[4] = prefs.getString('fri') != null ? prefs.getString('fri')! : 'Fr';
+  Future<bool> PrintTimetable(BuildContext context, String title, List<String> days, List<String> times, List<List<LessonBlock>> timetable) async {
 
-    times[0] = prefs.getString('time1') != null ? prefs.getString('time1')! : '   1';
-    times[1] = prefs.getString('time2') != null ? prefs.getString('time2')! : '   2';
-    times[2] = prefs.getString('time3') != null ? prefs.getString('time3')! : '   3';
-    times[3] = prefs.getString('time4') != null ? prefs.getString('time4')! : '   4';
-    times[4] = prefs.getString('time5') != null ? prefs.getString('time5')! : '   5';
-    times[5] = prefs.getString('time6') != null ? prefs.getString('time6')! : '   6';
-
-    String? timetableJson = prefs.getString('timetable');
-    if (timetableJson != null) {
-      List<dynamic> timetableData = jsonDecode(timetableJson);
-      timetable = timetableData.map((row) => (row as List).map((block) => LessonBlock( 
-        lessonName: block['lessonName'], 
-        className: block['className'], 
-        schoolName: block['schoolName'], 
-        color: Color(block['color']),
-      )).toList()).toList().cast<List<LessonBlock>>();
+    // Defensive checks: dimensions
+    if (days.isEmpty || times.isEmpty) return false;
+    if (timetable.length != times.length) return false;
+    for (final row in timetable) {
+      if (row.length != days.length) return false;
     }
-  }
 
-  Future<bool> PrintTimetable() async {
-    await loadData();
-    final pdf = pw.Document();
+    final pdf = pw.Document(title: AppLocalizations.of(context)!.appTitle, author: AppLocalizations.of(context)!.appNameWithSpaces, subject: title, keywords: 'stundenplan, timetable, print, pdf');
+
+    // Page creation
     pdf.addPage(
       pw.Page(
-        build: (pw.Context context) {
-          return pw.Table(
-            border: pw.TableBorder.all(color: PdfColors.grey300, width: 0.5),
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(18),
+        build: (pw.Context ctx) {
+          // Column widths: first column (time) narrow, rest evenly distributed.
+          final int colCount = days.length;
+          final Map<int, pw.TableColumnWidth> colWidths = {
+            0: const pw.FixedColumnWidth(60), // Zeit-Spalte
+          };
+          for (int i = 1; i <= colCount; i++) {
+            colWidths[i] = const pw.FlexColumnWidth(1);
+          }
+
+          // Header (Title + Spacing)
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.TableRow(
-                decoration: const pw.BoxDecoration(color: PdfColors.grey300),
+              pw.Center( child: pw.Text( title, style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)) ),
+              pw.SizedBox(height: 12),
+              // Table: first row = empty left cell + days header
+              pw.Table(
+                columnWidths: colWidths,
+                border: null, // pw.TableBorder.all(color: PdfColors.grey300, width: 0.0),  // no borders
                 children: [
-                  pw.Container(
-                    padding: const pw.EdgeInsets.all(4),
-                    child: pw.Text(title, style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                  // Header row: left cell empty (for times) + days
+                  pw.TableRow(
+                    children: [
+                      pw.Container(), // empty cell above the time column
+                      for (final d in days)
+                        pw.Container(
+                          padding: const pw.EdgeInsets.symmetric(vertical: 3),
+                          alignment: pw.Alignment.center,
+                          child: pw.Text( d, textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.normal))
+                        )
+                    ],
                   ),
-              ]),
-              
-              pw.TableRow(children: [pw.Text('Time'), ...days.map((day) => pw.Text(day))],)]
-              ...List.generate(6, (row) {
-                    final block = timetable[row][col];
-                    return pw.Container(
-                      decoration: pw.BoxDecoration(
-                        color: PdfColor(block.color.r / 255, block.color.g / 255, block.color.b / 255),
-                        border: pw.Border.all(color: PdfColors.grey300, width: 0.5),
-                      ),
-                      padding: const pw.EdgeInsets.all(4),
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Text(block.lessonName, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
-                          pw.Text(block.className, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
-                          pw.Text(block.schoolName, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
-                        ],
-                      ),
-                    );
-                  }),
-              ...List.generate(6, (row) {
-                return pw.TableRow(
-                  children: [
-                    pw.Text(times[row]),
-                    ...List.generate(5, (col) {
-                      final block = timetable[row][col];
-                      return pw.Container(
-                        decoration: pw.BoxDecoration(
-                          color: PdfColor(block.color.r / 255, block.color.g / 255, block.color.b / 255),
-                          border: pw.Border.all(color: PdfColors.grey300, width: 0.5),
-                        ),
-                        padding: const pw.EdgeInsets.all(4),
-                        child: pw.Column(
-                          crossAxisAlignment: pw.CrossAxisAlignment.start,
-                          children: [
-                            pw.Text(block.lessonName, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
-                            pw.Text(block.className, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
-                            pw.Text(block.schoolName, style: pw.TextStyle(color: isDark(block.color) ? PdfColors.white : PdfColors.black, fontSize: 8)),
-                          ],
-                        ),
-                      );
-                    }),
-                  ],
-                );
-              }),
+                  // Data rows: one row with time label for each time period + 5 blocks
+                  for (int r = 0; r < times.length; r++)
+                    pw.TableRow(
+                      verticalAlignment: pw.TableCellVerticalAlignment.middle,
+                      children: [
+                        // Time column (left)
+                        pw.Container(
+                          padding: const pw.EdgeInsets.all(3),
+                          alignment: pw.Alignment.center,
+                          child: pw.Text( times[r], style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.normal))
+                        ), 
+
+                        // The cells for the days
+                        for (int c = 0; c < days.length; c++)
+                          pw.Container( padding: const pw.EdgeInsets.all(3), child: () {
+                              final LessonBlock block = timetable[r][c];
+                              return pw.Container(
+                                height: 48,
+                                decoration: pw.BoxDecoration(
+                                  color: block.pdfColor,
+                                  borderRadius: pw.BorderRadius.zero, // pw.BorderRadius.circular(4),
+                                  border: pw.Border.all(color: PdfColors.black, width: 0.5),
+                                ),
+                                padding: const pw.EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                                child: pw.Column( mainAxisAlignment: pw.MainAxisAlignment.center, crossAxisAlignment: pw.CrossAxisAlignment.start,
+                                  children: [
+                                    pw.Align(
+                                      alignment: pw.Alignment.center,
+                                      child: pw.Text( block.lessonName, style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.black), maxLines: 1 )
+                                    ), 
+                                    
+                                    pw.Align(
+                                      alignment: pw.Alignment.center,
+                                      child: pw.Text( block.className, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: PdfColors.black), maxLines: 1 )
+                                    ), 
+                                    
+                                    pw.Align(
+                                      alignment: pw.Alignment.center,
+                                      child: pw.Text( block.schoolName, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.normal, color: PdfColors.black), maxLines: 1 )
+                                    ), 
+                                  ],
+                                ),
+                              );
+                            }(),
+                          ),
+                      ],
+                    ),
+                ],
+              ),
+              // pw.Spacer(),
+              // // Footer / Print notice (optional)
+              pw.SizedBox(height: 12),  // Distance according to the table
+              pw.Container( alignment: pw.Alignment.centerRight, padding: const pw.EdgeInsets.only(right: 6),
+                child: pw.Text(AppLocalizations.of(context)!.printingFooter(DateTime.now().toLocal().toString().split('.').first), style: pw.TextStyle(fontSize: 10, color: PdfColors.grey))
+              )
             ],
           );
         },
       ),
     );
-    await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf.save());
-    return true;
-  }
 
+    try {
+      // Open print dialog and transfer PDF
+      await Printing.layoutPdf( onLayout: (PdfPageFormat format) async => pdf.save() );
+      return true;
+    } catch (e) {
+      // Printing error / Cancel dialog
+      return false;
+    }
+  }
 }

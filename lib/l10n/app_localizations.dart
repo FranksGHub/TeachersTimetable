@@ -451,6 +451,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Source file not found'**
   String get fileNotFound;
+
+  /// No description provided for @appNameWithSpaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Teachers Timetable App'**
+  String get appNameWithSpaces;
+
+  /// No description provided for @printingFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Created with the teachers_timetable app at {date}'**
+  String printingFooter(Object date);
 }
 
 class _AppLocalizationsDelegate
