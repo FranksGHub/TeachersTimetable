@@ -78,6 +78,8 @@ class _TimetablePageState extends State<TimetablePage> {
           lessonName: block['lessonName'],
           schoolName: block['roomNumber'],
           className: block['schoolName'],
+          hideLeftList: block['hideLeftList'] ?? false,
+          hideRightList: block['hideRightList'] ?? false,
         )).toList()).toList();
       });
     }
@@ -94,6 +96,8 @@ class _TimetablePageState extends State<TimetablePage> {
       'lessonName': block.lessonName,
       'schoolName': block.className,
       'roomNumber': block.schoolName,
+      'hideLeftList': block.hideLeftList,
+      'hideRightList': block.hideRightList,
     }).toList()).toList()));
 
     // save into file as well

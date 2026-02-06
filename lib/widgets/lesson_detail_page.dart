@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
+import 'package:teachers_timetable/models/print.dart';
 import '../models/export_import_files.dart';
 import '../models/lesson_block.dart';
 import '../models/lesson_item.dart';
@@ -47,8 +48,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       _editBlock();
     }
 
-    loadRightData();
-    loadLeftData();
+    if (!widget.block.hideLeftList) { loadLeftData(); }
+    if (!widget.block.hideRightList) { loadRightData(); }
   }
 
   String getFilePath(String fileName) {
@@ -142,6 +143,32 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     );
   }
 
+  void _switchListVisibility(bool leftList) {
+    setState(() {
+      if (leftList) {
+        widget.block.hideLeftList = !widget.block.hideLeftList;
+        if (widget.block.hideLeftList) {
+          leftItems.clear();
+          leftExpanded.clear();
+          selectedLeftIndex = null;
+        } else {
+          loadLeftData();
+        }
+      } else {
+        widget.block.hideRightList = !widget.block.hideRightList;
+        if (widget.block.hideRightList) {
+          rightItems.clear();
+          rightExpanded.clear();
+          selectedRightIndex = null;
+          selectedRightSubIndex = null;
+        } else {
+          loadRightData();
+        }
+      }
+    });
+    widget.onSave(widget.block);
+  }
+
   void _editBlock() {
     showDialog(
       context: context,
@@ -158,8 +185,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               widget.block.className = updatedBlock.className;
               widget.block.schoolName = updatedBlock.schoolName;              
             });
-            loadRightData();
-            loadLeftData();
+            if (!widget.block.hideLeftList) { loadLeftData(); }
+            if (!widget.block.hideRightList) { loadRightData(); }
           }
         },
       ),
@@ -170,8 +197,20 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.block.lessonName + ' - ' + widget.block.className + ' - ' + widget.block.schoolName),
+        title: Text(AppLocalizations.of(context)!.workplan + ':   ' + widget.block.lessonName + ' - ' + widget.block.className + ' - ' + widget.block.schoolName),
         actions: [
+          IconButton(
+            icon: widget.block.hideLeftList ? const Icon(Icons.switch_left) : const Icon(Icons.switch_right),
+            onPressed: () {_switchListVisibility(true);},
+          ),
+          IconButton(
+            icon: widget.block.hideRightList ? const Icon(Icons.switch_right) : const Icon(Icons.switch_left),
+            onPressed: () {_switchListVisibility(false);},
+          ),
+          IconButton(
+            icon: const Icon(Icons.print),
+            onPressed: () { PrintPdf().PrintBlockDetails(context, widget.block); },
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: _editBlock,
@@ -182,399 +221,421 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         children: [
           Row(
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  final newItemText = AppLocalizations.of(context)!.newItem;
-                  setState(() {
-                    leftItems.add(LessonItem(text: newItemText));
-                    leftExpanded.add(true);
-                  });
-                  saveLeftData();
-                },
-                child: Text(AppLocalizations.of(context)!.addItemLeft),
-              ),
-              ElevatedButton(
-                onPressed: selectedLeftIndex != null ? () {
-                  final newSubitemText = AppLocalizations.of(context)!.newSubitem;
-                  setState(() {
-                    leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: newSubitemText));
-                  });
-                  saveLeftData();
-                } : null,
-                child: Text(AppLocalizations.of(context)!.addSubitemLeft),
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: selectedRightIndex != null ? () {
-                  var item = rightItems[selectedRightIndex!];
-                  var newItem = LessonItem(text: item.text, subitems: item.subitems.map((s) => LessonItem(text: s.text)).toList(), status: '(P)');
-                  setState(() {
-                    leftItems.add(newItem);
-                    leftExpanded.add(true);
-                  });
-                  saveLeftData();
-                } : null,
-                child: Text(AppLocalizations.of(context)!.copyItemToLeft),
-              ),
-              ElevatedButton(
-                onPressed: selectedRightIndex != null && selectedRightSubIndex != null && selectedLeftIndex != null ? () {
-                  final sub = rightItems[selectedRightIndex!].subitems[selectedRightSubIndex!];
+
+              // Help Text, if booth lists are hidden
+              if(widget.block.hideRightList && widget.block.hideLeftList)
+                Text('     ' + AppLocalizations.of(context)!.bothListsHidden, style: TextStyle(color: Colors.red, fontSize: 20), textAlign: TextAlign.center),
+
+              // Left list buttons Add Item, Add Subitem
+              if(!widget.block.hideLeftList)
+                ElevatedButton(
+                  onPressed: () {
+                    final newItemText = AppLocalizations.of(context)!.newItem;
                     setState(() {
-                      leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: sub.text));
+                      leftItems.add(LessonItem(text: newItemText));
+                      leftExpanded.add(true);
+                    });
+                    saveLeftData();
+                  },
+                  child: Text(AppLocalizations.of(context)!.addItemLeft),
+                ),
+              if(!widget.block.hideLeftList)
+                ElevatedButton(
+                  onPressed: selectedLeftIndex != null ? () {
+                    final newSubitemText = AppLocalizations.of(context)!.newSubitem;
+                    setState(() {
+                      leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: newSubitemText));
                     });
                     saveLeftData();
                   } : null,
-                child: Text(AppLocalizations.of(context)!.copySubitemToLeft),
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: () {
-                  final newItemText = AppLocalizations.of(context)!.newItem;
-                  setState(() {
-                    rightItems.add(LessonItem(text: newItemText));
-                    rightExpanded.add(true);
-                  });
-                  saveRightData();
-                },
-                child: Text(AppLocalizations.of(context)!.addItemRight),
-              ),
-              ElevatedButton(
-                onPressed: selectedRightIndex != null ? () {
-                  final newSubitemText = AppLocalizations.of(context)!.newSubitem;
-                  setState(() {
-                    rightItems[selectedRightIndex!].subitems.add(LessonItem(text: newSubitemText));
-                  });
-                  saveRightData();
-                } : null,
-                child: Text(AppLocalizations.of(context)!.addSubitemRight),
-              ),
+                  child: Text(AppLocalizations.of(context)!.addSubitemLeft),
+                ),
+              if(!widget.block.hideLeftList)
+                const Spacer(),
+
+              // Copy from right list buttons
+              if(!widget.block.hideRightList && !widget.block.hideLeftList)
+                ElevatedButton(
+                  onPressed: selectedRightIndex != null ? () {
+                    var item = rightItems[selectedRightIndex!];
+                    var newItem = LessonItem(text: item.text, subitems: item.subitems.map((s) => LessonItem(text: s.text)).toList(), status: '(P)');
+                    setState(() {
+                      leftItems.add(newItem);
+                      leftExpanded.add(true);
+                    });
+                    saveLeftData();
+                  } : null,
+                  child: Text(AppLocalizations.of(context)!.copyItemToLeft),
+                ),
+              if(!widget.block.hideRightList && !widget.block.hideLeftList)
+                ElevatedButton(
+                  onPressed: selectedRightIndex != null && selectedRightSubIndex != null && selectedLeftIndex != null ? () {
+                    final sub = rightItems[selectedRightIndex!].subitems[selectedRightSubIndex!];
+                      setState(() {
+                        leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: sub.text));
+                      });
+                      saveLeftData();
+                    } : null,
+                  child: Text(AppLocalizations.of(context)!.copySubitemToLeft),
+                ),
+              if(!widget.block.hideRightList && !widget.block.hideLeftList)
+                const Spacer(),
+
+              // Right list buttons Add Item, Add Subitem
+              if(!widget.block.hideRightList)
+                ElevatedButton(
+                  onPressed: () {
+                    final newItemText = AppLocalizations.of(context)!.newItem;
+                    setState(() {
+                      rightItems.add(LessonItem(text: newItemText));
+                      rightExpanded.add(true);
+                    });
+                    saveRightData();
+                  },
+                  child: Text(AppLocalizations.of(context)!.addItemRight),
+                ),
+              if(!widget.block.hideRightList)
+                ElevatedButton(
+                  onPressed: selectedRightIndex != null ? () {
+                    final newSubitemText = AppLocalizations.of(context)!.newSubitem;
+                    setState(() {
+                      rightItems[selectedRightIndex!].subitems.add(LessonItem(text: newSubitemText));
+                    });
+                    saveRightData();
+                  } : null,
+                  child: Text(AppLocalizations.of(context)!.addSubitemRight),
+                ),
+
             ],
           ),
           Expanded(
             child: Row(
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text(' ', style: const TextStyle(fontSize: 12)),
-                      Text(AppLocalizations.of(context)!.leftList, style: const TextStyle(height: 1.5, fontSize: 20, fontWeight: FontWeight.bold)),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: leftItems.length,
-                          itemBuilder: (context, index) {
-                            var item = leftItems[index];
-                            return ExpansionTile(
-                              initiallyExpanded: leftExpanded[index],
-                              backgroundColor: selectedLeftIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
-                              collapsedBackgroundColor: selectedLeftIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
-                              tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                              childrenPadding: EdgeInsets.zero,
-                              visualDensity: VisualDensity(vertical: -4),
-                              title: GestureDetector(
-                                onTap: () {
-                                  setState(() {
+                if(!widget.block.hideLeftList) 
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(' ', style: const TextStyle(fontSize: 12)),
+                        Text(AppLocalizations.of(context)!.leftList, style: const TextStyle(height: 1.5, fontSize: 20, fontWeight: FontWeight.bold)),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: leftItems.length,
+                            itemBuilder: (context, index) {
+                              var item = leftItems[index];
+                              return ExpansionTile(
+                                initiallyExpanded: leftExpanded[index],
+                                backgroundColor: selectedLeftIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
+                                collapsedBackgroundColor: selectedLeftIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
+                                tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                                childrenPadding: EdgeInsets.zero,
+                                visualDensity: VisualDensity(vertical: -4),
+                                title: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedLeftIndex = index;
+                                      // selectedRightIndex = null;
+                                      // selectedRightSubIndex = null;
+                                    });
+                                  },
+                                  onDoubleTap: () => _editText(item.text, (newText) {
+                                    setState(() => item.text = newText);
+                                    saveLeftData();
+                                  }),
+                                  child: Row(
+                                    children: [
+                                      Expanded(child: Text(item.text, style: const TextStyle(height: 1.0, fontSize: 16, fontWeight: FontWeight.bold))),
+                                      IconButton(
+                                        icon: const Icon(Icons.remove_circle_outline_rounded, size: 22, color: Colors.red),
+                                        onPressed: () {
+                                          setState(() {
+                                            leftItems.removeAt(index);
+                                            leftExpanded.removeAt(index);
+                                            if (selectedLeftIndex == index) selectedLeftIndex = null;
+                                          });
+                                          saveLeftData();
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.arrow_upward, size: 22),
+                                        onPressed: index > 0 ? () {
+                                          setState(() {
+                                            var temp = leftItems[index];
+                                            leftItems[index] = leftItems[index - 1];
+                                            leftItems[index - 1] = temp;
+                                            var tempExp = leftExpanded[index];
+                                            leftExpanded[index] = leftExpanded[index - 1];
+                                            leftExpanded[index - 1] = tempExp;
+                                            selectedLeftIndex = index - 1;
+                                          });
+                                          saveLeftData();
+                                        } : null,
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.arrow_downward, size: 22),
+                                        onPressed: index < leftItems.length - 1 ? () {
+                                          setState(() {
+                                            var temp = leftItems[index];
+                                            leftItems[index] = leftItems[index + 1];
+                                            leftItems[index + 1] = temp;
+                                            var tempExp = leftExpanded[index];
+                                            leftExpanded[index] = leftExpanded[index + 1];
+                                            leftExpanded[index + 1] = tempExp;
+                                            selectedLeftIndex = index + 1;
+                                          });
+                                          saveLeftData();
+                                        } : null,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                children: item.subitems.map((sub) => ListTile(
+                                  tileColor: null,  // selectedLeftIndex == index ? Color.fromARGB(255, 136, 134, 121) : null,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+                                  visualDensity: VisualDensity(vertical: -4),
+                                  title: Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.circle, size: 16, color: sub.status == '(F)' ? Colors.green : Colors.yellow),
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(minWidth: 24, minHeight: 24),  // reduziert die Mindestgröße
+                                        splashRadius: 48,
+                                        onPressed: () {
+                                          setState(() {
+                                            if (sub.status == '(P)') {
+                                              sub.status = '(W)';
+                                            } else if (sub.status == '(W)') {
+                                              sub.status = '(F)';
+                                            } else {
+                                              sub.status = '(P)';
+                                            }
+                                          });
+                                          saveLeftData();
+                                        },
+                                      ),
+                                      
+                                      Text(sub.status ?? '(P)', style: const TextStyle(height: 1.0, fontSize: 14)),
+                                      const SizedBox(width: 8, height: 8),
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onDoubleTap: () => _editText(sub.text, (newText) {
+                                            setState(() => sub.text = newText);
+                                            saveLeftData();
+                                          }),
+                                          child: Text(sub.text, style: const TextStyle(height: 1.0, fontSize: 16)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  onTap: () {
+                                    setState(() {
                                     selectedLeftIndex = index;
                                     // selectedRightIndex = null;
                                     // selectedRightSubIndex = null;
-                                  });
-                                },
-                                onDoubleTap: () => _editText(item.text, (newText) {
-                                  setState(() => item.text = newText);
-                                  saveLeftData();
-                                }),
-                                child: Row(
-                                  children: [
-                                    Expanded(child: Text(item.text, style: const TextStyle(height: 1.0, fontSize: 16, fontWeight: FontWeight.bold))),
-                                    IconButton(
-                                      icon: const Icon(Icons.remove_circle_outline_rounded, size: 22, color: Colors.red),
-                                      onPressed: () {
-                                        setState(() {
-                                          leftItems.removeAt(index);
-                                          leftExpanded.removeAt(index);
-                                          if (selectedLeftIndex == index) selectedLeftIndex = null;
-                                        });
-                                        saveLeftData();
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.arrow_upward, size: 22),
-                                      onPressed: index > 0 ? () {
-                                        setState(() {
-                                          var temp = leftItems[index];
-                                          leftItems[index] = leftItems[index - 1];
-                                          leftItems[index - 1] = temp;
-                                          var tempExp = leftExpanded[index];
-                                          leftExpanded[index] = leftExpanded[index - 1];
-                                          leftExpanded[index - 1] = tempExp;
-                                          selectedLeftIndex = index - 1;
-                                        });
-                                        saveLeftData();
-                                      } : null,
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.arrow_downward, size: 22),
-                                      onPressed: index < leftItems.length - 1 ? () {
-                                        setState(() {
-                                          var temp = leftItems[index];
-                                          leftItems[index] = leftItems[index + 1];
-                                          leftItems[index + 1] = temp;
-                                          var tempExp = leftExpanded[index];
-                                          leftExpanded[index] = leftExpanded[index + 1];
-                                          leftExpanded[index + 1] = tempExp;
-                                          selectedLeftIndex = index + 1;
-                                        });
-                                        saveLeftData();
-                                      } : null,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              children: item.subitems.map((sub) => ListTile(
-                                tileColor: null,  // selectedLeftIndex == index ? Color.fromARGB(255, 136, 134, 121) : null,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
-                                visualDensity: VisualDensity(vertical: -4),
-                                title: Row(
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.circle, size: 16, color: sub.status == '(F)' ? Colors.green : Colors.yellow),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 24, minHeight: 24),  // reduziert die Mindestgröße
-                                      splashRadius: 48,
-                                      onPressed: () {
-                                        setState(() {
-                                          if (sub.status == '(P)') {
-                                            sub.status = '(W)';
-                                          } else if (sub.status == '(W)') {
-                                            sub.status = '(F)';
-                                          } else {
-                                            sub.status = '(P)';
-                                          }
-                                        });
-                                        saveLeftData();
-                                      },
-                                    ),
-                                    
-                                    Text(sub.status ?? '(P)', style: const TextStyle(height: 1.0, fontSize: 14)),
-                                    const SizedBox(width: 8, height: 8),
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onDoubleTap: () => _editText(sub.text, (newText) {
-                                          setState(() => sub.text = newText);
+                                    });
+                                  },
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.remove_circle_outline_rounded, size: 20, color: Colors.red),
+                                        onPressed: () {
+                                          int subIndex = item.subitems.indexOf(sub);
+                                          setState(() {
+                                            item.subitems.removeAt(subIndex);
+                                          });
                                           saveLeftData();
-                                        }),
-                                        child: Text(sub.text, style: const TextStyle(height: 1.0, fontSize: 16)),
+                                        },
                                       ),
-                                    ),
-                                  ],
-                                ),
-
-                                onTap: () {
-                                  setState(() {
-                                  selectedLeftIndex = index;
-                                  // selectedRightIndex = null;
-                                  // selectedRightSubIndex = null;
-                                  });
-                                },
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.remove_circle_outline_rounded, size: 20, color: Colors.red),
-                                      onPressed: () {
-                                        int subIndex = item.subitems.indexOf(sub);
-                                        setState(() {
-                                          item.subitems.removeAt(subIndex);
-                                        });
-                                        saveLeftData();
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.arrow_upward, size: 20),
-                                      onPressed: () {
-                                        int subIndex = item.subitems.indexOf(sub);
-                                        if (subIndex > 0) {
-                                          setState(() {
-                                            var temp = item.subitems[subIndex];
-                                            item.subitems[subIndex] = item.subitems[subIndex - 1];
-                                            item.subitems[subIndex - 1] = temp;
-                                          });
-                                          saveLeftData();
-                                        }
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.arrow_downward, size: 20),
-                                      onPressed: () {
-                                        int subIndex = item.subitems.indexOf(sub);
-                                        if (subIndex < item.subitems.length - 1) {
-                                          setState(() {
-                                            var temp = item.subitems[subIndex];
-                                            item.subitems[subIndex] = item.subitems[subIndex + 1];
-                                            item.subitems[subIndex + 1] = temp;
-                                          });
-                                          saveLeftData();
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(width: 31, height: 8), 
-                                  ],
-                                ),
-                              )).toList(),
-                            );
-                          },
+                                      IconButton(
+                                        icon: const Icon(Icons.arrow_upward, size: 20),
+                                        onPressed: () {
+                                          int subIndex = item.subitems.indexOf(sub);
+                                          if (subIndex > 0) {
+                                            setState(() {
+                                              var temp = item.subitems[subIndex];
+                                              item.subitems[subIndex] = item.subitems[subIndex - 1];
+                                              item.subitems[subIndex - 1] = temp;
+                                            });
+                                            saveLeftData();
+                                          }
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.arrow_downward, size: 20),
+                                        onPressed: () {
+                                          int subIndex = item.subitems.indexOf(sub);
+                                          if (subIndex < item.subitems.length - 1) {
+                                            setState(() {
+                                              var temp = item.subitems[subIndex];
+                                              item.subitems[subIndex] = item.subitems[subIndex + 1];
+                                              item.subitems[subIndex + 1] = temp;
+                                            });
+                                            saveLeftData();
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(width: 31, height: 8), 
+                                    ],
+                                  ),
+                                )).toList(),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-
-
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text(' ', style: const TextStyle(fontSize: 12)),
-                      Text(AppLocalizations.of(context)!.rightList, style: const TextStyle(height: 1.5, fontSize: 20, fontWeight: FontWeight.bold)),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: rightItems.length,
-                          itemBuilder: (context, index) {
-                            var item = rightItems[index];
-                            return ExpansionTile(
-                              initiallyExpanded: rightExpanded[index],
-                              backgroundColor: selectedRightIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
-                              collapsedBackgroundColor: selectedRightIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
-                              tilePadding: const EdgeInsets.symmetric(horizontal: 50, vertical: 0),
-                              childrenPadding: EdgeInsets.zero,
-                              visualDensity: VisualDensity(vertical: -4),
-                              title: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedRightIndex = index;
-                                    selectedRightSubIndex = null;
-                                    // selectedLeftIndex = null;
-                                  });
-                                },
-                                onDoubleTap: () => _editText(item.text, (newText) {
-                                  setState(() => item.text = newText);
-                                  saveRightData();
-                                }),
-                                child: Row(
-                                  children: [
-                                    Expanded(child: Text(item.text, style: const TextStyle(height: 1.0, fontSize: 16, fontWeight: FontWeight.bold))),
-                                    IconButton(
-                                      icon: const Icon(Icons.remove_circle_outline_rounded, size: 22, color: Colors.red),
-                                      onPressed: () {
-                                        setState(() {
-                                          rightItems.removeAt(index);
-                                          rightExpanded.removeAt(index);
-                                          if (selectedRightIndex == index) selectedRightIndex = null;
-                                        });
-                                        saveRightData();
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.arrow_upward, size: 22),
-                                      onPressed: index > 0 ? () {
-                                        setState(() {
-                                          var temp = rightItems[index];
-                                          rightItems[index] = rightItems[index - 1];
-                                          rightItems[index - 1] = temp;
-                                          var tempExp = rightExpanded[index];
-                                          rightExpanded[index] = rightExpanded[index - 1];
-                                          rightExpanded[index - 1] = tempExp;
-                                          selectedRightIndex = index - 1;
-                                        });
-                                        saveRightData();
-                                      } : null,
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.arrow_downward, size: 22),
-                                      onPressed: index < rightItems.length - 1 ? () {
-                                        setState(() {
-                                          var temp = rightItems[index];
-                                          rightItems[index] = rightItems[index + 1];
-                                          rightItems[index + 1] = temp;
-                                          var tempExp = rightExpanded[index];
-                                          rightExpanded[index] = rightExpanded[index + 1];
-                                          rightExpanded[index + 1] = tempExp;
-                                          selectedRightIndex = index + 1;
-                                        });
-                                        saveRightData();
-                                      } : null,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              children: item.subitems.map((sub) => ListTile(
-                                tileColor: selectedRightIndex == index && selectedRightSubIndex == item.subitems.indexOf(sub) ? Color.fromARGB(255, 136, 134, 121) : null,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 70, vertical: 0),
+                
+                
+                if(!widget.block.hideRightList)
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(' ', style: const TextStyle(fontSize: 12)),
+                        Text(AppLocalizations.of(context)!.rightList, style: const TextStyle(height: 1.5, fontSize: 20, fontWeight: FontWeight.bold)),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: rightItems.length,
+                            itemBuilder: (context, index) {
+                              var item = rightItems[index];
+                              return ExpansionTile(
+                                initiallyExpanded: rightExpanded[index],
+                                backgroundColor: selectedRightIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
+                                collapsedBackgroundColor: selectedRightIndex == index ? const Color.fromARGB(255, 136, 134, 121) : null,
+                                tilePadding: const EdgeInsets.symmetric(horizontal: 50, vertical: 0),
+                                childrenPadding: EdgeInsets.zero,
                                 visualDensity: VisualDensity(vertical: -4),
                                 title: GestureDetector(
-                                  onDoubleTap: () => _editText(sub.text, (newText) {
-                                    setState(() => sub.text = newText);
+                                  onTap: () {
+                                    setState(() {
+                                      selectedRightIndex = index;
+                                      selectedRightSubIndex = null;
+                                      // selectedLeftIndex = null;
+                                    });
+                                  },
+                                  onDoubleTap: () => _editText(item.text, (newText) {
+                                    setState(() => item.text = newText);
                                     saveRightData();
                                   }),
-                                  child: Text(sub.text, style: const TextStyle(height: 1.0, fontSize: 16)),
-                                ),
-                                onTap: () {
-                                  setState(() {
-                                    selectedRightIndex = index;
-                                    selectedRightSubIndex = item.subitems.indexOf(sub);
-                                    // selectedLeftIndex = null;
-                                  });
-                                },
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.remove_circle_outline_rounded, size: 20, color: Colors.red),
-                                      onPressed: () {
-                                        int subIndex = item.subitems.indexOf(sub);
-                                        setState(() {
-                                          item.subitems.removeAt(subIndex);
-                                        });
-                                        saveRightData();
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.arrow_upward, size: 20),
-                                      onPressed: () {
-                                        int subIndex = item.subitems.indexOf(sub);
-                                        if (subIndex > 0) {
+                                  child: Row(
+                                    children: [
+                                      Expanded(child: Text(item.text, style: const TextStyle(height: 1.0, fontSize: 16, fontWeight: FontWeight.bold))),
+                                      IconButton(
+                                        icon: const Icon(Icons.remove_circle_outline_rounded, size: 22, color: Colors.red),
+                                        onPressed: () {
                                           setState(() {
-                                            var temp = item.subitems[subIndex];
-                                            item.subitems[subIndex] = item.subitems[subIndex - 1];
-                                            item.subitems[subIndex - 1] = temp;
+                                            rightItems.removeAt(index);
+                                            rightExpanded.removeAt(index);
+                                            if (selectedRightIndex == index) selectedRightIndex = null;
                                           });
                                           saveRightData();
-                                        }
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.arrow_downward, size: 20),
-                                      onPressed: () {
-                                        int subIndex = item.subitems.indexOf(sub);
-                                        if (subIndex < item.subitems.length - 1) {
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.arrow_upward, size: 22),
+                                        onPressed: index > 0 ? () {
                                           setState(() {
-                                            var temp = item.subitems[subIndex];
-                                            item.subitems[subIndex] = item.subitems[subIndex + 1];
-                                            item.subitems[subIndex + 1] = temp;
+                                            var temp = rightItems[index];
+                                            rightItems[index] = rightItems[index - 1];
+                                            rightItems[index - 1] = temp;
+                                            var tempExp = rightExpanded[index];
+                                            rightExpanded[index] = rightExpanded[index - 1];
+                                            rightExpanded[index - 1] = tempExp;
+                                            selectedRightIndex = index - 1;
                                           });
                                           saveRightData();
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(width: 20, height: 8), 
-                                  ],
+                                        } : null,
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.arrow_downward, size: 22),
+                                        onPressed: index < rightItems.length - 1 ? () {
+                                          setState(() {
+                                            var temp = rightItems[index];
+                                            rightItems[index] = rightItems[index + 1];
+                                            rightItems[index + 1] = temp;
+                                            var tempExp = rightExpanded[index];
+                                            rightExpanded[index] = rightExpanded[index + 1];
+                                            rightExpanded[index + 1] = tempExp;
+                                            selectedRightIndex = index + 1;
+                                          });
+                                          saveRightData();
+                                        } : null,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              )).toList(),
-                            );
-                          },
+                                children: item.subitems.map((sub) => ListTile(
+                                  tileColor: selectedRightIndex == index && selectedRightSubIndex == item.subitems.indexOf(sub) ? Color.fromARGB(255, 136, 134, 121) : null,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 70, vertical: 0),
+                                  visualDensity: VisualDensity(vertical: -4),
+                                  title: GestureDetector(
+                                    onDoubleTap: () => _editText(sub.text, (newText) {
+                                      setState(() => sub.text = newText);
+                                      saveRightData();
+                                    }),
+                                    child: Text(sub.text, style: const TextStyle(height: 1.0, fontSize: 16)),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      selectedRightIndex = index;
+                                      selectedRightSubIndex = item.subitems.indexOf(sub);
+                                      // selectedLeftIndex = null;
+                                    });
+                                  },
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.remove_circle_outline_rounded, size: 20, color: Colors.red),
+                                        onPressed: () {
+                                          int subIndex = item.subitems.indexOf(sub);
+                                          setState(() {
+                                            item.subitems.removeAt(subIndex);
+                                          });
+                                          saveRightData();
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.arrow_upward, size: 20),
+                                        onPressed: () {
+                                          int subIndex = item.subitems.indexOf(sub);
+                                          if (subIndex > 0) {
+                                            setState(() {
+                                              var temp = item.subitems[subIndex];
+                                              item.subitems[subIndex] = item.subitems[subIndex - 1];
+                                              item.subitems[subIndex - 1] = temp;
+                                            });
+                                            saveRightData();
+                                          }
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.arrow_downward, size: 20),
+                                        onPressed: () {
+                                          int subIndex = item.subitems.indexOf(sub);
+                                          if (subIndex < item.subitems.length - 1) {
+                                            setState(() {
+                                              var temp = item.subitems[subIndex];
+                                              item.subitems[subIndex] = item.subitems[subIndex + 1];
+                                              item.subitems[subIndex + 1] = temp;
+                                            });
+                                            saveRightData();
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(width: 20, height: 8), 
+                                    ],
+                                  ),
+                                )).toList(),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+
               ],
             ),
           ),

@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Teachers Timetable';
 
   @override
+  String get workplan => 'Workplan';
+
+  @override
   String get menu => 'Menu';
 
   @override
@@ -24,13 +27,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editTimes => 'Edit Times';
 
   @override
-  String get printPdf => 'Print PDF';
-
-  @override
-  String get exportData => 'Export Data';
-
-  @override
-  String get importData => 'Import Data';
+  String get printPdf => 'Print timetable';
 
   @override
   String get dataImported => 'Data imported successfully';
@@ -178,7 +175,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importbackupZipFileOk => 'All files imported successfully';
 
   @override
-  String get importAllFilesZip => 'Import all files from a backup';
+  String get importAllFilesZip => 'Import all files from a backup (ZIP)';
 
   @override
   String get exportAllFilesZip => 'Export all files as a backup (ZIP)';
@@ -194,6 +191,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String printingFooter(Object date) {
-    return 'Created with the teachers_timetable app at $date';
+    return 'Created with the Teachers Timetable app at $date';
   }
+
+  @override
+  String get bothListsHidden =>
+      'Please make one list visible again (top right)!';
 }

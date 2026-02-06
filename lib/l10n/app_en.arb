@@ -1,12 +1,11 @@
 {
   "appTitle": "Teachers Timetable",
+  "workplan": "Workplan",
   "menu": "Menu",
   "editTitle": "Edit Title",
   "editDays": "Edit Days",
   "editTimes": "Edit Times",
-  "printPdf": "Print PDF",
-  "exportData": "Export Data",
-  "importData": "Import Data",
+  "printPdf": "Print timetable",
   "dataImported": "Data imported successfully",
   "failedToImportData": "Data import failed",
   "dataExported": "Data exported to {path}",
@@ -54,10 +53,11 @@
   "backupInZipFileOk": "All files exported as ZIP",
   "failedToImportZipFile": "Failed to import files",
   "importbackupZipFileOk": "All files imported successfully",
-  "importAllFilesZip": "Import all files from a backup",
+  "importAllFilesZip": "Import all files from a backup (ZIP)",
   "exportAllFilesZip": "Export all files as a backup (ZIP)",
   "noFilesToExportYet": "No files to backup yet",
   "fileNotFound": "Source file not found",
   "appNameWithSpaces": "Teachers Timetable App",
-  "printingFooter": "Created with the Teachers Timetable app at {date}"
+  "printingFooter": "Created with the Teachers Timetable app at {date}",
+  "bothListsHidden": "Please make one list visible again (top right)!"
 }

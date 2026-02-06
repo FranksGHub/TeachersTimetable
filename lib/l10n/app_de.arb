@@ -1,12 +1,11 @@
 {
   "appTitle": "Lehrer Stundenplan",
+  "workplan": "Arbeitsplan",
   "menu": "Menü",
   "editTitle": "Titel bearbeiten",
   "editDays": "Tage bearbeiten",
   "editTimes": "Zeiten bearbeiten",
-  "printPdf": "PDF drucken",
-  "exportData": "Daten exportieren",
-  "importData": "Daten importieren",
+  "printPdf": "Stundenplan Drucken",
   "dataImported": "Daten erfolgreich importiert",
   "failedToImportData": "Fehler beim Daten Import",
   "dataExported": "Daten exportiert nach {path}",
@@ -54,10 +53,11 @@
   "backupInZipFileOk": "Alle Dateien wurden gesichert",
   "failedToImportZipFile": "Fehler beim Import der Dateien",
   "importbackupZipFileOk": "Alle Dateien wurden importiert",
-  "importAllFilesZip": "Importiere alle Dateien aus einem Backup",
+  "importAllFilesZip": "Importiere alle Dateien aus einem Backup (ZIP)",
   "exportAllFilesZip": "Exportiere alle Dateien als Backup (ZIP)",
   "noFilesToExportYet": "Keine Dateien zum Backup gefunden",
   "fileNotFound": "Quelldatei existiert nicht",
   "appNameWithSpaces": "Teachers Timetable App",
-  "printingFooter": "Erstellt mit der Teachers Timetable App am {date}"
+  "printingFooter": "Erstellt mit der Teachers Timetable App am {date}",
+  "bothListsHidden": "Bitte eine Liste wieder sichtbar machen (oben rechts)!"
 }

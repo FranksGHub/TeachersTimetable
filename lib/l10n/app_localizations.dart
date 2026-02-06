@@ -104,6 +104,12 @@ abstract class AppLocalizations {
   /// **'Teachers Timetable'**
   String get appTitle;
 
+  /// No description provided for @workplan.
+  ///
+  /// In en, this message translates to:
+  /// **'Workplan'**
+  String get workplan;
+
   /// No description provided for @menu.
   ///
   /// In en, this message translates to:
@@ -131,20 +137,8 @@ abstract class AppLocalizations {
   /// No description provided for @printPdf.
   ///
   /// In en, this message translates to:
-  /// **'Print PDF'**
+  /// **'Print timetable'**
   String get printPdf;
-
-  /// No description provided for @exportData.
-  ///
-  /// In en, this message translates to:
-  /// **'Export Data'**
-  String get exportData;
-
-  /// No description provided for @importData.
-  ///
-  /// In en, this message translates to:
-  /// **'Import Data'**
-  String get importData;
 
   /// No description provided for @dataImported.
   ///
@@ -431,7 +425,7 @@ abstract class AppLocalizations {
   /// No description provided for @importAllFilesZip.
   ///
   /// In en, this message translates to:
-  /// **'Import all files from a backup'**
+  /// **'Import all files from a backup (ZIP)'**
   String get importAllFilesZip;
 
   /// No description provided for @exportAllFilesZip.
@@ -461,8 +455,14 @@ abstract class AppLocalizations {
   /// No description provided for @printingFooter.
   ///
   /// In en, this message translates to:
-  /// **'Created with the teachers_timetable app at {date}'**
+  /// **'Created with the Teachers Timetable app at {date}'**
   String printingFooter(Object date);
+
+  /// No description provided for @bothListsHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Please make one list visible again (top right)!'**
+  String get bothListsHidden;
 }
 
 class _AppLocalizationsDelegate

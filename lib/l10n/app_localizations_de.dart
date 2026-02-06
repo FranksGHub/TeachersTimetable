@@ -12,6 +12,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get appTitle => 'Lehrer Stundenplan';
 
   @override
+  String get workplan => 'Arbeitsplan';
+
+  @override
   String get menu => 'Menü';
 
   @override
@@ -24,13 +27,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editTimes => 'Zeiten bearbeiten';
 
   @override
-  String get printPdf => 'PDF drucken';
-
-  @override
-  String get exportData => 'Daten exportieren';
-
-  @override
-  String get importData => 'Daten importieren';
+  String get printPdf => 'Stundenplan Drucken';
 
   @override
   String get dataImported => 'Daten erfolgreich importiert';
@@ -183,7 +180,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get importbackupZipFileOk => 'Alle Dateien wurden importiert';
 
   @override
-  String get importAllFilesZip => 'Importiere alle Dateien aus einem Backup';
+  String get importAllFilesZip =>
+      'Importiere alle Dateien aus einem Backup (ZIP)';
 
   @override
   String get exportAllFilesZip => 'Exportiere alle Dateien als Backup (ZIP)';
@@ -201,4 +199,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String printingFooter(Object date) {
     return 'Erstellt mit der Teachers Timetable App am $date';
   }
+
+  @override
+  String get bothListsHidden =>
+      'Bitte eine Liste wieder sichtbar machen (oben rechts)!';
 }
