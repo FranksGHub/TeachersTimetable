@@ -37,7 +37,7 @@ Ist der Block noch nie bearbeitet worden, öffnen sich direkt die Einstellungen 
 In dieser Detailansicht sieht man, je nach Einstellung zuerst den Arbeitsplan mit den Listen, oder die Notizen zu diesem Block.  
   
 ### **Detailseite - Die Block Ansicht**  
-Hier gibt es im Arbeitsplan eine Liste (die Aufgabenliste) für die geplanten, gerade in Arbeit befindlichen, oder schon erledigten Aufgaben und Arbeitsschritte, mit einer entsprechenden Status-Verwaltung (**P**lanung, **W**eiterarbeit, **F**ertig). Eine weitere, genauso aufgebaute, Liste (die Vorschlagsliste), die einmal erstellt, über die Jahre, immer gleich bleiben kann. Aus der Vorschlagsliste können jederzeit Aufgaben und Arbeitsschritte in die Aufgabenliste übernommen werden.  
+Hier gibt es im Arbeitsplan eine Liste (die Aufgabenliste) für die geplanten, gerade in Arbeit befindlichen, oder schon erledigten Aufgaben und Arbeitsschritte, mit einer entsprechenden Status-Verwaltung (**P**lanung, **W**eiterarbeit, **F**ertig). Eine weitere, genauso aufgebaute, Liste (die Vorschlagsliste), die einmal erstellt, über die Jahre, immer gleich bleiben kann als Vorrat an möglichen Aufgaben. Aus der Vorschlagsliste können jederzeit Aufgaben und Arbeitsschritte in die Aufgabenliste übernommen werden.  
 Desweiteren können hier auch, über einen Menüpunkt, Notizen für den Block angezeigt werden. Die Reihenfolge der Anzeige Arbeitsplan / Notizen lässt sich auch im Menü ändern.  
 
 > **Die Einstellungen im Details Menü:**  
@@ -67,16 +67,13 @@ In der Aufgabenliste gibt es vorne eine farbige Statusanzeige und einen Buchstab
 - **Weitere Schaltflächen in der Arbeitsplan Ansicht**  
 Mit der Schaltfläche "+ Aufgabe" lässt sich in der jweiligen Liste eine Aufgabe hinzufügen, die dann über die Aufwärts- / Abwärtspfeile verschoben werden kann.  
 Ist eine Aufgabe selektiert, dann kann über die "+ Arbeitsschritt" Schaltfläche unterhalb der selektierten Aufgabe ein weiterer Arbeitsschritt eingefügt und mit den zugehörigen Aufwärts- / Abwärtspfeilen verschoben werden.  
-Mit den beiden Schaltflächen "<= Aufgabe" und "<= Schritt" können ganze Aufgaben oder einzelne Arbeitsschritte aus der rechten Liste in die linke Liste kopiert werden. Dafür muss rechts eine Aufgabe oder ein Arbeitsschritt selektiert sein und im Falle de Arbeitsschrittes muss auch links eine Aufgabe selektiert sein, um den Schritt dort einzufügen.  
-Mit dem roten Minuszeichen im Kreis kann eine ganze Aufgabe, oder ein Arbeitsschritt, aus einer Liste gelöscht werden. Das lässt sich nicht rückgängig machen.  
-Alle Änderungen werden automatisch gespeichert!
+Mit den beiden Schaltflächen "<= Aufgabe" und "<= Schritt" können ganze Aufgaben oder einzelne Arbeitsschritte aus der rechten Liste in die linke Liste kopiert werden. Dafür muss rechts eine Aufgabe oder ein Arbeitsschritt selektiert sein und im Falle eines Arbeitsschrittes, muss links auch eine Aufgabe selektiert sein, um den Schritt dort einzufügen.  
+Mit dem roten Minuszeichen im Kreis kann eine ganze Aufgabe, oder ein Arbeitsschritt, aus einer Liste gelöscht werden.  
+Alle Änderungen werden automatisch gespeichert und lassen sich nicht rückgängig machen.  
 
 
 
-### **4. Tipps & Tricks**
-- Datenspeicherung pro Plattform
-- Supported Locales
-- Datenbackup-Strategien
+### **Sonstiges**
 - Lizenz
 - Häufig gestellte Fragen (FAQ)
 
