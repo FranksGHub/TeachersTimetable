@@ -1,14 +1,15 @@
-import 'dart:io';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path/path.dart' as p;
 import 'package:teachers_timetable/models/print.dart';
-import '../models/export_import_files.dart';
-import '../models/lesson_block.dart';
-import '../models/lesson_item.dart';
+import 'package:path/path.dart' as p;
+import 'dart:convert';
+import 'dart:io';
 import '../l10n/app_localizations.dart';
+import '../models/lesson_block.dart';
+import '../models/export_import_files.dart';
+import '../models/lesson_item.dart';
 import 'edit_block_dialog.dart';
+import 'edit_path_filenames_dialog.dart';
 
 class LessonDetailPage extends StatefulWidget {
   final LessonBlock block;
@@ -32,6 +33,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   int? selectedLeftIndex;
   int? selectedRightIndex;
   int? selectedRightSubIndex;
+  bool showNotesIsActive = false;
 
   @override
   void initState() {
@@ -56,9 +58,17 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     return p.join(dataPath, ExportImportFiles.GetSaveFilename(fileName));
   }
 
+  String GetDefaultLeftFilename() { 
+    return '${widget.block.lessonName}_${widget.block.className}_${widget.block.schoolName}.json';
+  }
+
+  String GetDefaultRightFilename() { 
+    return '${widget.block.lessonName}.json';
+  }
+
   void loadRightData() {
     try {
-      String filePath = getFilePath('${widget.block.lessonName}.json');
+      String filePath = widget.block.suggestionsFilename.length == 0 ? getFilePath(GetDefaultRightFilename()) : getFilePath(widget.block.suggestionsFilename + '.json');
       if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
@@ -76,7 +86,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void loadLeftData() {
     try {
-      String filePath = getFilePath('${widget.block.lessonName}_${widget.block.className}_${widget.block.schoolName}.json');
+      String filePath = widget.block.workplanFilename.length == 0 ? getFilePath(GetDefaultLeftFilename()) : getFilePath(widget.block.workplanFilename + '.json');
       if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
@@ -92,9 +102,22 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     }
   }
 
+  void _loadNotesData() {
+    showNotesIsActive = !showNotesIsActive;
+    if(showNotesIsActive) {
+      try {
+      } catch (e) {
+        _showError(AppLocalizations.of(context)!.failedToLoadNotesData + ': $e');
+      }
+    } else {
+      if (!widget.block.hideLeftList) { loadLeftData(); }
+      if (!widget.block.hideRightList) { loadRightData(); }
+    }
+  }
+
   void saveRightData() {
     try {
-      String filePath = getFilePath('${widget.block.lessonName}.json');
+      String filePath = widget.block.suggestionsFilename.length == 0 ? getFilePath(GetDefaultRightFilename()) : getFilePath(widget.block.suggestionsFilename + '.json');
       String json = jsonEncode(rightItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
     } catch (e) {
@@ -104,7 +127,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void saveLeftData() {
     try {
-      String filePath = getFilePath('${widget.block.lessonName}_${widget.block.className}_${widget.block.schoolName}.json');
+      String filePath = widget.block.workplanFilename.length == 0 ? getFilePath(GetDefaultLeftFilename()) : getFilePath(widget.block.workplanFilename + '.json');
       String json = jsonEncode(leftItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
     } catch (e) {
@@ -169,6 +192,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     widget.onSave(widget.block);
   }
 
+  void _switchNotesVisibility() {
+    showNotesIsActive = !showNotesIsActive;
+    _loadNotesData();
+  }
+
   void _editBlock() {
     showDialog(
       context: context,
@@ -193,29 +221,111 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     );
   }
 
+  void _editPathFilenames() {
+    showDialog(
+      context: context,
+      builder: (context) => EditPathFilenamesDialog(
+        block: widget.block,
+        onSave: (updatedBlock) {
+          widget.onSave(updatedBlock);
+          // Reload if names changed
+          if( widget.block.workplanFilename != updatedBlock.workplanFilename || 
+              widget.block.suggestionsFilename != updatedBlock.suggestionsFilename || 
+              widget.block.notesFilename != updatedBlock.notesFilename ||
+              widget.block.showNotesBeforeWorkplan != updatedBlock.showNotesBeforeWorkplan) {
+            setState(() {
+              widget.block.workplanFilename = updatedBlock.workplanFilename;
+              widget.block.suggestionsFilename = updatedBlock.suggestionsFilename;
+              widget.block.notesFilename = updatedBlock.notesFilename;
+              widget.block.showNotesBeforeWorkplan = updatedBlock.showNotesBeforeWorkplan;});
+            if (!widget.block.hideLeftList) { loadLeftData(); }
+            if (!widget.block.hideRightList) { loadRightData(); }
+          }
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.workplan + ':   ' + widget.block.lessonName + ' - ' + widget.block.className + ' - ' + widget.block.schoolName),
-        actions: [
-          IconButton(
-            icon: widget.block.hideLeftList ? const Icon(Icons.switch_left) : const Icon(Icons.switch_right),
-            onPressed: () {_switchListVisibility(true);},
-          ),
-          IconButton(
-            icon: widget.block.hideRightList ? const Icon(Icons.switch_right) : const Icon(Icons.switch_left),
-            onPressed: () {_switchListVisibility(false);},
-          ),
-          IconButton(
-            icon: const Icon(Icons.print),
-            onPressed: () { PrintPdf().PrintBlockDetails(context, widget.block); },
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: _editBlock,
-          ),
-        ],
+      ),
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            SizedBox(
+              height: 80,
+              child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple,
+                ),
+                child: Text(
+                  AppLocalizations.of(context)!.menu,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ),
+            ListTile(
+              leading: widget.block.hideLeftList ? const Icon(Icons.switch_left) : const Icon(Icons.switch_right),
+              title: Text((widget.block.hideLeftList ? AppLocalizations.of(context)!.show : AppLocalizations.of(context)!.hide) + ' ' + AppLocalizations.of(context)!.leftListShort),
+              onTap: () {
+                Navigator.pop(context);
+                _switchListVisibility(true);
+              },
+            ),
+            ListTile(
+              leading: widget.block.hideRightList ? const Icon(Icons.switch_right) : const Icon(Icons.switch_left),
+              title: Text((widget.block.hideRightList ? AppLocalizations.of(context)!.show : AppLocalizations.of(context)!.hide) + ' ' + AppLocalizations.of(context)!.rightListShort),
+              onTap: () {
+                Navigator.pop(context);
+                _switchListVisibility(false);
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.print),
+              title: Text(AppLocalizations.of(context)!.printWorkplan),
+              onTap: () {
+                Navigator.pop(context);
+                PrintPdf().PrintBlockDetails(context, widget.block);
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: showNotesIsActive ? const Icon(Icons.work) : const Icon(Icons.notes),
+              title: Text(showNotesIsActive ? AppLocalizations.of(context)!.showWorkplan : AppLocalizations.of(context)!.showNotes),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() {
+                  _switchNotesVisibility();
+                });
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(AppLocalizations.of(context)!.editFilenames),
+              onTap: () {
+                Navigator.pop(context);
+                _editPathFilenames();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(AppLocalizations.of(context)!.editBlock),
+              onTap: () {
+                Navigator.pop(context);
+                _editBlock();
+              },
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [

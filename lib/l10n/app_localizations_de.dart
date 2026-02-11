@@ -15,7 +15,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get workplan => 'Arbeitsplan';
 
   @override
+  String get showTimetable => 'Öffne den Stundenplan';
+
+  @override
+  String get showNotes => 'Öffne die Notizen';
+
+  @override
+  String get showWorkplan => 'Öffne den Arbeitsplan';
+
+  @override
   String get menu => 'Menü';
+
+  @override
+  String get help => 'Hilfe';
 
   @override
   String get editTitle => 'Titel bearbeiten';
@@ -28,6 +40,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get printPdf => 'Stundenplan Drucken';
+
+  @override
+  String get printWorkplan => 'Arbeitsplan drucken';
 
   @override
   String get dataImported => 'Daten erfolgreich importiert';
@@ -74,6 +89,22 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get editBlock => 'Block bearbeiten';
+
+  @override
+  String get editFilenames => 'Dateinamen bearbeiten';
+
+  @override
+  String get workplanFilename => 'Dateiname des Arbeitsplans';
+
+  @override
+  String get suggestionsFilename => 'Dateiname der Vorschläge';
+
+  @override
+  String get notesFilename => 'Dateiname der Notizen';
+
+  @override
+  String get showNotesBeforeWorkplan =>
+      'Zeige Notizen immer vor dem Arbeitsplan';
 
   @override
   String get color => 'Farbe:';
@@ -137,14 +168,30 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rightList => 'Vorschläge aus dem Lehrplan';
 
   @override
+  String get show => 'Zeige';
+
+  @override
+  String get hide => 'Verstecke';
+
+  @override
+  String get leftListShort => 'linke Liste';
+
+  @override
+  String get rightListShort => 'rechte Liste';
+
+  @override
   String get newItem => 'Aufgabe';
 
   @override
   String get newSubitem => '- Arbeitsschritt';
 
   @override
+  String get failedToLoadNotesData =>
+      'Laden der Notiz Daten ist fehlgeschlagen';
+
+  @override
   String get failedToLoadLeftData =>
-      'Laden der aktuellen Aufgaben ist fehlgeschlagen';
+      'Laden der Aufgaben Daten ist fehlgeschlagen';
 
   @override
   String get failedToLoadRightData => 'Laden der Vorschläge ist fehlgeschlagen';

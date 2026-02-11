@@ -8,6 +8,10 @@ class LessonBlock {
   String schoolName;
   bool hideLeftList;
   bool hideRightList;
+  bool showNotesBeforeWorkplan;
+  String workplanFilename;
+  String suggestionsFilename;
+  String notesFilename;
   
 
   LessonBlock({
@@ -17,6 +21,10 @@ class LessonBlock {
     this.schoolName = '',
     this.hideLeftList = false,
     this.hideRightList = false,
+    this.showNotesBeforeWorkplan = false,
+    this.workplanFilename = '',
+    this.suggestionsFilename = '',
+    this.notesFilename = '',
   });
 
   /// Convert Flutter Color to PDF Color

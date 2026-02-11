@@ -12,10 +12,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Teachers Timetable';
 
   @override
-  String get workplan => 'Workplan';
+  String get workplan => 'Work plan';
+
+  @override
+  String get showTimetable => 'Open the timetable';
+
+  @override
+  String get showNotes => 'Open the notes';
+
+  @override
+  String get showWorkplan => 'Open the work plan';
 
   @override
   String get menu => 'Menu';
+
+  @override
+  String get help => 'Help';
 
   @override
   String get editTitle => 'Edit Title';
@@ -28,6 +40,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get printPdf => 'Print timetable';
+
+  @override
+  String get printWorkplan => 'Print work plan';
 
   @override
   String get dataImported => 'Data imported successfully';
@@ -74,6 +89,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editBlock => 'Edit Block';
+
+  @override
+  String get editFilenames => 'Edit filenames';
+
+  @override
+  String get workplanFilename => 'Work plan filename only';
+
+  @override
+  String get suggestionsFilename => 'Suggestions filename only';
+
+  @override
+  String get notesFilename => 'Notes filename only';
+
+  @override
+  String get showNotesBeforeWorkplan => 'Always show notes before work plan';
 
   @override
   String get color => 'Color:';
@@ -136,10 +166,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rightList => 'Suggestions from the curriculum';
 
   @override
+  String get show => 'Show';
+
+  @override
+  String get hide => 'Hide';
+
+  @override
+  String get leftListShort => 'left list';
+
+  @override
+  String get rightListShort => 'right list';
+
+  @override
   String get newItem => 'New Task';
 
   @override
   String get newSubitem => '- New Step';
+
+  @override
+  String get failedToLoadNotesData => 'Failed to load notes data';
 
   @override
   String get failedToLoadLeftData => 'Failed to load curent task data';

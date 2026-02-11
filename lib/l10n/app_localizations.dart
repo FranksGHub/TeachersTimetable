@@ -107,14 +107,38 @@ abstract class AppLocalizations {
   /// No description provided for @workplan.
   ///
   /// In en, this message translates to:
-  /// **'Workplan'**
+  /// **'Work plan'**
   String get workplan;
+
+  /// No description provided for @showTimetable.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the timetable'**
+  String get showTimetable;
+
+  /// No description provided for @showNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the notes'**
+  String get showNotes;
+
+  /// No description provided for @showWorkplan.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the work plan'**
+  String get showWorkplan;
 
   /// No description provided for @menu.
   ///
   /// In en, this message translates to:
   /// **'Menu'**
   String get menu;
+
+  /// No description provided for @help.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get help;
 
   /// No description provided for @editTitle.
   ///
@@ -139,6 +163,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Print timetable'**
   String get printPdf;
+
+  /// No description provided for @printWorkplan.
+  ///
+  /// In en, this message translates to:
+  /// **'Print work plan'**
+  String get printWorkplan;
 
   /// No description provided for @dataImported.
   ///
@@ -223,6 +253,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit Block'**
   String get editBlock;
+
+  /// No description provided for @editFilenames.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit filenames'**
+  String get editFilenames;
+
+  /// No description provided for @workplanFilename.
+  ///
+  /// In en, this message translates to:
+  /// **'Work plan filename only'**
+  String get workplanFilename;
+
+  /// No description provided for @suggestionsFilename.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions filename only'**
+  String get suggestionsFilename;
+
+  /// No description provided for @notesFilename.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes filename only'**
+  String get notesFilename;
+
+  /// No description provided for @showNotesBeforeWorkplan.
+  ///
+  /// In en, this message translates to:
+  /// **'Always show notes before work plan'**
+  String get showNotesBeforeWorkplan;
 
   /// No description provided for @color.
   ///
@@ -344,6 +404,30 @@ abstract class AppLocalizations {
   /// **'Suggestions from the curriculum'**
   String get rightList;
 
+  /// No description provided for @show.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get show;
+
+  /// No description provided for @hide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get hide;
+
+  /// No description provided for @leftListShort.
+  ///
+  /// In en, this message translates to:
+  /// **'left list'**
+  String get leftListShort;
+
+  /// No description provided for @rightListShort.
+  ///
+  /// In en, this message translates to:
+  /// **'right list'**
+  String get rightListShort;
+
   /// No description provided for @newItem.
   ///
   /// In en, this message translates to:
@@ -355,6 +439,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'- New Step'**
   String get newSubitem;
+
+  /// No description provided for @failedToLoadNotesData.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load notes data'**
+  String get failedToLoadNotesData;
 
   /// No description provided for @failedToLoadLeftData.
   ///

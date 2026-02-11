@@ -1,112 +1,81 @@
-Schreib bitte eine End-User Dokumentation auf Basis des Repositories in https://github.com/FranksGHub/TeachersTimetable/ in Englisch in eine neue Datei Readme_en.md und erzeuge eine deutsche Übersetzung der Doku in einer neuen Readme_de.md Datei. 
+## 📋 **Die Stundenplan APP Teachers_Timetable:**  
+  
+### **Übersicht & Erste Schritte**  
+- **Kurzbeschreibung:**  
+Mit dieser App kannst du unter Windows und Android deinen Stundenplan, Aufgabenlisten und Notizen erstellen und ausdrucken. Momentan besteht der Stundenplan aus einer Tabelle von 5 Tagen × 6 Blöcke (Stunden). Ein Klick auf einen der Blöcke bringt dich in die detailierte Ansicht mit den Konfigurationsmöglichkeiten.  
 
-Perfekt! 📚 Ich habe eine umfassende **End-User Dokumentation** für dein TeachersTimetable Projekt erstellt. Hier ist, was ich in die neue README.md eingefügt habe:
+- **Mehrsprachigkeit:**  
+Deutsch und Englisch  
 
-## 📋 **Dokumentationsstruktur:**
+- **Unterstützte Plattformen:**  
+Android und Windows  
 
-### **1. Übersicht & Erste Schritte**
-- Projektbeschreibung
-- Unterstützte Plattformen (Android, Windows, macOS, iOS, Web, Linux)
-- Schnellstart-Anleitung
+- **Nötige Berechtigungen:**  
+Die App speichert ihre Einstellungen nur in das App eigene Dokumentenverzeichnis und benötigt auch sonst keine Berechtigungen. Wählt der Benutzer Export oder Import aus dem Hauptmenü, dann müssen dafür natürlich, zum Sichern und Synchronisieren der Einstellungen, Dateien ausserhalb der APP gespeichert / geteilt und gelesen werden können.  
 
-### **2. Hauptfunktionen**
-- **Stundenplan erstellen**: 5 Tage × 6 Blöcke
-- **Lektionen verwalten**: Farben, Namen, Klassen, Schulen
-- **Arbeitspläne**: Linke/Rechte Liste mit Items und Subitems
-- **Status-Verwaltung**: Planned → Working → Finished
-- **Druckfunktion**: PDF-Export des Stundenplans
-- **Mehrsprachigkeit**: Deutsch & Englisch
-- **Import/Export**: Zip-basiert für Backup und Datenaustausch
+- **Schnellstart-Anleitung für Windows:**  
+Kopiere die ZIP-Datei in ein neues Verzeichnis deiner Wahl (z.B.: C:\Tools\Stundenplan) und entpacke sie, zum Beispiel mit dem Datei-Explorer. Klicke mit der rechten Maustaste auf die Datei "teachers_timetable.exe" und wähle "An Start anheften" aus, so kannst du sie bequem aus dem Startmenü aus aufrufen. Bei Updates entpacke einfach die neue ZIP-Datei wieder in dieses Verzeichnis und überschreibe damit einfach die alten Dateien.  
 
-### **3. Detaillierte Bedienungsanleitung**
-- Menü-Navigation
-- Stundenplan-Verwaltung
-- Lektions-Details bearbeiten
-- Listen verwalten (Items/Subitems)
-- Status-Buttons nutzen
-- Drucken
-- Einstellungen
+- **Schnellstart-Anleitung für Android:**  
+So lange die APP noch nicht im Google Play Store sichtbar ist, speichere die APK-Datei auf deinem Android Tablet oder Handy und installiere sie mit einem Datei-Manager, der die Berechtigung dazu hat (z.B.: Google's "Files" App, oder dein Browser).  
+
+## **Die APP-Funktionen**
+### **Startseite - Die Stundenplan Ansicht**  
+Momentan sind 5 Tage × 6 Blöcke angelegt   
+> **Die Einstellungen im Hauptmenü:**  
+> Die Version der APP wird hier angezeigt  
+> Ein Hilfe Fenster kann angezeigt werden  
+> Der Titel der Seite kann geändert werden  
+> Spalten Überschriften (Tage) editieren  
+> Zeileneinteilung (Zeiten) editieren  
+> Der Stundenplan kann ausdrucken oder als PDF gespeichert werden  
+> Export der Einstellungen und Daten als ZIP-Datei als Backup und zum Datenaustausch  
+> Import der Einstellungen und Daten über eine vorher exportierte ZIP-Datei  
+
+Durch den Klick auf einen Block kommt man in die Detailansicht des Blocks.  
+Ist der Block noch nie bearbeitet worden, kommt man direkt in die Einstellungen zur Farbe und den Texten dieses Blocks. Das kann später auch jederzeit über das Menü in der Detailansicht geändert werden.
+In dieser Detailansicht sieht man, je nach Einstellung zuerst den Arbeitsplan mit den Listen, oder die Notizen zu diesem Block.  
+  
+### **Detailseite - Die Block Ansicht**  
+Hier gibt es im Arbeitsplan eine Liste (die Aufgabenliste) für die geplanten, gerade in Arbeit befindlichen, oder schon erledigten Aufgaben und Arbeitsschritte, mit einer entsprechenden Status Verwaltung (**P**lanung, **W**eiterarbeit, **F**ertig). Eine weitere, genauso aufgebaute, Liste (die Vorschlagsliste), die einmal erstellt, über die Jahre, immer gleich bleiben kann. Aus der Vorschlagsliste können jederzeit Aufgaben und Unteraufgaben in die Aufgabenliste übernommen werden.  
+Desweiteren können hier auch, über einen Menüpunkt, Notizen für den Block angezeigt werden. Die Reihenfolge der Anzeige Arbeitsplan / Notizen lässt sich im Menü fest einstellen.  
+> **Die Einstellungen im Details Menü:**  
+> Die Aufgabenliste (linke Seite) kann versteckt / sichtbar gemacht werden  
+> Die Vorschlagsliste (rechte Seite) kann versteckt / sichtbar gemacht werden  
+> Die Aufgabenliste kann gedruckt, oder als PDF gespeichert werden  
+> Die Notizen können geöffnet werden (wenn gerade die Aufgaben angezeigt werden)  
+> Die Aufgaben können geöffnet werden (wenn gerade die Notizen angezeigt werden)  
+> Die Dateinamen und die Anzeigereihenfolge für die Listen und Notizen können geändert werden  
+> Die Texte und die Farbe des Blocks auf der Hauptseite können eingestellt werden  
+
+Alle Möglichkeiten in dieser Ansicht werden weiter unten beschrieben.  
+  
+
+### **Detaillierte Bedienungsanleitung**
+
+- **Stundenplan-Verwaltung / Export-Import**  
+Über die Export / Import Funktion lässt sich jederzeit ein komplettes Backup der Daten und Einstellungen vornehmen. Das sollte auch regelmässig nach Änderungen getan werden. Die dabei entstehende ZIP-Datei mit Datum kann vom Benutzer gesichert aufbewahrt und jederzeit wieder importiert werden. Damit kann man auch die Jahrgänge verwalten oder verschiedene Farben und Einstellungen ausprobiere usw.. Außerdem lassen sich so ganz einfach die Daten zwischen der Windows und der Android APP austauschen. Die großen Änderungen zum Schuljahresbeginn können so mit der Windows Version leichter durchgeführt und das Ergebnis dann mit der Android APP weiter genutzt werden. Die APP Daten sind identisch, können sich aber von Version zu Version ändern. Auf allen Geräten sollte immer die selbe Version verwendet werden. Die Version ist im Menu der Startseite ganz oben zu sehen.  
+Beim Import werden nur die Dateien, die sich in der ZIP-Datei befinden auf dem Gerät importiert und damit die bisherigen Datein überschrieben. Es werden keine weiteren Dateien gelöscht. Enthällt die ZIP-Datei weniger Dateien als das importierende Gerät, dann bleiben diese Dateien erhalten. Das können fortgeschrittene Benutzer durch ändern der ZIP-Datei , allerdings auf eigene Gefahr, ausnutzen. Sollen alle Dateien gelöscht werden (Urzustand herstellen), dann geht das über die Android Bordmittel "APP-Info" und "Speicher löschen", oder mit dem Windows Datei Explorer im Verzeichnis "Dokumente" "Timetable" alle Dateien löschen. Vorher natürlich die APP schliessen.  
+
+- Arbeitsplan - Aufgaben / Arbeiten verwalten  
+  Der Arbeitsplan wurde ursprünglich in der App eingefügt, um einer Werken- und Gestalten Lehrerin die Möglichkeit zu geben, ihre Werkstücke mit den jeweiligen nötigen Arbeitsschritten zu planen und den Status der einzelnen Arbeitsschritte zu speichern. Also eine Art Wochenplan. Die Listen können natürlich auch ganz individuell verwendet werden. Dadurch, dass die Dateinamen, in denen die Listen ihre Einträge speichern und wieder laden, frei vergeben werden können, sind der Gestaltung was in dieser Datei oder Liste eingetragen wird keine Grenzen gesetzt? Das kann z.B. eine Aufgabenliste pro Unterichtsblock sein, das ist die Voreinstellung, weil der sich Dateiname aus dem Kürzel für das Unterrichtsfach, der Klasse und der Schule zusammensetzt, oder pro Wochentag, wenn der Dateiname zum Beispiel "Montag" lautet, oder Schulübergreifend pro Unterrichtseinheit, wenn der Dateiname nur das Unterrichtsfach enthällt. Letzteres ist auch die Voreinstellung für die Vorschlagslisten, weil die Aufgaben wahrscheinlich von der Jahrgangsstufe und dem Fach abhängig sind. Natürlich können durch mehrmalige Änderung des Dateinamens der Vorschlagsliste auch beliebige Aufgaben aus mehreren Listen in die Aufgabenliste übernommen werden usw..
+
+- Status-Verwaltung in der Aufgabenliste nutzen  
+In der Aufgabenliste gibt es vorne eine farbige Statusanzeige und einen Buchstaben für den aktuellen Status. Zur Zeit ist es die Farbe Gelb und ein "(P)" für in Planung, Gelb und ein "(W)" für weiterarbeiten und Grün und ein "(F)" für fertig. Wenn man auf den farbigen Kreis klickt, dann ändert sich der Status, in der Reihenfolge P, W, F und wieder P. Damit kann man leicht überschauen, welche Arbeitsschritte schon durchgeführt wurden und welche Arbeitsschritte für die jeweilige Aufgabe noch ausstehen. Sind alle Arbeitsschritte für eine Aufgabe fertig, dann wird diese Aufgabe beim Öffnen des Fensters zugeklappt dargestellt. Das erhöht die Übersicht.  
+
+- Weitere Schaltflächen in der Arbeitsplan Ansicht  
+Mit der Schaltfläche "+ Aufgabe" lässt sich in der jweiligen Liste eine Aufgabe hinzufügen, die dann über die Aufwärts- / Abwärtspfeile verschoben werden kann.  
+Ist eine Aufgabe selektiert, dann kann über die "+ Arbeitsschritt" Schaltfläche unterhalb der selektierten Aufgabe ein weiterer Arbeitsschritt eingefügt und mit den zugehörigen Aufwärts- / Abwärtspfeilen verschoben werden.  
+Mit den beiden Schaltflächen "<= Aufgabe" und "<= Schritt" können ganze Aufgaben oder einzelne Arbeitsschritte aus der rechten Liste in die linke Liste kopiert werden. Dafür muss rechts eine Aufgabe oder ein Arbeitsschritt selektiert sein und im Falle de Arbeitsschrittes muss auch links eine Aufgabe selektiert sein, um den Schritt dort einzufügen.  
+Mit dem roten Minuszeichen im Kreis kann eine ganze Aufgabe, oder ein Arbeitsschritt, aus einer Liste gelöscht werden. Das lässt sich nicht rückgängig machen.  
+Alle Änderungen werden automatisch gespeichert!
+
+
 
 ### **4. Tipps & Tricks**
-- Tastenkombinationen
-- Häufig gestellte Fragen (FAQ)
-- Troubleshooting
-- Datenbackup-Strategien
-
-### **5. Technische Informationen**
-- Supported Locales
 - Datenspeicherung pro Plattform
+- Supported Locales
+- Datenbackup-Strategien
 - Lizenz
+- Häufig gestellte Fragen (FAQ)
 
-## 🌐 **Zwei-Sprachen-Format:**
-Die Dokumentation ist strukturiert, damit sie:
-- ✅ In der **README auf GitHub** gut lesbar ist
-- ✅ In deine **Flutter-App** als Help-Seite integriert werden kann
-- ✅ **In Deutsch UND Englisch** verfügbar ist
-
-## 🚀 **Nächste Schritte zur Integration in die App:**
-
-Die README.md-Datei wurde erfolgreich mit umfangreicher Endbenutzerdokumentation in Englisch und Deutsch aktualisiert. Du kannst sie hier ansehen: [README.md](https://github.com/FranksGHub/TeachersTimetable/blob/main/README.md).
-
-### So bindest du die README.md im Menü von `timetable_page.dart` ein:
-Um das README im Menü des Widgets `timetable_page.dart` anzuzeigen, mache folgendes:
-
-#### 1. Füge eine neue Option hinzu:
-Bearbeite den `Drawer` im Widget `timetable_page.dart`, um einen neuen Menüpunkt "Hilfe" (oder "Help") hinzuzufügen.
-
-#### Beispiel für die Methode `build`:
-```dart
-ListTile(
-  leading: const Icon(Icons.help),
-  title: Text(AppLocalizations.of(context)!.help), // In deinen Lokalisierungen
-  onTap: () {
-    Navigator.pop(context); // Schließt die Seitenleiste
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HelpPage()), // Neue Hilfe-Seite
-    );
-  },
-),
-```
-
-#### 2. Erstelle die `HelpPage` Widget:
-Zeige den Inhalt der README.md als Text in einer neuen Seite.
-
-```dart
-import 'package:flutter/material.dart';
-
-class HelpPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    const helpContent = '''
-      # Teachers Timetable
-
-      ## Überblick
-      Die Lehrer Stundenplan-Anwendung wurde...
-    ''';
-
-    return Scaffold(
-      appBar: AppBar(title: Text('Help')), // Lokalisierungswert verwenden
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Text(helpContent),
-        ),
-      ),
-    );
-  }
-}
-```
-
-#### 3. Multi-Language Unterstützung:
-Nutze die vorhandenen Lokalisierungsoptionen deiner App (`AppLocalizations`) und lade die entsprechenden Inhalte je nach Sprache.
-
-Soll ich einen **vollständigen Codevorschlag** auf Basis deiner Ordnerstruktur erstellen? 😊
-
-Wenn du die Dokumentation auch **in der App anzeigen** möchtest (z.B. unter einem "Help"-Button), kannst du:
-
-1. **Separate Markdown-Dateien** erstellen (z.B. `docs/help_de.md`, `docs/help_en.md`)
-2. **In Flutter einlesen** und in einer WebView anzeigen
-3. **Lokalisierungssystem nutzen**: Die App hat bereits `l10n.yaml` konfiguriert
-
-Möchtest du, dass ich dir zeige, wie du die Hilfe **direkt in der App integrierst**? 🎯

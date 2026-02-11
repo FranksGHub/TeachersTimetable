@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teachers_timetable/models/print.dart';
+import 'package:teachers_timetable/widgets/help_page.dart';
 import 'dart:convert';
 import '../l10n/app_localizations.dart';
 import '../models/lesson_block.dart';
@@ -80,6 +81,10 @@ class _TimetablePageState extends State<TimetablePage> {
           className: block['schoolName'],
           hideLeftList: block['hideLeftList'] ?? false,
           hideRightList: block['hideRightList'] ?? false,
+          showNotesBeforeWorkplan: block['showNotesBeforeWorkplan'] ?? false,
+          workplanFilename: block['workplanFilename'] ?? '',
+          suggestionsFilename: block['suggestionsFilename'] ?? '',
+          notesFilename: block['notesFilename'] ?? '',
         )).toList()).toList();
       });
     }
@@ -98,6 +103,10 @@ class _TimetablePageState extends State<TimetablePage> {
       'roomNumber': block.schoolName,
       'hideLeftList': block.hideLeftList,
       'hideRightList': block.hideRightList,
+      'showNotesBeforeWorkplan': block.showNotesBeforeWorkplan,
+      'workplanFilename': block.workplanFilename,
+      'suggestionsFilename': block.suggestionsFilename,
+      'notesFilename': block.notesFilename,
     }).toList()).toList()));
 
     // save into file as well
@@ -228,6 +237,17 @@ class _TimetablePageState extends State<TimetablePage> {
                 ),
               ),
               VersionMenu(),
+              ListTile(
+                leading: const Icon(Icons.help),
+                title: Text(AppLocalizations.of(context)!.help),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HelpPage()),
+                  );
+                },
+              ),
               ListTile(
                 leading: const Icon(Icons.edit),
                 title: Text(AppLocalizations.of(context)!.editTitle),
