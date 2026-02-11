@@ -1,4 +1,4 @@
-## 📋 **The Timetable App Teachers_Timetable:**  
+## **The Timetable App Teachers_Timetable:**  
   
 ### **Overview & First Steps**  
 - **Short Description:**  

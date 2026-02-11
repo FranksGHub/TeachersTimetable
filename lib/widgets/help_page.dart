@@ -15,7 +15,7 @@ class HelpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.help)),
+      appBar: AppBar(title: Text('${AppLocalizations.of(context)!.appTitle} - ${AppLocalizations.of(context)!.help}')),
       body: FutureBuilder<String>(
         future: _loadReadme(context),
         builder: (context, snapshot) {

@@ -1,4 +1,4 @@
-## 📋 **Die Stundenplan APP Teachers_Timetable:**  
+## **Die Stundenplan APP Teachers_Timetable:**  
   
 ### **Übersicht & Erste Schritte**  
 - **Kurzbeschreibung:**  
