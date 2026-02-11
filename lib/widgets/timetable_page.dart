@@ -248,6 +248,7 @@ class _TimetablePageState extends State<TimetablePage> {
                   );
                 },
               ),
+              const Divider(),
               ListTile(
                 leading: const Icon(Icons.edit),
                 title: Text(AppLocalizations.of(context)!.editTitle),

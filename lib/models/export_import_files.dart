@@ -169,9 +169,6 @@ class ExportImportFiles {
 
       // Encode the archive as zip
       final zipData = ZipEncoder().encode(archive);
-      if (zipData == null) {
-        throw Exception(AppLocalizations.of(context)!.failedToCreateZipFile);
-      }
 
       // Save zip file in temporary directory with date/time stamp
       final tempDir = Directory.systemTemp;
