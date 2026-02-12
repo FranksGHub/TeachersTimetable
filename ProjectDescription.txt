@@ -109,3 +109,19 @@ Ich möchte aus meiner flutter / dart app ein pdf zum Drucker schicken. Die Seit
 Step 9 Menu change in lesson_datail_page
 The file lesson_datail_page.dart contains four buttons for printing, showing/hiding the two lists, and accessing settings. These buttons should be moved to a menu that looks and feels like the drawer menu in the page timetable_page.dart. The icons should be copied to the menu.
 
+Step 10 Help files
+User: I have a class "HelpPage" inside help_page.dart and like to show the help text out of the file "Readme_de.md", if the german language is active and out of the file "Teadme_en.md", if the english language is active. How do I do that in an easy, smart and modern way. Both Readme files should stay unchanged.
+GitHub Copilot: 
+- **What I changed:**  
+  - Added `flutter_markdown: ^0.7.10` and declared Readme_de.md / Readme_en.md as assets in pubspec.yaml.  
+  - Replaced `HelpPage` in help_page.dart to load the correct Readme asset based on the active locale and render it with `flutter_markdown`.
+User: replaced flutter_markdown by flutter_markdown_plus
+
+Step 11
+User: After the windows build, there is a file "kernel_blob.bin" in the data\flutter_assets path. Do I need that file for publish?
+GitHub Copilot: Short answer: No — `kernel_blob.bin` is a JIT/kernel snapshot used for debug/hot-reload. You don't need it when publishing a release Windows build.
+
+Step 12 Notes page added
+User: I need a new dart page called "notes_page.dart" where the end-user can edit text, if possible with text decoration as bold, size and so on. The text is stored in and loaded from a json file. The filename is loaded from the "notesFilename" parameter stored in the SharedPreferences. If the "notesFilename" is empty, the default filename should be "notes.json" in the getApplicationDocumentsDirectory path. if the page is loaded the text should be read from the file and there should be a save button in the AppBar to write the changes into the json file. I will bind the new page to the existing pages later.
+
+

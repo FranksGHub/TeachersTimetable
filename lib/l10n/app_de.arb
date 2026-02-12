@@ -4,6 +4,7 @@
   "showTimetable": "Öffne den Stundenplan",
   "showNotes": "Öffne die Notizen",
   "showWorkplan": "Öffne den Arbeitsplan",
+  "notesTitle": "Notizen",
   "menu": "Menü",
   "help": "Hilfe",
   "editTitle": "Titel bearbeiten",
@@ -11,6 +12,7 @@
   "editTimes": "Zeiten bearbeiten",
   "printPdf": "Stundenplan Drucken",
   "printWorkplan": "Arbeitsplan drucken",
+  "printNotes": "Notizen drucken",
   "dataImported": "Daten erfolgreich importiert",
   "failedToImportData": "Fehler beim Daten Import",
   "dataExported": "Daten exportiert nach {path}",
@@ -61,6 +63,9 @@
   "failedToLoadRightData": "Laden der Vorschläge ist fehlgeschlagen",
   "failedToSaveLeftData": "Speichern der aktuellen Aufgaben ist fehlgeschlagen",
   "failedToSaveRightData": "Speichern der Vorschläge ist fehlgeschlagen",
+  "saveNotesButton": "Speichern",
+  "savedNotesData": "Die Notiz Daten wurden gespeichert",
+  "failedToSaveNotesData": "Speichern der Notiz Daten ist fehlgeschlagen",
   "failedToCreateZipFile": "Fehler beim erzeugen der ZIP-Datei",
   "timetableBackup": "Backup alle Dateien in eine ZIP-Datei",
   "timetableBackupImport": "Importiere alle Dateien aus einer Backup ZIP-Datei",
@@ -74,5 +79,7 @@
   "fileNotFound": "Quelldatei existiert nicht",
   "appNameWithSpaces": "Teachers Timetable App",
   "printingFooter": "Erstellt mit der Teachers Timetable App am {date}",
-  "bothListsHidden": "Bitte eine Liste wieder sichtbar machen (oben rechts)!"
+  "bothListsHidden": "Bitte eine Liste wieder sichtbar machen (oben rechts)!",
+  "printingFailed": "Printing failed",
+  "printingSuccess": "Printing started"
 }

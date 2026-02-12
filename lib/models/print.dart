@@ -12,6 +12,237 @@ import 'dart:convert';
 
 class PrintPdf {
 
+  Future<bool> PrintNotes(BuildContext context, String markdowntext) async {
+    // Printing: convert HTML to PDF and open print dialog
+    try {
+      // Erzeuge einfache Markdown-Blocks (wir nutzen die markdown lib nur für Zeilenaufteilung)
+      final lines = const LineSplitter().convert(markdowntext);
+
+        // Erstelle PDF-Dokument
+        final doc = pw.Document();
+
+        doc.addPage(
+          pw.MultiPage(
+            pageFormat: PdfPageFormat.a4,
+            margin: const pw.EdgeInsets.all(24),
+            build: (context) {
+              // Konvertiere Markdown-Lines in pw-Widgets
+              final widgets = <pw.Widget>[];
+              final buffer = <String>[]; // für List- oder Paragraph-Puffer
+              String? currentListType; // 'ul' oder 'ol'
+              bool inCodeBlock = false;
+              final codeBuffer = <String>[];
+
+              void flushParagraph() {
+                if (buffer.isEmpty) return;
+                final text = buffer.join('\n').trim();
+                if (text.isNotEmpty) {
+                  widgets.add(_paragraphToPw(text));
+                }
+                buffer.clear();
+              }
+
+              void flushList() {
+                if (buffer.isEmpty) return;
+                final items = buffer.map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+                if (items.isNotEmpty) {
+                  widgets.add(pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: items.map((it) => pw.Bullet(text: _inlineMarkdownToPlain(it))).toList(),
+                  ));
+                }
+                buffer.clear();
+                currentListType = null;
+              }
+
+              for (var raw in lines) {
+                final line = raw.replaceAll('\t', '    ');
+                // Codeblock fence
+                if (line.startsWith('```')) {
+                  if (inCodeBlock) {
+                    // Ende Codeblock
+                    widgets.add(
+                      pw.Container(
+                        width: double.infinity,
+                        decoration: pw.BoxDecoration(
+                          color: PdfColors.grey200,
+                          borderRadius: pw.BorderRadius.circular(4),
+                        ),
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text(codeBuffer.join('\n'), style: pw.TextStyle(font: pw.Font.courier())),
+                      ),
+                    );
+                    codeBuffer.clear();
+                    inCodeBlock = false;
+                  } else {
+                    // Start Codeblock
+                    flushParagraph();
+                    flushList();
+                    inCodeBlock = true;
+                  }
+                  continue;
+                }
+
+                if (inCodeBlock) {
+                  codeBuffer.add(line);
+                  continue;
+                }
+
+                // Überschriften
+                final hMatch = RegExp(r'^(#{1,6})\s+(.*)').firstMatch(line);
+                if (hMatch != null) {
+                  flushParagraph();
+                  flushList();
+                  final level = hMatch.group(1)!.length;
+                  final text = hMatch.group(2) ?? '';
+                  widgets.add(_headingToPw(level, _inlineMarkdownToPlain(text)));
+                  continue;
+                }
+
+                // Unordered list
+                final ulMatch = RegExp(r'^\s*[-\*\+]\s+(.*)').firstMatch(line);
+                if (ulMatch != null) {
+                  final item = ulMatch.group(1) ?? '';
+                  if (currentListType != 'ul') {
+                    flushParagraph();
+                    flushList();
+                    currentListType = 'ul';
+                  }
+                  buffer.add(item);
+                  continue;
+                }
+
+                // Ordered list
+                final olMatch = RegExp(r'^\s*\d+\.\s+(.*)').firstMatch(line);
+                if (olMatch != null) {
+                  final item = olMatch.group(1) ?? '';
+                  if (currentListType != 'ol') {
+                    flushParagraph();
+                    flushList();
+                    currentListType = 'ol';
+                  }
+                  buffer.add(item);
+                  continue;
+                }
+
+                // Leerzeile -> Absatzende
+                if (line.trim().isEmpty) {
+                  flushParagraph();
+                  flushList();
+                  continue;
+                }
+
+                // normale Textzeile -> Puffer
+                buffer.add(line);
+              }
+
+              // Flush am Ende
+              if (inCodeBlock) {
+                widgets.add(
+                  pw.Container(
+                    width: double.infinity,
+                    decoration: pw.BoxDecoration(
+                      color: PdfColors.grey200,
+                      borderRadius: pw.BorderRadius.circular(4),
+                    ),
+                    padding: const pw.EdgeInsets.all(8),
+                    child: pw.Text(codeBuffer.join('\n'), style: pw.TextStyle(font: pw.Font.courier())),
+                  ),
+                );
+              } else {
+                flushParagraph();
+                flushList();
+              }
+
+              // Falls keine Widgets, füge leeren Text hinzu
+              if (widgets.isEmpty) {
+                widgets.add(pw.Text(''));
+              }
+
+              return widgets;
+            },
+          ),
+        );
+
+        // Speichern und Drucken
+        final pdfBytes = await doc.save();
+        await Printing.layoutPdf(onLayout: (format) async => pdfBytes);
+
+    } catch (e) {
+      return false;
+    }
+
+    return true;
+  }
+
+  // Hilfsfunktionen
+
+  pw.Widget _headingToPw(int level, String text) {
+    final sizes = {1: 22.0, 2: 18.0, 3: 16.0, 4: 14.0, 5: 12.0, 6: 11.0};
+    final size = sizes[level] ?? 12.0;
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(top: 8, bottom: 4),
+      child: pw.Text(text, style: pw.TextStyle(fontSize: size, fontWeight: pw.FontWeight.bold)),
+    );
+  }
+
+  pw.Widget _paragraphToPw(String text) {
+    // Ersetze Inline-Markdown (**bold**, *italic*, `code`) durch einfache pw.RichText
+    final spans = _buildTextSpans(text);
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 6),
+      child: pw.RichText(text: pw.TextSpan(children: spans)),
+    );
+  }
+
+  String _inlineMarkdownToPlain(String s) {
+    // Entfernt einfache Markdown-Markierungen für Listeneinträge
+    var out = s.replaceAllMapped(RegExp(r'\*\*(.*?)\*\*'), (m) => m.group(1) ?? '');
+    out = out.replaceAllMapped(RegExp(r'\*(.*?)\*'), (m) => m.group(1) ?? '');
+    out = out.replaceAll('`', '');
+    return out;
+  }
+
+  List<pw.TextSpan> _buildTextSpans(String text) {
+    final spans = <pw.TextSpan>[];
+    var remaining = text;
+
+    // Einfacher Parser: **bold**, *italic*, `code`
+    final pattern = RegExp(r'(\*\*.*?\*\*|\*.*?\*|`.*?`)', dotAll: true);
+    final matches = pattern.allMatches(remaining).toList();
+
+    if (matches.isEmpty) {
+      spans.add(pw.TextSpan(text: remaining));
+      return spans;
+    }
+
+    var lastIndex = 0;
+    for (final m in matches) {
+      if (m.start > lastIndex) {
+        spans.add(pw.TextSpan(text: remaining.substring(lastIndex, m.start)));
+      }
+      final token = remaining.substring(m.start, m.end);
+      if (token.startsWith('**') && token.endsWith('**')) {
+        final inner = token.substring(2, token.length - 2);
+        spans.add(pw.TextSpan(text: inner, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)));
+      } else if (token.startsWith('*') && token.endsWith('*')) {
+        final inner = token.substring(1, token.length - 1);
+        spans.add(pw.TextSpan(text: inner, style: pw.TextStyle(fontStyle: pw.FontStyle.italic)));
+      } else if (token.startsWith('`') && token.endsWith('`')) {
+        final inner = token.substring(1, token.length - 1);
+        spans.add(pw.TextSpan(text: inner, style: pw.TextStyle(font: pw.Font.courier())));
+      } else {
+        spans.add(pw.TextSpan(text: token));
+      }
+      lastIndex = m.end;
+    }
+    if (lastIndex < remaining.length) {
+      spans.add(pw.TextSpan(text: remaining.substring(lastIndex)));
+    }
+    return spans;
+  }
+
+
   Future<bool> PrintBlockDetails(BuildContext context, LessonBlock block) async {
     // Header title
     String title = '${block.lessonName} - ${block.className} - ${block.schoolName}';

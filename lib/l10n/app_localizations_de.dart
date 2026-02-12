@@ -24,6 +24,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get showWorkplan => 'Öffne den Arbeitsplan';
 
   @override
+  String get notesTitle => 'Notizen';
+
+  @override
   String get menu => 'Menü';
 
   @override
@@ -43,6 +46,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get printWorkplan => 'Arbeitsplan drucken';
+
+  @override
+  String get printNotes => 'Notizen drucken';
 
   @override
   String get dataImported => 'Daten erfolgreich importiert';
@@ -205,6 +211,16 @@ class AppLocalizationsDe extends AppLocalizations {
       'Speichern der Vorschläge ist fehlgeschlagen';
 
   @override
+  String get saveNotesButton => 'Speichern';
+
+  @override
+  String get savedNotesData => 'Die Notiz Daten wurden gespeichert';
+
+  @override
+  String get failedToSaveNotesData =>
+      'Speichern der Notiz Daten ist fehlgeschlagen';
+
+  @override
   String get failedToCreateZipFile => 'Fehler beim erzeugen der ZIP-Datei';
 
   @override
@@ -250,4 +266,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get bothListsHidden =>
       'Bitte eine Liste wieder sichtbar machen (oben rechts)!';
+
+  @override
+  String get printingFailed => 'Printing failed';
+
+  @override
+  String get printingSuccess => 'Printing started';
 }

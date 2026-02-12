@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'Open the work plan'**
   String get showWorkplan;
 
+  /// No description provided for @notesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notesTitle;
+
   /// No description provided for @menu.
   ///
   /// In en, this message translates to:
@@ -169,6 +175,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Print work plan'**
   String get printWorkplan;
+
+  /// No description provided for @printNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Print notes'**
+  String get printNotes;
 
   /// No description provided for @dataImported.
   ///
@@ -470,6 +482,24 @@ abstract class AppLocalizations {
   /// **'Failed to save suggestions data'**
   String get failedToSaveRightData;
 
+  /// No description provided for @saveNotesButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveNotesButton;
+
+  /// No description provided for @savedNotesData.
+  ///
+  /// In en, this message translates to:
+  /// **'The notes data saved successfully'**
+  String get savedNotesData;
+
+  /// No description provided for @failedToSaveNotesData.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save notes data'**
+  String get failedToSaveNotesData;
+
   /// No description provided for @failedToCreateZipFile.
   ///
   /// In en, this message translates to:
@@ -553,6 +583,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please make one list visible again (top right)!'**
   String get bothListsHidden;
+
+  /// No description provided for @printingFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Drucken fehlgeschlagen'**
+  String get printingFailed;
+
+  /// No description provided for @printingSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Drucken gestartet'**
+  String get printingSuccess;
 }
 
 class _AppLocalizationsDelegate
