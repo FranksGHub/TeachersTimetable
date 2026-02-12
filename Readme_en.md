@@ -1,6 +1,8 @@
-## **The Timetable App Teachers_Timetable:**  
+## **The Timetable App - Teachers_Timetable:**  
   
 ### **Overview & First Steps**  
+The Teachers Timetable project offers a simple and user-friendly way to manage and organize the schedules of teachers. It allows teachers to track the tasks for each class. But of course this is not only for teachers...  
+
 - **Short Description:**  
 With this app, you can create and print your timetable, task lists, and notes on Windows and Android. Currently, the timetable consists of a table of 5 days × 6 blocks (hours). Clicking on one of the blocks takes you to the detailed view with configuration options.  
   

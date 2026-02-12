@@ -1,6 +1,8 @@
-## **Die Stundenplan APP Teachers_Timetable:**  
+## **Die Stundenplan APP - Teachers_Timetable:**  
   
 ### **Übersicht & Erste Schritte**  
+Das Projekt "Teachers Timetable" bietet eine sehr einfache und benutzerfreundliche Möglichkeit, die Stundenpläne von Lehrkräften zu verwalten und zu organisieren. Es ermöglicht Lehrkräften, die Aufgaben für jede Unterrichtsstunde zu verfolgen. Aber natürlich ist dies nicht nur für Lehrkräfte gedacht…  
+
 - **Kurzbeschreibung:**  
 Mit dieser App kannst du unter Windows und Android deinen Stundenplan, Aufgabenlisten und Notizen erstellen und ausdrucken. Momentan besteht der Stundenplan aus einer Tabelle von 5 Tagen × 6 Blöcke (Stunden). Ein Klick auf einen der Blöcke bringt dich in die detailierte Ansicht dieses Blocks mit den Konfigurationsmöglichkeiten.  
 
