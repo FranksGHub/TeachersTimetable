@@ -4,6 +4,7 @@
   "showTimetable": "Open the timetable",
   "showNotes": "Open the notes",
   "showWorkplan": "Open the work plan",
+  "notesTitle": "Notes",
   "menu": "Menu",
   "help": "Help",
   "editTitle": "Edit Title",
@@ -11,6 +12,7 @@
   "editTimes": "Edit Times",
   "printPdf": "Print timetable",
   "printWorkplan": "Print work plan",
+  "printNotes": "Print notes",
   "dataImported": "Data imported successfully",
   "failedToImportData": "Data import failed",
   "dataExported": "Data exported to {path}",
@@ -61,6 +63,9 @@
   "failedToLoadRightData": "Failed to load suggestions data",
   "failedToSaveLeftData": "Failed to save curent task data",
   "failedToSaveRightData": "Failed to save suggestions data",
+  "saveNotesButton": "Save",
+  "savedNotesData": "The notes data saved successfully",
+  "failedToSaveNotesData": "Failed to save notes data",
   "failedToCreateZipFile": "Failed to create zip file",
   "timetableBackup": "Backup all files into a zip file",
   "timetableBackupImport": "Import all files from a backup zip file",
@@ -74,5 +79,7 @@
   "fileNotFound": "Source file not found",
   "appNameWithSpaces": "Teachers Timetable App",
   "printingFooter": "Created with the Teachers Timetable app at {date}",
-  "bothListsHidden": "Please make one list visible again (top right)!"
+  "bothListsHidden": "Please make one list visible again (top right)!",
+  "printingFailed": "Drucken fehlgeschlagen",
+  "printingSuccess": "Drucken gestartet"
 }

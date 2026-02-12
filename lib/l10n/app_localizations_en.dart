@@ -24,6 +24,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showWorkplan => 'Open the work plan';
 
   @override
+  String get notesTitle => 'Notes';
+
+  @override
   String get menu => 'Menu';
 
   @override
@@ -43,6 +46,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get printWorkplan => 'Print work plan';
+
+  @override
+  String get printNotes => 'Print notes';
 
   @override
   String get dataImported => 'Data imported successfully';
@@ -199,6 +205,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToSaveRightData => 'Failed to save suggestions data';
 
   @override
+  String get saveNotesButton => 'Save';
+
+  @override
+  String get savedNotesData => 'The notes data saved successfully';
+
+  @override
+  String get failedToSaveNotesData => 'Failed to save notes data';
+
+  @override
   String get failedToCreateZipFile => 'Failed to create zip file';
 
   @override
@@ -242,4 +257,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get bothListsHidden =>
       'Please make one list visible again (top right)!';
+
+  @override
+  String get printingFailed => 'Drucken fehlgeschlagen';
+
+  @override
+  String get printingSuccess => 'Drucken gestartet';
 }
