@@ -41,7 +41,9 @@ In dieser Detailansicht sieht man, je nach Einstellung zuerst den Arbeitsplan mi
 ### **Detailseite - Die Block Ansicht**  
 Hier gibt es im Arbeitsplan eine Liste (die Aufgabenliste) für die geplanten, gerade in Arbeit befindlichen, oder schon erledigten Aufgaben und Arbeitsschritte, mit einer entsprechenden Status-Verwaltung (**P**lanung, **W**eiterarbeit, **F**ertig). Eine weitere, genauso aufgebaute, Liste (die Vorschlagsliste), die einmal erstellt, über die Jahre, immer gleich bleiben kann als Vorrat an möglichen Aufgaben. Aus der Vorschlagsliste können jederzeit Aufgaben und Arbeitsschritte in die Aufgabenliste übernommen werden.  
 Desweiteren können hier auch, über einen Menüpunkt, Notizen für den Block angezeigt werden. Die Reihenfolge der Anzeige Arbeitsplan / Notizen lässt sich auch im Menü ändern.  
-
+  
+Alle Möglichkeiten in dieser Ansicht werden weiter unten beschrieben.  
+  
 > **Die Einstellungen im Details Menü:**  
 > Die Aufgabenliste (linke Seite) kann versteckt / sichtbar gemacht werden  
 > Die Vorschlagsliste (rechte Seite) kann versteckt / sichtbar gemacht werden  
@@ -50,28 +52,26 @@ Desweiteren können hier auch, über einen Menüpunkt, Notizen für den Block an
 > Die Aufgaben können geöffnet werden (wenn gerade die Notizen angezeigt werden)  
 > Die Dateinamen und die Anzeigereihenfolge für die Listen und Notizen können geändert werden  
 > Die Texte und die Farbe des Blocks auf der Hauptseite können eingestellt werden  
-
-Alle Möglichkeiten in dieser Ansicht werden weiter unten beschrieben.  
   
-
+  
 ### **Detaillierte Bedienungsanleitung**
 
 - **Stundenplan-Verwaltung / Export-Import**  
 Über die Export / Import Funktion lässt sich jederzeit ein komplettes Backup der Daten und Einstellungen vornehmen. Das sollte auch regelmässig nach Änderungen getan werden. Die dabei entstehende ZIP-Datei mit Datum kann vom Benutzer gesichert aufbewahrt und jederzeit wieder importiert werden. Damit kann man auch die Jahrgänge verwalten oder verschiedene Farben und Einstellungen ausprobiere usw.. Außerdem lassen sich so ganz einfach die Daten zwischen der Windows und der Android APP austauschen. Die großen Änderungen zum Schuljahresbeginn können so mit der Windows Version leichter durchgeführt und das Ergebnis dann mit der Android APP weiter genutzt werden. Die APP Daten sind identisch, können sich aber von Version zu Version ändern. Auf allen Geräten sollte immer die selbe Version verwendet werden. Die Version ist im Menu der Startseite ganz oben zu sehen.  
-Beim Import werden nur die Dateien, die sich in der ZIP-Datei befinden auf dem Gerät importiert und damit die bisherigen Datein überschrieben. Es werden keine weiteren Dateien gelöscht. Enthällt die ZIP-Datei weniger Dateien als das importierende Gerät, dann bleiben diese Dateien erhalten. Das können fortgeschrittene Benutzer durch ändern der ZIP-Datei , allerdings auf eigene Gefahr, ausnutzen. Sollen alle Dateien gelöscht werden (Urzustand herstellen), dann geht das über die Android Bordmittel "APP-Info" und "Speicher löschen", oder mit dem Windows Datei Explorer im Verzeichnis "Dokumente" "Timetable" alle Dateien löschen. Vorher natürlich die APP schliessen.  
+Beim Import werden nur die Dateien, die sich in der ZIP-Datei befinden auf dem Gerät importiert und damit die bisherigen Datein überschrieben. Es werden keine weiteren Dateien gelöscht. Enthällt die ZIP-Datei weniger Dateien als das importierende Gerät, dann bleiben diese Dateien auf dem Gerät erhalten. Das können fortgeschrittene Benutzer durch das Ändern der ZIP-Datei ausnutzen, allerdings auf eigene Gefahr. Sollen alle Dateien gelöscht werden (Urzustand herstellen), dann geht das über die Android Bordmittel "APP-Info" und "Speicher löschen", oder mit dem Windows Datei Explorer im Verzeichnis "Dokumente" "Timetable" alle Dateien löschen. Vorher natürlich die APP schliessen.  
 
 - **Arbeitsplan - Aufgaben / Arbeiten verwalten**  
-  Der Arbeitsplan wurde ursprünglich in der App eingefügt, um einer Werken- und Gestalten Lehrerin die Möglichkeit zu geben, ihre Werkstücke mit den jeweiligen nötigen Arbeitsschritten zu planen und den Status der einzelnen Arbeitsschritte zu speichern. Also eine Art Wochenplan. Die Listen können natürlich auch ganz individuell verwendet werden. Dadurch, dass die Dateinamen, in denen die Listen ihre Einträge speichern und wieder laden, frei vergeben werden können, sind der Gestaltung was in dieser Datei oder Liste eingetragen wird keine Grenzen gesetzt? Das kann z.B. eine Aufgabenliste pro Unterichtsblock sein, das ist die Voreinstellung, weil der sich Dateiname aus dem Kürzel für das Unterrichtsfach, der Klasse und der Schule zusammensetzt, oder pro Wochentag, wenn der Dateiname zum Beispiel "Montag" lautet, oder Schulübergreifend pro Unterrichtseinheit, wenn der Dateiname nur das Unterrichtsfach enthällt. Letzteres ist auch die Voreinstellung für die Vorschlagslisten, weil die Aufgaben wahrscheinlich von der Jahrgangsstufe und dem Fach abhängig sind. Natürlich können durch mehrmalige Änderung des Dateinamens der Vorschlagsliste auch beliebige Aufgaben aus mehreren Listen in die Aufgabenliste übernommen werden usw..
-
-- **Status-Verwaltung in der Aufgabenliste nutzen**  
-In der Aufgabenliste gibt es vorne eine farbige Statusanzeige und einen Buchstaben für den aktuellen Status. Zur Zeit ist es die Farbe Gelb und ein "(P)" für in Planung, Gelb und ein "(W)" für weiterarbeiten und Grün und ein "(F)" für fertig. Wenn man auf den farbigen Kreis klickt, dann ändert sich der Status, in der Reihenfolge P, W, F und wieder P. Damit kann man leicht überschauen, welche Arbeitsschritte schon durchgeführt wurden und welche Arbeitsschritte für die jeweilige Aufgabe noch ausstehen. Sind alle Arbeitsschritte für eine Aufgabe fertig, dann wird diese Aufgabe beim Öffnen des Fensters zugeklappt dargestellt. Das erhöht die Übersicht.  
+  Der Arbeitsplan wurde ursprünglich in der App eingefügt, um einer Werken- und Gestalten Lehrerin die Möglichkeit zu geben, ihre Werkstücke mit den jeweiligen nötigen Arbeitsschritten zu planen und den Status der einzelnen Arbeitsschritte pro Klasse zu speichern. Also eine Art Wochenplan. Die Listen können natürlich auch ganz individuell verwendet werden. Dadurch, dass die Dateinamen, in denen die Listen ihre Einträge speichern und wieder laden, frei vergeben werden können, sind der Gestaltung was in dieser Datei oder Liste eingetragen wird keine Grenzen gesetzt? Das kann z.B. eine Aufgabenliste pro Unterichtsblock sein, das ist die Voreinstellung, weil der sich Dateiname aus dem Kürzel für das Unterrichtsfach, der Klasse und der Schule zusammensetzt, oder pro Wochentag, wenn der Dateiname für alle Blöcke am Montag zum Beispiel "Montag" lautet, oder Schulübergreifend pro Unterrichtseinheit, wenn der Dateiname nur das Unterrichtsfach enthällt. Letzteres ist auch die Voreinstellung für die Vorschlagslisten, weil die Aufgaben wahrscheinlich nur von der Jahrgangsstufe und dem Fach abhängig sind. Natürlich können durch mehrmalige Änderung des Dateinamens der Vorschlagsliste auch beliebige Aufgaben aus mehreren Listen in die Aufgabenliste übernommen werden usw..
 
 - **Weitere Schaltflächen in der Arbeitsplan Ansicht**  
-Mit der Schaltfläche "+ Aufgabe" lässt sich in der jweiligen Liste eine Aufgabe hinzufügen, die dann über die Aufwärts- / Abwärtspfeile verschoben werden kann.  
-Ist eine Aufgabe selektiert, dann kann über die "+ Arbeitsschritt" Schaltfläche unterhalb der selektierten Aufgabe ein weiterer Arbeitsschritt eingefügt und mit den zugehörigen Aufwärts- / Abwärtspfeilen verschoben werden.  
+Mit der Schaltfläche "+ Aufgabe" lässt sich in der jweiligen Liste eine Aufgabe hinzufügen, die dann über die Aufwärts- / Abwärtspfeile verschoben werden kann. Durch einen Doppelklick auf die Zeile kann der Text geändert werden. 
+Ist eine Aufgabe selektiert, dann kann über die "+ Arbeitsschritt" Schaltfläche unterhalb der selektierten Aufgabe ein weiterer Arbeitsschritt eingefügt und mit den zugehörigen Aufwärts- / Abwärtspfeilen verschoben werden. Durch einen Doppelklick auf die Zeile kann der Text geändert werden. 
 Mit den beiden Schaltflächen "<= Aufgabe" und "<= Schritt" können ganze Aufgaben oder einzelne Arbeitsschritte aus der rechten Liste in die linke Liste kopiert werden. Dafür muss rechts eine Aufgabe oder ein Arbeitsschritt selektiert sein und im Falle eines Arbeitsschrittes, muss links auch eine Aufgabe selektiert sein, um den Schritt dort einzufügen.  
 Mit dem roten Minuszeichen im Kreis kann eine ganze Aufgabe, oder ein Arbeitsschritt, aus einer Liste gelöscht werden.  
 Alle Änderungen werden automatisch gespeichert und lassen sich nicht rückgängig machen.  
+
+- **Status-Verwaltung in der Aufgabenliste nutzen**  
+In der Aufgabenliste gibt es vorne eine farbige Statusanzeige und einen Buchstaben für den aktuellen Status. Zur Zeit ist es die Farbe Gelb und ein "(P)" für in Planung, Gelb und ein "(W)" für weiterarbeiten und Grün und ein "(F)" für fertig. Wenn man auf den farbigen Kreis klickt, dann ändert sich der Status, in der Reihenfolge P, W, F und wieder P. Damit kann man leicht überschauen, welche Arbeitsschritte schon durchgeführt wurden und welche Arbeitsschritte für die jeweilige Aufgabe noch ausstehen. Sind alle Arbeitsschritte für eine Aufgabe fertig, dann wird diese Aufgabe beim Öffnen des Fensters zugeklappt dargestellt. Das erhöht die Übersicht.  
 
 
 
