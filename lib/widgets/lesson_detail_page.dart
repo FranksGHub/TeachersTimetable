@@ -1,9 +1,8 @@
-import 'package:pdf/pdf.dart';
 //import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_quill/quill_delta.dart';
-import 'package:pdf/src/widgets/document.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teachers_timetable/models/print.dart';
 import 'package:path/path.dart' as p;
@@ -15,6 +14,9 @@ import '../models/export_import_files.dart';
 import '../models/lesson_item.dart';
 import 'edit_block_dialog.dart';
 import 'edit_path_filenames_dialog.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
+import 'package:pdf/src/widgets/document.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_quill_to_pdf/flutter_quill_to_pdf.dart';
@@ -70,7 +72,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     if(widget.block.showNotesBeforeWorkplan) {
       _loadNotesData();
     } else {
-      if (!widget.block.hideLeftList) { _loadLeftData(); }
+      if (!widget.block.hideLeftList || !widget.block.hideRightList) { _loadLeftData(); }
       if (!widget.block.hideRightList) { _loadRightData(); }
     }
   }
@@ -162,8 +164,13 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   Future<void> _printNotes() async {
     // Erstellt ein PDF-Dokument aus dem Quill-Inhalt
+    final fontRegular = pw.Font.ttf(await rootBundle.load('lib/assets/Roboto-Regular.ttf')); 
+    final fontBold = pw.Font.ttf(await rootBundle.load('lib/assets/Roboto-Bold.ttf'));
+    final fontItalic = pw.Font.ttf(await rootBundle.load('lib/assets/Roboto-Italic.ttf'));
+    final theme = pw.ThemeData.withFont( base: fontRegular, bold: fontBold, italic: fontItalic);
+
     final Delta delta = controllerQuill.document.toDelta();
-    final converter = await PDFConverter(pageFormat: PDFPageFormat.a4, document: delta, fallbacks: []);
+    final converter = await PDFConverter(pageFormat: PDFPageFormat.a4, document: delta, themeData: theme, fallbacks: []);
     final doc = await converter.createDocument();
     if(doc != null) {
       final printDoc = await doc.save();
@@ -235,8 +242,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       if (leftList) {
         widget.block.hideLeftList = !widget.block.hideLeftList;
         if (widget.block.hideLeftList) {
-          leftItems.clear();
-          leftExpanded.clear();
+          //leftItems.clear();
+          //leftExpanded.clear();
           selectedLeftIndex = null;
         } else {
           _loadLeftData();
@@ -261,7 +268,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     if(showNotesIsActive) {
       _loadNotesData();
     } else {
-      if (!widget.block.hideLeftList) { _loadLeftData(); }
+      if (!widget.block.hideLeftList || !widget.block.hideRightList) { _loadLeftData(); }
       if (!widget.block.hideRightList) { _loadRightData(); }
     }
   }
@@ -282,7 +289,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               widget.block.className = updatedBlock.className;
               widget.block.schoolName = updatedBlock.schoolName;              
             });
-            if (!widget.block.hideLeftList) { _loadLeftData(); }
+            if (!widget.block.hideLeftList || !widget.block.hideRightList) { _loadLeftData(); }
             if (!widget.block.hideRightList) { _loadRightData(); }
           }
         },
@@ -307,7 +314,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               widget.block.suggestionsFilename = updatedBlock.suggestionsFilename;
               widget.block.notesFilename = updatedBlock.notesFilename;
               widget.block.showNotesBeforeWorkplan = updatedBlock.showNotesBeforeWorkplan;});
-            if (!widget.block.hideLeftList) { _loadLeftData(); }
+            if (!widget.block.hideLeftList || !widget.block.hideRightList) { _loadLeftData(); }
             if (!widget.block.hideRightList) { _loadRightData(); }
           }
         },
@@ -448,7 +455,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   const Spacer(),
 
                 // Copy from right list buttons
-                if(!widget.block.hideRightList && !widget.block.hideLeftList && !showNotesIsActive)
+                if(!widget.block.hideRightList && !showNotesIsActive)
                   ElevatedButton(
                     onPressed: selectedRightIndex != null ? () {
                       var item = rightItems[selectedRightIndex!];
@@ -472,7 +479,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                       } : null,
                     child: Text(AppLocalizations.of(context)!.copySubitemToLeft),
                   ),
-                if(!widget.block.hideRightList && !widget.block.hideLeftList && !showNotesIsActive)
+                if(!widget.block.hideRightList && !showNotesIsActive)
                   const Spacer(),
 
                 // Right list buttons Add Item, Add Subitem
@@ -835,8 +842,32 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                 Expanded(
                   child: Column(
                     children: [
-                      Text(' xxx', style: const TextStyle(fontSize: 12)),
-                    ],
+                      // Die Toolbar mit allen Buttons
+                      SizedBox( width: double.infinity, // to fill the whole line and make the editor show up in the next line
+                        child: quill.QuillSimpleToolbar(
+                          controller: controllerQuill,
+                          config: const quill.QuillSimpleToolbarConfig( showAlignmentButtons: true, showBackgroundColorButton: true, 
+                                                                        showColorButton: true, showListNumbers: true, showListBullets: true, 
+                                                                        showListCheck: true, showCodeBlock: true, showQuote: true, 
+                                                                        showLink: true, showUndo: true, showRedo: true, 
+                                                                        showBoldButton: true, showItalicButton: true, showUnderLineButton: true, 
+                                                                        showStrikeThrough: true, showInlineCode: true, showClearFormat: true,
+                                                                        showFontSize: true, showSearchButton: true,
+                                                                        showClipboardCopy: true, showClipboardCut: true, showClipboardPaste: true,
+                                                                        showIndent: true, showFontFamily: false)
+                        ),
+                      ),
+                    // Der eigentliche Editor
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        child: quill.QuillEditor.basic(
+                          controller: controllerQuill,
+                          config: const quill.QuillEditorConfig( placeholder: 'Schreibe etwas...'),
+                        ),
+                      ),
+                    )
+                  ],
                 )),
               ]
           ),
