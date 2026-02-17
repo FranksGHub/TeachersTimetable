@@ -127,9 +127,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  
   assets:
     - Readme_de.md
     - Readme_en.md
-    - lib/assets/NotoSans-Regular.ttf
-    - lib/assets/NotoSans-Bold.ttf
-    - lib/assets/NotoSans-Italic.ttf
+    - lib/assets/NotoSans_Regular.ttf
+    - lib/assets/NotoSans_Bold.ttf
+    - lib/assets/NotoSans_Italic.ttf

@@ -1,6 +1,6 @@
 //import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_quill/quill_delta.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,10 +14,10 @@ import '../models/export_import_files.dart';
 import '../models/lesson_item.dart';
 import 'edit_block_dialog.dart';
 import 'edit_path_filenames_dialog.dart';
-import 'package:pdf/pdf.dart';
-import 'package:printing/printing.dart';
-import 'package:pdf/src/widgets/document.dart';
-import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+//import 'package:pdf/pdf.dart';
+//import 'package:printing/printing.dart';
+//import 'package:pdf/src/widgets/document.dart';
+//import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_quill_to_pdf/flutter_quill_to_pdf.dart';
 
@@ -164,21 +164,29 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   Future<void> _printNotes() async {
     // Erstellt ein PDF-Dokument aus dem Quill-Inhalt
-    final fontRegular = pw.Font.ttf(await rootBundle.load('lib/assets/Roboto-Regular.ttf')); 
-    final fontBold = pw.Font.ttf(await rootBundle.load('lib/assets/Roboto-Bold.ttf'));
-    final fontItalic = pw.Font.ttf(await rootBundle.load('lib/assets/Roboto-Italic.ttf'));
-    final theme = pw.ThemeData.withFont( base: fontRegular, bold: fontBold, italic: fontItalic);
+    try {
+      final pw.Font fontRegular = pw.Font.ttf(await rootBundle.load('lib/assets/NotoSans_Regular.ttf')); 
+      final pw.Font fontBold = pw.Font.ttf(await rootBundle.load('lib/assets/NotoSans_Bold.ttf'));
+      final pw.Font fontItalic = pw.Font.ttf(await rootBundle.load('lib/assets/NotoSans_Italic.ttf'));
 
-    final Delta delta = controllerQuill.document.toDelta();
-    final converter = await PDFConverter(pageFormat: PDFPageFormat.a4, document: delta, themeData: theme, fallbacks: []);
-    final doc = await converter.createDocument();
-    if(doc != null) {
-      final printDoc = await doc.save();
-      if( await PrintPdf().PrintNotes(context, printDoc) == false) {
-        _showError(AppLocalizations.of(context)!.printingFailed);
-        return;
+      final pw.ThemeData theme = pw.ThemeData.withFont( base: fontRegular, bold: fontBold, italic: fontItalic);
+
+      final Delta delta = controllerQuill.document.toDelta();
+      final converter = await PDFConverter(pageFormat: PDFPageFormat.a4, document: delta, themeData: theme, fallbacks: []);
+
+      final doc = await converter.createDocument();
+
+      if(doc != null) {
+        final printDoc = await doc.save();
+        if( await PrintPdf().PrintNotes(context, printDoc) == false) {
+          _showError(AppLocalizations.of(context)!.printingFailed);
+          return;
+        }
+        _showInfo(AppLocalizations.of(context)!.printingSuccess);
       }
-      _showInfo(AppLocalizations.of(context)!.printingSuccess);
+    } catch (e) {
+      _showError('Failed to load fonts: $e');
+      return;
     }
   }
 
