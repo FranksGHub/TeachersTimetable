@@ -109,3 +109,210 @@ Ich möchte aus meiner flutter / dart app ein pdf zum Drucker schicken. Die Seit
 Step 9 Menu change in lesson_datail_page
 The file lesson_datail_page.dart contains four buttons for printing, showing/hiding the two lists, and accessing settings. These buttons should be moved to a menu that looks and feels like the drawer menu in the page timetable_page.dart. The icons should be copied to the menu.
 
+
+Step save on close
+Kann ich bei einer flutter Seite feststellen, wenn die Seite geschlossen werden soll und vorher noch die Daten sichern?
+
+onPopInvokedWithResult
+Damit bist du zukunftssicher und kompatibel mit:
+
+Android Predictive Back
+
+Windows/macOS/Linux Fenster‑Schließen
+
+Navigator.pop()
+
+AppBar‑Back‑Button
+
+Ich zeige dir jetzt die korrekte, moderne Lösung, die zuverlässig deine Daten speichert, bevor die Seite geschlossen wird.
+
+🎯 1. PopScope mit onPopInvokedWithResult (neue API)
+So sieht die empfohlene Implementierung aus:
+return PopScope(
+  canPop: true,
+  onPopInvokedWithResult: (didPop, result) async {
+    // Egal ob die Seite wirklich geschlossen wurde oder nicht:
+    await saveData();
+  },
+  child: Scaffold(
+    appBar: AppBar(title: Text("Notizen")),
+    body: ...
+  ),
+);
+Was passiert hier?
+didPop == true → Seite wurde bereits geschlossen
+didPop == false → Nutzer wollte schließen, aber Navigation hat es verhindert
+in beiden Fällen speicherst du sicher
+
+2. Windows/macOS/Linux: Fenster‑Schließen abfangen
+PopScope reagiert NICHT, wenn der Nutzer das Fenster über das X schließt.
+
+Dafür brauchst du:
+
+WidgetsBindingObserver
+class NotesPageState extends State<NotesPage> with WidgetsBindingObserver {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    saveData(); // Sicherheitshalber
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive) {
+      saveData();
+    }
+  }
+}
+
+3. Für alle Plattformen kombiniert
+class NotesPage extends StatefulWidget {
+  @override
+  State<NotesPage> createState() => _NotesPageState();
+}
+
+class _NotesPageState extends State<NotesPage> with WidgetsBindingObserver {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    saveData();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive) {
+      saveData();
+    }
+  }
+
+  Future<void> saveData() async {
+    // deine Speicherlogik
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) async {
+        await saveData();
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text("Notizen")),
+        body: ...
+      ),
+    );
+  }
+}
+
+Step Kann ich erkennen, ob die flutter_quill Text Daten geändert wurden?
+1. Änderungen erkennen über controller.document.changes (empfohlen)
+Der QuillController besitzt einen Stream, der jedes Delta‑Update liefert.
+Damit erkennst du jede Textänderung, egal ob Tippen, Löschen, Einfügen, Undo, Redo.
+
+bool hasChanged = false;
+
+@override
+void initState() {
+  super.initState();
+
+  controllerQuill = QuillController.basic();
+
+  controllerQuill.document.changes.listen((event) {
+    if (event.item3 == ChangeSource.LOCAL) {
+      hasChanged = true;
+    }
+  });
+}
+
+Future<void> saveIfNeeded() async {
+  if (hasChanged) {
+    await saveData();
+    hasChanged = false;
+  }
+}
+
+@override
+Widget build(BuildContext context) {
+  return PopScope(
+    canPop: true,
+    onPopInvokedWithResult: (didPop, result) async {
+      await saveIfNeeded();
+    },
+    child: Scaffold(
+      appBar: AppBar(title: Text("Notizen")),
+      body: QuillEditor.basic(
+        controller: controllerQuill,
+        readOnly: false,
+      ),
+    ),
+  );
+}
+
+
+Frank, jetzt haben wir den entscheidenden Punkt gefunden:
+In deiner Version von flutter_quill (11.x) wird weder controller.document.changes noch controller.changes ausgelöst, solange du den Controller vor dem Laden der Daten initialisierst.
+
+Das ist ein bekanntes Verhalten in Quill 10–11:
+👉 Wenn du den Controller mit QuillController.basic() erstellst und danach das Dokument ersetzt, feuern keine Events.
+
+→ Der Listener hängt noch am alten Controller  
+→ Der neue Controller hat keinen Listener  
+→ Es kommt nie ein Event
+
+Controller in loadPrefsAndData() erstellen und erst dann Listener setzen
+Future<void> loadPrefsAndData() async {
+  final delta = await loadDeltaFromJson(); // dein gespeicherter Text
+
+  controllerQuill = quill.QuillController(
+    document: quill.Document.fromDelta(delta),
+    selection: const TextSelection.collapsed(offset: 0),
+  );
+
+  // 🔥 Listener HIER setzen – nicht vorher!
+  controllerQuill.changes.listen((event) {
+    if (event.source == quill.ChangeSource.local) {
+      hasNoteChanges = true;
+      print("Quill wurde geändert");
+    }
+  });
+
+  setState(() {});
+}
+
+🟦 Alternative: Wenn du unbedingt basic() nutzen willst
+Dann musst du das Dokument in den bestehenden Controller einfügen, statt den Controller zu ersetzen:
+controllerQuill = quill.QuillController.basic();
+
+controllerQuill.document.replace(
+  0,
+  controllerQuill.document.length,
+  loadedDelta,
+);
+
+
+
+⭐ Bonus: Nur echte Textänderungen zählen
+controllerQuill.changes.listen((event) {
+  if (event.source == quill.ChangeSource.local &&
+      event.change.isNotEmpty) {
+    hasNoteChanges = true;
+  }
+});

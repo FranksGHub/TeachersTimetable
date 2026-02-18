@@ -1,7 +1,12 @@
 //import 'package:pdf/widgets.dart' as pw;
+//import 'dart:math';
+//import 'package:markdown/markdown.dart';
+//import 'package:pdf/pdf.dart';
+//import 'package:printing/printing.dart';
+//import 'package:pdf/src/widgets/document.dart';
+//import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_quill/quill_delta.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teachers_timetable/models/print.dart';
@@ -14,10 +19,7 @@ import '../models/export_import_files.dart';
 import '../models/lesson_item.dart';
 import 'edit_block_dialog.dart';
 import 'edit_path_filenames_dialog.dart';
-//import 'package:pdf/pdf.dart';
-//import 'package:printing/printing.dart';
-//import 'package:pdf/src/widgets/document.dart';
-//import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_quill_to_pdf/flutter_quill_to_pdf.dart';
 
@@ -33,7 +35,7 @@ class LessonDetailPage extends StatefulWidget {
   State<LessonDetailPage> createState() => _LessonDetailPageState();
 }
 
-class _LessonDetailPageState extends State<LessonDetailPage> {
+class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBindingObserver {
   late SharedPreferences prefs;
   late String dataPath;
   List<LessonItem> leftItems = <LessonItem>[];
@@ -43,21 +45,32 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   int? selectedLeftIndex;
   int? selectedRightIndex;
   int? selectedRightSubIndex;
-  bool showNotesIsActive = false;
   bool isLoading = false;
   bool isPreview = false;
+  bool showNotesIsActive = false;
+  bool hasNoteChanges = false;
+  bool notesLoaded = false;
+  bool listDataLoaded = false;
   quill.QuillController controllerQuill = quill.QuillController.basic();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     loadPrefsAndData();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this); 
     controllerQuill.dispose();
     super.dispose();
+  }
+
+  @override void didChangeAppLifecycleState(AppLifecycleState state) { 
+    if (hasNoteChanges && (state == AppLifecycleState.detached || state == AppLifecycleState.inactive)) { 
+      _saveNotesData();
+    } 
   }
 
   Future<void> loadPrefsAndData() async {
@@ -69,12 +82,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       _editBlock();
     }
 
-    if(widget.block.showNotesBeforeWorkplan) {
-      _loadNotesData();
-    } else {
-      if (!widget.block.hideLeftList || !widget.block.hideRightList) { _loadLeftData(); }
-      if (!widget.block.hideRightList) { _loadRightData(); }
-    }
+    if(widget.block.showNotesBeforeWorkplan) { _loadNotesData(); } 
+    else { _loadWorkplanData(); }
   }
 
   String getFilePath(String fileName) {
@@ -111,10 +120,38 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       _showError(AppLocalizations.of(context)!.failedToLoadNotesData + ': $e');
     }
 
+    // set listener to track changes for auto-saving when app is closed
+    // the listener has to set AFTER loading the quill document, otherwise it would trigger on the old, not visible, document!
+    controllerQuill.changes.listen((event) {
+      if (event.source == quill.ChangeSource.local) {
+        hasNoteChanges = true;
+      }
+    });
+
+    hasNoteChanges = false;
+    notesLoaded = true;
     setState(() => isLoading = false);
+    // setState(() {});
   }
 
-  void _loadRightData() {
+  void _emptyList(bool rightList, bool leftList) {
+    setState(() {
+      if (rightList) {
+        rightItems.clear();
+        rightExpanded.clear();
+        selectedRightIndex = null;
+        selectedRightSubIndex = null;
+      }
+      if (leftList) {
+        leftItems.clear();
+        leftExpanded.clear();
+        selectedLeftIndex = null;
+      }
+    });
+  }
+
+  void _loadWorkplanData() {
+    // load the right list data from file
     try {
       String filePath = widget.block.suggestionsFilename.length == 0 ? getFilePath(getDefaultRightFilename()) : getFilePath(widget.block.suggestionsFilename + '.json');
       if (File(filePath).existsSync()) {
@@ -127,12 +164,15 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           rightExpanded = rightItems.map((_) => false).toList();
         });
       }
+      else {  // empty list if no file exists
+        _emptyList(true, false);
+      }
     } catch (e) {
       _showError(AppLocalizations.of(context)!.failedToLoadRightData + ': $e');
+      _emptyList(true, false);
     }
-  }
 
-  void _loadLeftData() {
+    // load the left list data from file
     try {
       String filePath = widget.block.workplanFilename.length == 0 ? getFilePath(getDefaultLeftFilename()) : getFilePath(widget.block.workplanFilename + '.json');
       if (File(filePath).existsSync()) {
@@ -145,9 +185,16 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           leftExpanded = leftItems.map((item) => !item.subitems.every((s) => s.status == '(F)')).toList();
         });
       }
+      else {  // empty list if no file exists
+        _emptyList(false, true);
+      } 
     } catch (e) {
       _showError(AppLocalizations.of(context)!.failedToLoadLeftData + ': $e');
+      _emptyList(false, true);
     }
+
+    listDataLoaded = true;
+    setState(() {});
   }
 
   void _saveNotesData() {
@@ -156,6 +203,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       final jsonData = {"document": controllerQuill.document.toDelta().toJson()};
       final jsonString = jsonEncode(jsonData);
       File(filePath).writeAsStringSync(jsonString);
+      hasNoteChanges = false;
       _showInfo(AppLocalizations.of(context)!.savedNotesData);
     } catch (e) {
       _showError(AppLocalizations.of(context)!.failedToSaveNotesData + ': $e');
@@ -249,23 +297,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     setState(() {
       if (leftList) {
         widget.block.hideLeftList = !widget.block.hideLeftList;
-        if (widget.block.hideLeftList) {
-          //leftItems.clear();
-          //leftExpanded.clear();
-          selectedLeftIndex = null;
-        } else {
-          _loadLeftData();
-        }
+        if (!widget.block.hideLeftList && !listDataLoaded) { _loadWorkplanData(); }
       } else {
         widget.block.hideRightList = !widget.block.hideRightList;
-        if (widget.block.hideRightList) {
-          rightItems.clear();
-          rightExpanded.clear();
-          selectedRightIndex = null;
-          selectedRightSubIndex = null;
-        } else {
-          _loadRightData();
-        }
+        if (!widget.block.hideRightList && !listDataLoaded) { _loadWorkplanData(); }
       }
     });
     widget.onSave(widget.block);
@@ -273,12 +308,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void _switchNotesVisibility() {
     showNotesIsActive = !showNotesIsActive;
-    if(showNotesIsActive) {
-      _loadNotesData();
-    } else {
-      if (!widget.block.hideLeftList || !widget.block.hideRightList) { _loadLeftData(); }
-      if (!widget.block.hideRightList) { _loadRightData(); }
-    }
+    if(showNotesIsActive && !notesLoaded) { _loadNotesData(); } 
+    if(!showNotesIsActive && hasNoteChanges) { _saveNotesData(); }
+    if(!showNotesIsActive && !listDataLoaded) { _loadWorkplanData(); }
+    setState(() {});
   }
 
   void _editBlock() {
@@ -287,7 +320,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       builder: (context) => EditBlockDialog(
         block: widget.block,
         onSave: (updatedBlock) {
-          widget.onSave(updatedBlock);
           // Reload if names changed
           if( widget.block.lessonName != updatedBlock.lessonName || 
               widget.block.className != updatedBlock.className || 
@@ -297,8 +329,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               widget.block.className = updatedBlock.className;
               widget.block.schoolName = updatedBlock.schoolName;              
             });
-            if (!widget.block.hideLeftList || !widget.block.hideRightList) { _loadLeftData(); }
-            if (!widget.block.hideRightList) { _loadRightData(); }
+            
+            widget.onSave(widget.block);
+
+            // reload data with new names, if data are already visible
+            if (listDataLoaded) { _loadWorkplanData(); }
+            if (notesLoaded) { _loadNotesData(); }
           }
         },
       ),
@@ -311,7 +347,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       builder: (context) => EditPathFilenamesDialog(
         block: widget.block,
         onSave: (updatedBlock) {
-          widget.onSave(updatedBlock);
           // Reload if names changed
           if( widget.block.workplanFilename != updatedBlock.workplanFilename || 
               widget.block.suggestionsFilename != updatedBlock.suggestionsFilename || 
@@ -322,8 +357,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               widget.block.suggestionsFilename = updatedBlock.suggestionsFilename;
               widget.block.notesFilename = updatedBlock.notesFilename;
               widget.block.showNotesBeforeWorkplan = updatedBlock.showNotesBeforeWorkplan;});
-            if (!widget.block.hideLeftList || !widget.block.hideRightList) { _loadLeftData(); }
-            if (!widget.block.hideRightList) { _loadRightData(); }
+
+            widget.onSave(widget.block);
+            
+            // reload data with new names, if data are already visible
+            if (listDataLoaded) { _loadWorkplanData(); }
+            if (notesLoaded) { _loadNotesData(); }
           }
         },
       ),
@@ -332,7 +371,14 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: true, // page may be closed
+      onPopInvokedWithResult: (didPop, result) async {
+        if(hasNoteChanges) {
+          _saveNotesData();
+        }
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: showNotesIsActive ? 
           Text(AppLocalizations.of(context)!.notesTitle + ':   ' + widget.block.lessonName + ' - ' + widget.block.className + ' - ' + widget.block.schoolName) : 
@@ -882,8 +928,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           )
         ]
       )
-    );
-
+    )
+   );
   }
-
 }
