@@ -76,7 +76,47 @@ class AppLocalizationsDe extends AppLocalizations {
   String get schoolName => 'Schulname';
 
   @override
-  String get roomNumber => 'Raumnummer';
+  String get className => 'Klassenname';
+
+  @override
+  String get editLessonName => 'Unterrichtsname bearbeiten';
+
+  @override
+  String get editClassName => 'Klasse bearbeiten';
+
+  @override
+  String get editSchoolName => 'Schulname bearbeiten';
+
+  @override
+  String get editBlockColor => 'Hintergrund Farbe ändern';
+
+  @override
+  String get editWorkplanFilename => 'Arbeitsplan Dateinamen bearbeiten';
+
+  @override
+  String get editSuggestionsFilename => 'Vorschlags Dateinamen bearbeiten';
+
+  @override
+  String get editNotesFilename => 'Notizen Dateinamen bearbeiten';
+
+  @override
+  String get workplanFilename => 'Dateiname des Arbeitsplans';
+
+  @override
+  String get suggestionsFilename => 'Dateiname der Vorschläge';
+
+  @override
+  String get notesFilename => 'Dateiname der Notizen';
+
+  @override
+  String get editFilenames => 'Dateinamen bearbeiten';
+
+  @override
+  String get showNotesBeforeWorkplan =>
+      'Zeige Notizen immer vor dem Arbeitsplan';
+
+  @override
+  String get editShowNotesBeforeWorkplan => 'Notizen oder Arbeitsplan zuerst?';
 
   @override
   String get save => 'Speichern';
@@ -97,26 +137,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editBlock => 'Block bearbeiten';
 
   @override
-  String get editFilenames => 'Dateinamen bearbeiten';
-
-  @override
-  String get workplanFilename => 'Dateiname des Arbeitsplans';
-
-  @override
-  String get suggestionsFilename => 'Dateiname der Vorschläge';
-
-  @override
-  String get notesFilename => 'Dateiname der Notizen';
-
-  @override
-  String get showNotesBeforeWorkplan =>
-      'Zeige Notizen immer vor dem Arbeitsplan';
-
-  @override
   String get color => 'Farbe:';
-
-  @override
-  String get className => 'Klassenname';
 
   @override
   String get schoolNameLabel => 'Schulname';
