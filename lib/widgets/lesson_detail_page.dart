@@ -366,20 +366,20 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
               }
               break;
               case 'workplanFilename':
-              if(widget.block.workplanFilename != currentTextValue && currentTextValue != getDefaultLeftFilename()) {
-                widget.block.workplanFilename = currentTextValue;
+              if(widget.block.workplanFilename != currentTextValue) {
+                widget.block.workplanFilename = (currentTextValue == getDefaultLeftFilename() || currentTextValue.length == 0) ? '' : currentTextValue;
                 widget.onSave(widget.block);
               }
               break;
               case 'suggestionsFilename':
-              if(widget.block.suggestionsFilename != currentTextValue && currentTextValue != getDefaultRightFilename()) {
-                widget.block.suggestionsFilename = currentTextValue;
+              if(widget.block.suggestionsFilename != currentTextValue) {
+                widget.block.suggestionsFilename = (currentTextValue == getDefaultRightFilename() || currentTextValue.length == 0) ? '' : currentTextValue;
                 widget.onSave(widget.block);
               }
               break;
               case 'notesFilename':
-              if(widget.block.notesFilename != currentTextValue && currentTextValue != getDefaultNotesFilename()) {
-                widget.block.notesFilename = currentTextValue;
+              if(widget.block.notesFilename != currentTextValue) {
+                widget.block.notesFilename = (currentTextValue == getDefaultNotesFilename() || currentTextValue.length == 0) ? '' : currentTextValue;
                 widget.onSave(widget.block);
               }
               break;
