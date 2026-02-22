@@ -24,6 +24,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showWorkplan => 'Open the work plan';
 
   @override
+  String get notesTitle => 'Notes';
+
+  @override
   String get menu => 'Menu';
 
   @override
@@ -43,6 +46,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get printWorkplan => 'Print work plan';
+
+  @override
+  String get printNotes => 'Print notes';
 
   @override
   String get dataImported => 'Data imported successfully';
@@ -70,7 +76,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get schoolName => 'School Name';
 
   @override
-  String get roomNumber => 'Room Number';
+  String get className => 'Class Name';
+
+  @override
+  String get editLessonName => 'Edit Lesson Name';
+
+  @override
+  String get editClassName => 'Edit Class Name';
+
+  @override
+  String get editSchoolName => 'Edit School Name';
+
+  @override
+  String get editBlockColor => 'Set Background Color';
+
+  @override
+  String get editWorkplanFilename => 'Work plan filename';
+
+  @override
+  String get editSuggestionsFilename => 'Suggestions filename';
+
+  @override
+  String get editNotesFilename => 'Notes filename';
+
+  @override
+  String get workplanFilename => 'Work plan filename';
+
+  @override
+  String get suggestionsFilename => 'Suggestions filename';
+
+  @override
+  String get notesFilename => 'Notes filename';
+
+  @override
+  String get editFilenames => 'Edit filenames';
+
+  @override
+  String get showNotesBeforeWorkplan => 'Always show notes before work plan';
+
+  @override
+  String get editShowNotesBeforeWorkplan => 'Notizen oder Arbeitsplan zuerst?';
 
   @override
   String get save => 'Save';
@@ -91,25 +136,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editBlock => 'Edit Block';
 
   @override
-  String get editFilenames => 'Edit filenames';
-
-  @override
-  String get workplanFilename => 'Work plan filename only';
-
-  @override
-  String get suggestionsFilename => 'Suggestions filename only';
-
-  @override
-  String get notesFilename => 'Notes filename only';
-
-  @override
-  String get showNotesBeforeWorkplan => 'Always show notes before work plan';
-
-  @override
   String get color => 'Color:';
-
-  @override
-  String get className => 'Class Name';
 
   @override
   String get schoolNameLabel => 'School Name';
@@ -199,6 +226,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToSaveRightData => 'Failed to save suggestions data';
 
   @override
+  String get saveNotesButton => 'Save';
+
+  @override
+  String get savedNotesData => 'The notes data saved successfully';
+
+  @override
+  String get failedToSaveNotesData => 'Failed to save notes data';
+
+  @override
   String get failedToCreateZipFile => 'Failed to create zip file';
 
   @override
@@ -242,4 +278,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get bothListsHidden =>
       'Please make one list visible again (top right)!';
+
+  @override
+  String get printingFailed => 'Drucken fehlgeschlagen';
+
+  @override
+  String get printingSuccess => 'Drucken gestartet';
 }

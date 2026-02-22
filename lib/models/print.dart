@@ -9,8 +9,18 @@ import '../models/lesson_item.dart';
 import '../models/export_import_files.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 
 class PrintPdf {
+
+  Future<bool> PrintNotes(BuildContext context, Uint8List doc) async {
+    try {
+      await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => doc);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 
   Future<bool> PrintBlockDetails(BuildContext context, LessonBlock block) async {
     // Header title

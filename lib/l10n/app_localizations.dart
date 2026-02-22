@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'Open the work plan'**
   String get showWorkplan;
 
+  /// No description provided for @notesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notesTitle;
+
   /// No description provided for @menu.
   ///
   /// In en, this message translates to:
@@ -169,6 +175,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Print work plan'**
   String get printWorkplan;
+
+  /// No description provided for @printNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Print notes'**
+  String get printNotes;
 
   /// No description provided for @dataImported.
   ///
@@ -212,11 +224,89 @@ abstract class AppLocalizations {
   /// **'School Name'**
   String get schoolName;
 
-  /// No description provided for @roomNumber.
+  /// No description provided for @className.
   ///
   /// In en, this message translates to:
-  /// **'Room Number'**
-  String get roomNumber;
+  /// **'Class Name'**
+  String get className;
+
+  /// No description provided for @editLessonName.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Lesson Name'**
+  String get editLessonName;
+
+  /// No description provided for @editClassName.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Class Name'**
+  String get editClassName;
+
+  /// No description provided for @editSchoolName.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit School Name'**
+  String get editSchoolName;
+
+  /// No description provided for @editBlockColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Background Color'**
+  String get editBlockColor;
+
+  /// No description provided for @editWorkplanFilename.
+  ///
+  /// In en, this message translates to:
+  /// **'Work plan filename'**
+  String get editWorkplanFilename;
+
+  /// No description provided for @editSuggestionsFilename.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions filename'**
+  String get editSuggestionsFilename;
+
+  /// No description provided for @editNotesFilename.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes filename'**
+  String get editNotesFilename;
+
+  /// No description provided for @workplanFilename.
+  ///
+  /// In en, this message translates to:
+  /// **'Work plan filename'**
+  String get workplanFilename;
+
+  /// No description provided for @suggestionsFilename.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions filename'**
+  String get suggestionsFilename;
+
+  /// No description provided for @notesFilename.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes filename'**
+  String get notesFilename;
+
+  /// No description provided for @editFilenames.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit filenames'**
+  String get editFilenames;
+
+  /// No description provided for @showNotesBeforeWorkplan.
+  ///
+  /// In en, this message translates to:
+  /// **'Always show notes before work plan'**
+  String get showNotesBeforeWorkplan;
+
+  /// No description provided for @editShowNotesBeforeWorkplan.
+  ///
+  /// In en, this message translates to:
+  /// **'Notizen oder Arbeitsplan zuerst?'**
+  String get editShowNotesBeforeWorkplan;
 
   /// No description provided for @save.
   ///
@@ -254,47 +344,11 @@ abstract class AppLocalizations {
   /// **'Edit Block'**
   String get editBlock;
 
-  /// No description provided for @editFilenames.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit filenames'**
-  String get editFilenames;
-
-  /// No description provided for @workplanFilename.
-  ///
-  /// In en, this message translates to:
-  /// **'Work plan filename only'**
-  String get workplanFilename;
-
-  /// No description provided for @suggestionsFilename.
-  ///
-  /// In en, this message translates to:
-  /// **'Suggestions filename only'**
-  String get suggestionsFilename;
-
-  /// No description provided for @notesFilename.
-  ///
-  /// In en, this message translates to:
-  /// **'Notes filename only'**
-  String get notesFilename;
-
-  /// No description provided for @showNotesBeforeWorkplan.
-  ///
-  /// In en, this message translates to:
-  /// **'Always show notes before work plan'**
-  String get showNotesBeforeWorkplan;
-
   /// No description provided for @color.
   ///
   /// In en, this message translates to:
   /// **'Color:'**
   String get color;
-
-  /// No description provided for @className.
-  ///
-  /// In en, this message translates to:
-  /// **'Class Name'**
-  String get className;
 
   /// No description provided for @schoolNameLabel.
   ///
@@ -470,6 +524,24 @@ abstract class AppLocalizations {
   /// **'Failed to save suggestions data'**
   String get failedToSaveRightData;
 
+  /// No description provided for @saveNotesButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveNotesButton;
+
+  /// No description provided for @savedNotesData.
+  ///
+  /// In en, this message translates to:
+  /// **'The notes data saved successfully'**
+  String get savedNotesData;
+
+  /// No description provided for @failedToSaveNotesData.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save notes data'**
+  String get failedToSaveNotesData;
+
   /// No description provided for @failedToCreateZipFile.
   ///
   /// In en, this message translates to:
@@ -553,6 +625,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please make one list visible again (top right)!'**
   String get bothListsHidden;
+
+  /// No description provided for @printingFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Drucken fehlgeschlagen'**
+  String get printingFailed;
+
+  /// No description provided for @printingSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Drucken gestartet'**
+  String get printingSuccess;
 }
 
 class _AppLocalizationsDelegate

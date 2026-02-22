@@ -2,21 +2,18 @@ import 'package:flutter/material.dart';
 import '../models/lesson_block.dart';
 import '../l10n/app_localizations.dart';
 
-class EditBlockDialog extends StatefulWidget {
+class EditColorDialog extends StatefulWidget {
   final LessonBlock block;
   final Function(LessonBlock) onSave;
 
-  const EditBlockDialog({super.key, required this.block, required this.onSave});
+  const EditColorDialog({super.key, required this.block, required this.onSave});
 
   @override
-  State<EditBlockDialog> createState() => _EditBlockDialogState();
+  State<EditColorDialog> createState() => _EditColorDialogState();
 }
 
-class _EditBlockDialogState extends State<EditBlockDialog> {
+class _EditColorDialogState extends State<EditColorDialog> {
   late Color selectedColor;
-  late TextEditingController lessonNameController;
-  late TextEditingController classNameController;
-  late TextEditingController schoolNameController;
 
   final List<Color> colors = [
     Colors.white,
@@ -33,21 +30,18 @@ class _EditBlockDialogState extends State<EditBlockDialog> {
   void initState() {
     super.initState();
     selectedColor = widget.block.color;
-    lessonNameController = TextEditingController(text: widget.block.lessonName);
-    classNameController = TextEditingController(text: widget.block.className);
-    schoolNameController = TextEditingController(text: widget.block.schoolName);
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(AppLocalizations.of(context)!.editBlock),
+      title: Text(AppLocalizations.of(context)!.editBlockColor),
       scrollable: true,
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            //Text(AppLocalizations.of(context)!.color),
+            Text(AppLocalizations.of(context)!.color),
             Wrap(
               children: colors.map((color) {
                 return GestureDetector(
@@ -64,9 +58,6 @@ class _EditBlockDialogState extends State<EditBlockDialog> {
                 );
               }).toList(),
             ),
-            TextField(controller: lessonNameController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.lessonName)),
-            TextField(controller: classNameController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.className)),
-            TextField(controller: schoolNameController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.schoolNameLabel)),
           ],
         ),
       ),
@@ -74,12 +65,7 @@ class _EditBlockDialogState extends State<EditBlockDialog> {
         TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
         TextButton(
           onPressed: () {
-            widget.onSave(LessonBlock(
-              color: selectedColor,
-              lessonName: lessonNameController.text,
-              className: classNameController.text,
-              schoolName: schoolNameController.text,
-            ));
+            widget.onSave(LessonBlock(color: selectedColor));
             Navigator.pop(context);
           },
           child: Text(AppLocalizations.of(context)!.save),

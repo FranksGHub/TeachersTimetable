@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:pdf/widgets.dart' as pw;
 import 'package:teachers_timetable/models/print.dart';
 import 'package:path/path.dart' as p;
+import 'package:teachers_timetable/widgets/edit_checkbox_dialog.dart';
+import 'package:teachers_timetable/widgets/edit_color_dialog.dart';
+import 'package:teachers_timetable/widgets/edit_text_dialog.dart';
 import 'dart:convert';
 import 'dart:io';
 import '../l10n/app_localizations.dart';
 import '../models/lesson_block.dart';
 import '../models/export_import_files.dart';
 import '../models/lesson_item.dart';
-import 'edit_block_dialog.dart';
-import 'edit_path_filenames_dialog.dart';
+import 'package:flutter_quill/quill_delta.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:flutter_quill_to_pdf/flutter_quill_to_pdf.dart';
 
 class LessonDetailPage extends StatefulWidget {
   final LessonBlock block;
@@ -23,8 +28,7 @@ class LessonDetailPage extends StatefulWidget {
   State<LessonDetailPage> createState() => _LessonDetailPageState();
 }
 
-class _LessonDetailPageState extends State<LessonDetailPage> {
-  late SharedPreferences prefs;
+class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBindingObserver {
   late String dataPath;
   List<LessonItem> leftItems = <LessonItem>[];
   List<LessonItem> rightItems = <LessonItem>[];
@@ -33,42 +37,114 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   int? selectedLeftIndex;
   int? selectedRightIndex;
   int? selectedRightSubIndex;
+  bool isLoading = false;
+  bool isPreview = false;
   bool showNotesIsActive = false;
+  bool hasNoteChanges = false;
+  bool notesLoaded = false;
+  bool listDataLoaded = false;
+  quill.QuillController controllerQuill = quill.QuillController.basic();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     loadPrefsAndData();
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); 
+    controllerQuill.dispose();
+    super.dispose();
+  }
+
+  @override void didChangeAppLifecycleState(AppLifecycleState state) { 
+    if (hasNoteChanges && (state == AppLifecycleState.detached || state == AppLifecycleState.inactive)) { 
+      _saveNotesData();
+    } 
+  }
+
   Future<void> loadPrefsAndData() async {
-    prefs = await SharedPreferences.getInstance();
     // get or create data path
     dataPath = await ExportImportFiles.GetPrivateDirectoryPath();
     
     if(widget.block.className.isEmpty && widget.block.schoolName.isEmpty && widget.block.lessonName.isEmpty) {
-      _editBlock();
+      _editBlockColor();
     }
 
-    if (!widget.block.hideLeftList) { loadLeftData(); }
-    if (!widget.block.hideRightList) { loadRightData(); }
+    if(widget.block.showNotesBeforeWorkplan) { showNotesIsActive = true; _loadNotesData(); } 
+    else { _loadWorkplanData(); }
   }
 
   String getFilePath(String fileName) {
     return p.join(dataPath, ExportImportFiles.GetSaveFilename(fileName));
   }
 
-  String GetDefaultLeftFilename() { 
+  String getDefaultLeftFilename() { 
     return '${widget.block.lessonName}_${widget.block.className}_${widget.block.schoolName}.json';
   }
 
-  String GetDefaultRightFilename() { 
+  String getDefaultRightFilename() { 
     return '${widget.block.lessonName}.json';
   }
 
-  void loadRightData() {
+  String getDefaultNotesFilename() { 
+    return 'notes_col_${widget.col}.json';
+  }
+
+  void _loadNotesData() {
+    setState(() => isLoading = true);
+
     try {
-      String filePath = widget.block.suggestionsFilename.length == 0 ? getFilePath(GetDefaultRightFilename()) : getFilePath(widget.block.suggestionsFilename + '.json');
+      String filePath = widget.block.notesFilename.length == 0 ? getFilePath(getDefaultNotesFilename()) : getFilePath(widget.block.notesFilename + '.json');
+      if (File(filePath).existsSync()) {
+        final content = File(filePath).readAsStringSync();
+        final jsonData = jsonDecode(content);
+        final doc = quill.Document.fromJson(jsonData["document"]);
+        controllerQuill = quill.QuillController(document: doc, selection: const TextSelection.collapsed(offset: 0));
+      } else {
+        controllerQuill = quill.QuillController.basic();
+      }
+    } catch (e) {
+        controllerQuill = quill.QuillController.basic();
+      _showError(AppLocalizations.of(context)!.failedToLoadNotesData + ': $e');
+    }
+
+    // set listener to track changes for auto-saving when app is closed
+    // the listener has to set AFTER loading the quill document, otherwise it would trigger on the old, not visible, document!
+    controllerQuill.changes.listen((event) {
+      if (event.source == quill.ChangeSource.local) {
+        hasNoteChanges = true;
+      }
+    });
+
+    hasNoteChanges = false;
+    notesLoaded = true;
+    setState(() => isLoading = false);
+    // setState(() {});
+  }
+
+  void _emptyList(bool rightList, bool leftList) {
+    setState(() {
+      if (rightList) {
+        rightItems.clear();
+        rightExpanded.clear();
+        selectedRightIndex = null;
+        selectedRightSubIndex = null;
+      }
+      if (leftList) {
+        leftItems.clear();
+        leftExpanded.clear();
+        selectedLeftIndex = null;
+      }
+    });
+  }
+
+  void _loadWorkplanData() {
+    // load the right list data from file
+    try {
+      String filePath = widget.block.suggestionsFilename.length == 0 ? getFilePath(getDefaultRightFilename()) : getFilePath(widget.block.suggestionsFilename + '.json');
       if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
@@ -79,14 +155,17 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           rightExpanded = rightItems.map((_) => false).toList();
         });
       }
+      else {  // empty list if no file exists
+        _emptyList(true, false);
+      }
     } catch (e) {
       _showError(AppLocalizations.of(context)!.failedToLoadRightData + ': $e');
+      _emptyList(true, false);
     }
-  }
 
-  void loadLeftData() {
+    // load the left list data from file
     try {
-      String filePath = widget.block.workplanFilename.length == 0 ? getFilePath(GetDefaultLeftFilename()) : getFilePath(widget.block.workplanFilename + '.json');
+      String filePath = (widget.block.workplanFilename.length == 0 ? getFilePath(getDefaultLeftFilename()) : getFilePath(widget.block.workplanFilename)) + '.json';
       if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
@@ -97,27 +176,62 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           leftExpanded = leftItems.map((item) => !item.subitems.every((s) => s.status == '(F)')).toList();
         });
       }
+      else {  // empty list if no file exists
+        _emptyList(false, true);
+      } 
     } catch (e) {
       _showError(AppLocalizations.of(context)!.failedToLoadLeftData + ': $e');
+      _emptyList(false, true);
     }
+
+    listDataLoaded = true;
+    setState(() {});
   }
 
-  void _loadNotesData() {
-    showNotesIsActive = !showNotesIsActive;
-    if(showNotesIsActive) {
-      try {
-      } catch (e) {
-        _showError(AppLocalizations.of(context)!.failedToLoadNotesData + ': $e');
-      }
-    } else {
-      if (!widget.block.hideLeftList) { loadLeftData(); }
-      if (!widget.block.hideRightList) { loadRightData(); }
-    }
-  }
-
-  void saveRightData() {
+  void _saveNotesData() {
     try {
-      String filePath = widget.block.suggestionsFilename.length == 0 ? getFilePath(GetDefaultRightFilename()) : getFilePath(widget.block.suggestionsFilename + '.json');
+      final filePath = widget.block.notesFilename.length == 0 ? getFilePath(getDefaultNotesFilename()) : getFilePath(widget.block.notesFilename + '.json');
+      final jsonData = {"document": controllerQuill.document.toDelta().toJson()};
+      final jsonString = jsonEncode(jsonData);
+      File(filePath).writeAsStringSync(jsonString);
+      hasNoteChanges = false;
+      _showInfo(AppLocalizations.of(context)!.savedNotesData);
+    } catch (e) {
+      _showError(AppLocalizations.of(context)!.failedToSaveNotesData + ': $e');
+    }
+  }
+
+  Future<void> _printNotes() async {
+    // Erstellt ein PDF-Dokument aus dem Quill-Inhalt
+    try {
+      final pw.Font fontRegular = pw.Font.ttf(await rootBundle.load('lib/assets/NotoSans_Regular.ttf')); 
+      final pw.Font fontBold = pw.Font.ttf(await rootBundle.load('lib/assets/NotoSans_Bold.ttf'));
+      final pw.Font fontItalic = pw.Font.ttf(await rootBundle.load('lib/assets/NotoSans_Italic.ttf'));
+
+      final pw.ThemeData theme = pw.ThemeData.withFont( base: fontRegular, bold: fontBold, italic: fontItalic);
+
+      final Delta delta = controllerQuill.document.toDelta();
+      final converter = await PDFConverter(pageFormat: PDFPageFormat.a4, document: delta, themeData: theme, fallbacks: []);
+
+      final doc = await converter.createDocument();
+
+      if(doc != null) {
+        final printDoc = await doc.save();
+        if( await PrintPdf().PrintNotes(context, printDoc) == false) {
+          _showError(AppLocalizations.of(context)!.printingFailed);
+          return;
+        }
+        _showInfo(AppLocalizations.of(context)!.printingSuccess);
+      }
+    } catch (e) {
+      _showError('Failed to load fonts: $e');
+      return;
+    }
+  }
+
+  void _saveRightData() {
+    try {
+      String filePath = widget.block.suggestionsFilename.length == 0 ? getFilePath(getDefaultRightFilename()) : getFilePath(widget.block.suggestionsFilename + '.json');
       String json = jsonEncode(rightItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
     } catch (e) {
@@ -125,9 +239,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     }
   }
 
-  void saveLeftData() {
+  void _saveLeftData() {
     try {
-      String filePath = widget.block.workplanFilename.length == 0 ? getFilePath(GetDefaultLeftFilename()) : getFilePath(widget.block.workplanFilename + '.json');
+      String filePath = (widget.block.workplanFilename.length == 0 ? getFilePath(getDefaultLeftFilename()) : getFilePath(widget.block.workplanFilename)) + '.json';
       String json = jsonEncode(leftItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
     } catch (e) {
@@ -137,6 +251,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red, duration: const Duration(seconds: 4)));
+  }
+
+  void _showInfo(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green, duration: const Duration(seconds: 4)));
   }
 
   void _editText(String currentText, Function(String) onSave) {
@@ -170,23 +288,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     setState(() {
       if (leftList) {
         widget.block.hideLeftList = !widget.block.hideLeftList;
-        if (widget.block.hideLeftList) {
-          leftItems.clear();
-          leftExpanded.clear();
-          selectedLeftIndex = null;
-        } else {
-          loadLeftData();
-        }
+        if (!widget.block.hideLeftList && !listDataLoaded) { _loadWorkplanData(); }
       } else {
         widget.block.hideRightList = !widget.block.hideRightList;
-        if (widget.block.hideRightList) {
-          rightItems.clear();
-          rightExpanded.clear();
-          selectedRightIndex = null;
-          selectedRightSubIndex = null;
-        } else {
-          loadRightData();
-        }
+        if (!widget.block.hideRightList && !listDataLoaded) { _loadWorkplanData(); }
       }
     });
     widget.onSave(widget.block);
@@ -194,63 +299,159 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   void _switchNotesVisibility() {
     showNotesIsActive = !showNotesIsActive;
-    _loadNotesData();
+    if(showNotesIsActive && !notesLoaded) { _loadNotesData(); } 
+    if(!showNotesIsActive && hasNoteChanges) { _saveNotesData(); }
+    if(!showNotesIsActive && !listDataLoaded) { _loadWorkplanData(); }
+    setState(() {});
   }
 
-  void _editBlock() {
+  void _editBlockText(String tag) {
+    final dialogTitle = AppLocalizations.of(context)!.editText; 
+    final currentTextValue;
+    final dialogText;
+    switch(tag) {
+      case 'lessonName':
+        currentTextValue = widget.block.lessonName;
+        dialogText = AppLocalizations.of(context)!.lessonName;
+        break;
+      case 'className':
+        currentTextValue = widget.block.className;
+        dialogText = AppLocalizations.of(context)!.className;
+        break;
+      case 'schoolName':
+        currentTextValue = widget.block.schoolName;
+        dialogText = AppLocalizations.of(context)!.schoolNameLabel;
+        break;
+      case 'workplanFilename':
+        currentTextValue = widget.block.workplanFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultLeftFilename()) : widget.block.workplanFilename;
+        dialogText = AppLocalizations.of(context)!.workplanFilename;
+        break;
+      case 'suggestionsFilename':
+        currentTextValue = widget.block.suggestionsFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultRightFilename()) : widget.block.suggestionsFilename;
+        dialogText = AppLocalizations.of(context)!.suggestionsFilename;
+        break;
+      case 'notesFilename':
+        currentTextValue = widget.block.notesFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultNotesFilename()) : widget.block.notesFilename;
+        dialogText = AppLocalizations.of(context)!.notesFilename;
+        break;
+      default:
+        _showError('Invalid Tag: ' + tag);
+        return; // invalid tag
+    }
     showDialog(
       context: context,
-      builder: (context) => EditBlockDialog(
+      builder: (context) => EditTextDialog(
+        dialogTitle: dialogTitle,
+        dialogText: dialogText,
+        currentTextValue: currentTextValue,
+
+        onSave: (currentTextValue) {
+          switch(tag) {
+            case 'lessonName':
+              if(widget.block.lessonName != currentTextValue) { 
+                widget.block.lessonName = currentTextValue;
+                widget.onSave(widget.block);
+              }
+              break;
+            case 'className':
+              if(widget.block.className != currentTextValue) { 
+                widget.block.className = currentTextValue;
+                widget.onSave(widget.block);
+              }
+              break;
+            case 'schoolName':
+              if(widget.block.schoolName != currentTextValue) {
+                widget.block.schoolName = currentTextValue;
+                widget.onSave(widget.block);
+              }
+              break;
+              case 'workplanFilename':
+              if(widget.block.workplanFilename != currentTextValue) {
+                widget.block.workplanFilename = (currentTextValue == getDefaultLeftFilename() || currentTextValue.length == 0) ? '' : currentTextValue;
+                widget.onSave(widget.block);
+              }
+              break;
+              case 'suggestionsFilename':
+              if(widget.block.suggestionsFilename != currentTextValue) {
+                widget.block.suggestionsFilename = (currentTextValue == getDefaultRightFilename() || currentTextValue.length == 0) ? '' : currentTextValue;
+                widget.onSave(widget.block);
+              }
+              break;
+              case 'notesFilename':
+              if(widget.block.notesFilename != currentTextValue) {
+                widget.block.notesFilename = (currentTextValue == getDefaultNotesFilename() || currentTextValue.length == 0) ? '' : currentTextValue;
+                widget.onSave(widget.block);
+              }
+              break;
+          }
+        }
+      ),
+    );
+
+    setState(() {});
+            
+    // reload data with new names, if data are already visible
+    if (listDataLoaded) { _loadWorkplanData(); }
+    if (notesLoaded) { _loadNotesData(); }
+  }
+
+  void _editBlockColor() {
+    showDialog(
+      context: context,
+      builder: (context) => EditColorDialog(
         block: widget.block,
         onSave: (updatedBlock) {
-          widget.onSave(updatedBlock);
           // Reload if names changed
-          if( widget.block.lessonName != updatedBlock.lessonName || 
-              widget.block.className != updatedBlock.className || 
-              widget.block.schoolName != updatedBlock.schoolName) {
+          if( widget.block.color != updatedBlock.color) {
             setState(() {
-              widget.block.lessonName = updatedBlock.lessonName;
-              widget.block.className = updatedBlock.className;
-              widget.block.schoolName = updatedBlock.schoolName;              
+              widget.block.color = updatedBlock.color;
             });
-            if (!widget.block.hideLeftList) { loadLeftData(); }
-            if (!widget.block.hideRightList) { loadRightData(); }
+            widget.onSave(widget.block);
           }
         },
       ),
     );
   }
 
-  void _editPathFilenames() {
+  void _editCheckbox(String tag) {
     showDialog(
       context: context,
-      builder: (context) => EditPathFilenamesDialog(
-        block: widget.block,
-        onSave: (updatedBlock) {
-          widget.onSave(updatedBlock);
+      builder: (context) => EditCheckboxDialog(
+        checkValue: widget.block.showNotesBeforeWorkplan, 
+        dialogTitle: AppLocalizations.of(context)!.editShowNotesBeforeWorkplan, 
+        dialogText: AppLocalizations.of(context)!.showNotesBeforeWorkplan,
+
+        onSave: (checkValue) {
           // Reload if names changed
-          if( widget.block.workplanFilename != updatedBlock.workplanFilename || 
-              widget.block.suggestionsFilename != updatedBlock.suggestionsFilename || 
-              widget.block.notesFilename != updatedBlock.notesFilename ||
-              widget.block.showNotesBeforeWorkplan != updatedBlock.showNotesBeforeWorkplan) {
+          if( widget.block.showNotesBeforeWorkplan != checkValue) { 
             setState(() {
-              widget.block.workplanFilename = updatedBlock.workplanFilename;
-              widget.block.suggestionsFilename = updatedBlock.suggestionsFilename;
-              widget.block.notesFilename = updatedBlock.notesFilename;
-              widget.block.showNotesBeforeWorkplan = updatedBlock.showNotesBeforeWorkplan;});
-            if (!widget.block.hideLeftList) { loadLeftData(); }
-            if (!widget.block.hideRightList) { loadRightData(); }
+              widget.block.showNotesBeforeWorkplan = checkValue;
+              widget.onSave(widget.block);
+            });
+
+            
+            // reload data with new names, if data are already visible
+            if (listDataLoaded) { _loadWorkplanData(); }
+            if (notesLoaded) { _loadNotesData(); }
           }
-        },
+        }, 
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: true, // page may be closed
+      onPopInvokedWithResult: (didPop, result) async {
+        if(hasNoteChanges) { _saveNotesData(); }
+      },
+      child: Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.workplan + ':   ' + widget.block.lessonName + ' - ' + widget.block.className + ' - ' + widget.block.schoolName),
+        title: showNotesIsActive ? 
+          Text(AppLocalizations.of(context)!.notesTitle + ':   ' + widget.block.lessonName + ' - ' + widget.block.className + ' - ' + widget.block.schoolName) : 
+          Text(AppLocalizations.of(context)!.workplan + ':   ' + widget.block.lessonName + ' - ' + widget.block.className + ' - ' + widget.block.schoolName),
       ),
       endDrawer: Drawer(
         child: ListView(
@@ -287,15 +488,20 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                 _switchListVisibility(false);
               },
             ),
+
             const Divider(),
             ListTile(
               leading: const Icon(Icons.print),
-              title: Text(AppLocalizations.of(context)!.printWorkplan),
+              title: Text(showNotesIsActive ? AppLocalizations.of(context)!.printNotes : AppLocalizations.of(context)!.printWorkplan),
               onTap: () {
                 Navigator.pop(context);
-                PrintPdf().PrintBlockDetails(context, widget.block);
+                if(showNotesIsActive)
+                  _printNotes();
+                else
+                  PrintPdf().PrintBlockDetails(context, widget.block);
               },
             ),
+
             const Divider(),
             ListTile(
               leading: showNotesIsActive ? const Icon(Icons.work) : const Icon(Icons.notes),
@@ -307,121 +513,181 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                 });
               },
             ),
+
             const Divider(),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: Text(AppLocalizations.of(context)!.editFilenames),
+              title: Text(AppLocalizations.of(context)!.editBlockColor),
               onTap: () {
                 Navigator.pop(context);
-                _editPathFilenames();
+                _editBlockColor();
               },
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: Text(AppLocalizations.of(context)!.editBlock),
+              title: Text(AppLocalizations.of(context)!.editLessonName),
               onTap: () {
                 Navigator.pop(context);
-                _editBlock();
+                _editBlockText('lessonName');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(AppLocalizations.of(context)!.editClassName),
+              onTap: () {
+                Navigator.pop(context);
+                _editBlockText('className');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(AppLocalizations.of(context)!.editSchoolName),
+              onTap: () {
+                Navigator.pop(context);
+                _editBlockText('schoolName');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(AppLocalizations.of(context)!.editWorkplanFilename),
+              onTap: () {
+                Navigator.pop(context);
+                _editBlockText('workplanFilename');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(AppLocalizations.of(context)!.editSuggestionsFilename),
+              onTap: () {
+                Navigator.pop(context);
+                _editBlockText('suggestionsFilename');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(AppLocalizations.of(context)!.editNotesFilename),
+              onTap: () {
+                Navigator.pop(context);
+                _editBlockText('notesFilename');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(AppLocalizations.of(context)!.editShowNotesBeforeWorkplan),
+              onTap: () {
+                Navigator.pop(context);
+                _editCheckbox('showNotesBeforeWorkplan');
               },
             ),
           ],
         ),
       ),
+      
       body: Column(
         children: [
-          Row(
-            children: [
+            // Button row
+            Row(
+              children: [
 
-              // Help Text, if booth lists are hidden
-              if(widget.block.hideRightList && widget.block.hideLeftList)
-                Text('     ' + AppLocalizations.of(context)!.bothListsHidden, style: TextStyle(color: Colors.red, fontSize: 20), textAlign: TextAlign.center),
+                if(showNotesIsActive)
+                  ElevatedButton(
+                    onPressed: () {
+                      _saveNotesData();
+                    },
+                    child: Text(AppLocalizations.of(context)!.saveNotesButton),
+                  ),
 
-              // Left list buttons Add Item, Add Subitem
-              if(!widget.block.hideLeftList)
-                ElevatedButton(
-                  onPressed: () {
-                    final newItemText = AppLocalizations.of(context)!.newItem;
-                    setState(() {
-                      leftItems.add(LessonItem(text: newItemText));
-                      leftExpanded.add(true);
-                    });
-                    saveLeftData();
-                  },
-                  child: Text(AppLocalizations.of(context)!.addItemLeft),
-                ),
-              if(!widget.block.hideLeftList)
-                ElevatedButton(
-                  onPressed: selectedLeftIndex != null ? () {
-                    final newSubitemText = AppLocalizations.of(context)!.newSubitem;
-                    setState(() {
-                      leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: newSubitemText));
-                    });
-                    saveLeftData();
-                  } : null,
-                  child: Text(AppLocalizations.of(context)!.addSubitemLeft),
-                ),
-              if(!widget.block.hideLeftList)
-                const Spacer(),
+                // Help Text, if booth lists are hidden
+                if(!showNotesIsActive && widget.block.hideRightList && widget.block.hideLeftList)
+                  Text('     ' + AppLocalizations.of(context)!.bothListsHidden, style: TextStyle(color: Colors.red, fontSize: 20), textAlign: TextAlign.center),
 
-              // Copy from right list buttons
-              if(!widget.block.hideRightList && !widget.block.hideLeftList)
-                ElevatedButton(
-                  onPressed: selectedRightIndex != null ? () {
-                    var item = rightItems[selectedRightIndex!];
-                    var newItem = LessonItem(text: item.text, subitems: item.subitems.map((s) => LessonItem(text: s.text)).toList(), status: '(P)');
-                    setState(() {
-                      leftItems.add(newItem);
-                      leftExpanded.add(true);
-                    });
-                    saveLeftData();
-                  } : null,
-                  child: Text(AppLocalizations.of(context)!.copyItemToLeft),
-                ),
-              if(!widget.block.hideRightList && !widget.block.hideLeftList)
-                ElevatedButton(
-                  onPressed: selectedRightIndex != null && selectedRightSubIndex != null && selectedLeftIndex != null ? () {
-                    final sub = rightItems[selectedRightIndex!].subitems[selectedRightSubIndex!];
+                // Left list buttons Add Item, Add Subitem
+                if(!widget.block.hideLeftList && !showNotesIsActive)
+                  ElevatedButton(
+                    onPressed: () {
+                      final newItemText = AppLocalizations.of(context)!.newItem;
                       setState(() {
-                        leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: sub.text));
+                        leftItems.add(LessonItem(text: newItemText));
+                        leftExpanded.add(true);
                       });
-                      saveLeftData();
+                      _saveLeftData();
+                    },
+                    child: Text(AppLocalizations.of(context)!.addItemLeft),
+                  ),
+                if(!widget.block.hideLeftList && !showNotesIsActive)
+                  ElevatedButton(
+                    onPressed: selectedLeftIndex != null ? () {
+                      final newSubitemText = AppLocalizations.of(context)!.newSubitem;
+                      setState(() {
+                        leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: newSubitemText));
+                      });
+                      _saveLeftData();
                     } : null,
-                  child: Text(AppLocalizations.of(context)!.copySubitemToLeft),
-                ),
-              if(!widget.block.hideRightList && !widget.block.hideLeftList)
-                const Spacer(),
+                    child: Text(AppLocalizations.of(context)!.addSubitemLeft),
+                  ),
+                if(!widget.block.hideLeftList && !showNotesIsActive)
+                  const Spacer(),
 
-              // Right list buttons Add Item, Add Subitem
-              if(!widget.block.hideRightList)
-                ElevatedButton(
-                  onPressed: () {
-                    final newItemText = AppLocalizations.of(context)!.newItem;
-                    setState(() {
-                      rightItems.add(LessonItem(text: newItemText));
-                      rightExpanded.add(true);
-                    });
-                    saveRightData();
-                  },
-                  child: Text(AppLocalizations.of(context)!.addItemRight),
-                ),
-              if(!widget.block.hideRightList)
-                ElevatedButton(
-                  onPressed: selectedRightIndex != null ? () {
-                    final newSubitemText = AppLocalizations.of(context)!.newSubitem;
-                    setState(() {
-                      rightItems[selectedRightIndex!].subitems.add(LessonItem(text: newSubitemText));
-                    });
-                    saveRightData();
-                  } : null,
-                  child: Text(AppLocalizations.of(context)!.addSubitemRight),
-                ),
+                // Copy from right list buttons
+                if(!widget.block.hideRightList && !showNotesIsActive)
+                  ElevatedButton(
+                    onPressed: selectedRightIndex != null ? () {
+                      var item = rightItems[selectedRightIndex!];
+                      var newItem = LessonItem(text: item.text, subitems: item.subitems.map((s) => LessonItem(text: s.text)).toList(), status: '(P)');
+                      setState(() {
+                        leftItems.add(newItem);
+                        leftExpanded.add(true);
+                      });
+                      _saveLeftData();
+                    } : null,
+                    child: Text(AppLocalizations.of(context)!.copyItemToLeft),
+                  ),
+                if(!widget.block.hideRightList && !widget.block.hideLeftList && !showNotesIsActive)
+                  ElevatedButton(
+                    onPressed: selectedRightIndex != null && selectedRightSubIndex != null && selectedLeftIndex != null ? () {
+                      final sub = rightItems[selectedRightIndex!].subitems[selectedRightSubIndex!];
+                        setState(() {
+                          leftItems[selectedLeftIndex!].subitems.add(LessonItem(text: sub.text));
+                        });
+                        _saveLeftData();
+                      } : null,
+                    child: Text(AppLocalizations.of(context)!.copySubitemToLeft),
+                  ),
+                if(!widget.block.hideRightList && !showNotesIsActive)
+                  const Spacer(),
 
-            ],
-          ),
+                // Right list buttons Add Item, Add Subitem
+                if(!widget.block.hideRightList && !showNotesIsActive)
+                  ElevatedButton(
+                    onPressed: () {
+                      final newItemText = AppLocalizations.of(context)!.newItem;
+                      setState(() {
+                        rightItems.add(LessonItem(text: newItemText));
+                        rightExpanded.add(true);
+                      });
+                      _saveRightData();
+                    },
+                    child: Text(AppLocalizations.of(context)!.addItemRight),
+                  ),
+                if(!widget.block.hideRightList && !showNotesIsActive)
+                  ElevatedButton(
+                    onPressed: selectedRightIndex != null ? () {
+                      final newSubitemText = AppLocalizations.of(context)!.newSubitem;
+                      setState(() {
+                        rightItems[selectedRightIndex!].subitems.add(LessonItem(text: newSubitemText));
+                      });
+                      _saveRightData();
+                    } : null,
+                    child: Text(AppLocalizations.of(context)!.addSubitemRight),
+                  ),
+                
+              ],
+            ),
+
           Expanded(
             child: Row(
               children: [
-                if(!widget.block.hideLeftList) 
+                if(!widget.block.hideLeftList && !showNotesIsActive) 
                   Expanded(
                     child: Column(
                       children: [
@@ -449,7 +715,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   },
                                   onDoubleTap: () => _editText(item.text, (newText) {
                                     setState(() => item.text = newText);
-                                    saveLeftData();
+                                    _saveLeftData();
                                   }),
                                   child: Row(
                                     children: [
@@ -462,7 +728,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             leftExpanded.removeAt(index);
                                             if (selectedLeftIndex == index) selectedLeftIndex = null;
                                           });
-                                          saveLeftData();
+                                          _saveLeftData();
                                         },
                                       ),
                                       IconButton(
@@ -477,7 +743,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             leftExpanded[index - 1] = tempExp;
                                             selectedLeftIndex = index - 1;
                                           });
-                                          saveLeftData();
+                                          _saveLeftData();
                                         } : null,
                                       ),
                                       IconButton(
@@ -492,7 +758,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             leftExpanded[index + 1] = tempExp;
                                             selectedLeftIndex = index + 1;
                                           });
-                                          saveLeftData();
+                                          _saveLeftData();
                                         } : null,
                                       ),
                                     ],
@@ -519,7 +785,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               sub.status = '(P)';
                                             }
                                           });
-                                          saveLeftData();
+                                          _saveLeftData();
                                         },
                                       ),
                                       
@@ -529,7 +795,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         child: GestureDetector(
                                           onDoubleTap: () => _editText(sub.text, (newText) {
                                             setState(() => sub.text = newText);
-                                            saveLeftData();
+                                            _saveLeftData();
                                           }),
                                           child: Text(sub.text, style: const TextStyle(height: 1.0, fontSize: 16)),
                                         ),
@@ -554,7 +820,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           setState(() {
                                             item.subitems.removeAt(subIndex);
                                           });
-                                          saveLeftData();
+                                          _saveLeftData();
                                         },
                                       ),
                                       IconButton(
@@ -567,7 +833,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               item.subitems[subIndex] = item.subitems[subIndex - 1];
                                               item.subitems[subIndex - 1] = temp;
                                             });
-                                            saveLeftData();
+                                            _saveLeftData();
                                           }
                                         },
                                       ),
@@ -581,7 +847,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               item.subitems[subIndex] = item.subitems[subIndex + 1];
                                               item.subitems[subIndex + 1] = temp;
                                             });
-                                            saveLeftData();
+                                            _saveLeftData();
                                           }
                                         },
                                       ),
@@ -598,7 +864,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   ),
                 
                 
-                if(!widget.block.hideRightList)
+                if(!widget.block.hideRightList && !showNotesIsActive)
                   Expanded(
                     child: Column(
                       children: [
@@ -626,7 +892,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   },
                                   onDoubleTap: () => _editText(item.text, (newText) {
                                     setState(() => item.text = newText);
-                                    saveRightData();
+                                    _saveRightData();
                                   }),
                                   child: Row(
                                     children: [
@@ -639,7 +905,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             rightExpanded.removeAt(index);
                                             if (selectedRightIndex == index) selectedRightIndex = null;
                                           });
-                                          saveRightData();
+                                          _saveRightData();
                                         },
                                       ),
                                       IconButton(
@@ -654,7 +920,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             rightExpanded[index - 1] = tempExp;
                                             selectedRightIndex = index - 1;
                                           });
-                                          saveRightData();
+                                          _saveRightData();
                                         } : null,
                                       ),
                                       IconButton(
@@ -669,7 +935,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             rightExpanded[index + 1] = tempExp;
                                             selectedRightIndex = index + 1;
                                           });
-                                          saveRightData();
+                                          _saveRightData();
                                         } : null,
                                       ),
                                     ],
@@ -682,7 +948,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   title: GestureDetector(
                                     onDoubleTap: () => _editText(sub.text, (newText) {
                                       setState(() => sub.text = newText);
-                                      saveRightData();
+                                      _saveRightData();
                                     }),
                                     child: Text(sub.text, style: const TextStyle(height: 1.0, fontSize: 16)),
                                   ),
@@ -703,7 +969,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           setState(() {
                                             item.subitems.removeAt(subIndex);
                                           });
-                                          saveRightData();
+                                          _saveRightData();
                                         },
                                       ),
                                       IconButton(
@@ -716,7 +982,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               item.subitems[subIndex] = item.subitems[subIndex - 1];
                                               item.subitems[subIndex - 1] = temp;
                                             });
-                                            saveRightData();
+                                            _saveRightData();
                                           }
                                         },
                                       ),
@@ -730,7 +996,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               item.subitems[subIndex] = item.subitems[subIndex + 1];
                                               item.subitems[subIndex + 1] = temp;
                                             });
-                                            saveRightData();
+                                            _saveRightData();
                                           }
                                         },
                                       ),
@@ -746,11 +1012,43 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                     ),
                   ),
 
-              ],
-            ),
+                if(showNotesIsActive)
+                Expanded(
+                  child: Column(
+                    children: [
+                      // Die Toolbar mit allen Buttons
+                      SizedBox( width: double.infinity, // to fill the whole line and make the editor show up in the next line
+                        child: quill.QuillSimpleToolbar(
+                          controller: controllerQuill,
+                          config: const quill.QuillSimpleToolbarConfig( showAlignmentButtons: true, showBackgroundColorButton: true, 
+                                                                        showColorButton: true, showListNumbers: true, showListBullets: true, 
+                                                                        showListCheck: true, showCodeBlock: true, showQuote: true, 
+                                                                        showLink: true, showUndo: true, showRedo: true, 
+                                                                        showBoldButton: true, showItalicButton: true, showUnderLineButton: true, 
+                                                                        showStrikeThrough: true, showInlineCode: true, showClearFormat: true,
+                                                                        showFontSize: true, showSearchButton: true,
+                                                                        showClipboardCopy: true, showClipboardCut: true, showClipboardPaste: true,
+                                                                        showIndent: true, showFontFamily: false)
+                        ),
+                      ),
+                    // Der eigentliche Editor
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        child: quill.QuillEditor.basic(
+                          controller: controllerQuill,
+                          config: const quill.QuillEditorConfig( placeholder: 'Schreibe etwas...'),
+                        ),
+                      ),
+                    )
+                  ],
+                )),
+              ]
           ),
-        ],
-      ),
-    );
+          )
+        ]
+      )
+    )
+   );
   }
 }

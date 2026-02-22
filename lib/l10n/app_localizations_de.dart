@@ -24,6 +24,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get showWorkplan => 'Öffne den Arbeitsplan';
 
   @override
+  String get notesTitle => 'Notizen';
+
+  @override
   String get menu => 'Menü';
 
   @override
@@ -43,6 +46,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get printWorkplan => 'Arbeitsplan drucken';
+
+  @override
+  String get printNotes => 'Notizen drucken';
 
   @override
   String get dataImported => 'Daten erfolgreich importiert';
@@ -70,7 +76,47 @@ class AppLocalizationsDe extends AppLocalizations {
   String get schoolName => 'Schulname';
 
   @override
-  String get roomNumber => 'Raumnummer';
+  String get className => 'Klassenname';
+
+  @override
+  String get editLessonName => 'Unterrichtsname bearbeiten';
+
+  @override
+  String get editClassName => 'Klasse bearbeiten';
+
+  @override
+  String get editSchoolName => 'Schulname bearbeiten';
+
+  @override
+  String get editBlockColor => 'Hintergrund Farbe ändern';
+
+  @override
+  String get editWorkplanFilename => 'Arbeitsplan Dateinamen bearbeiten';
+
+  @override
+  String get editSuggestionsFilename => 'Vorschlags Dateinamen bearbeiten';
+
+  @override
+  String get editNotesFilename => 'Notizen Dateinamen bearbeiten';
+
+  @override
+  String get workplanFilename => 'Dateiname des Arbeitsplans';
+
+  @override
+  String get suggestionsFilename => 'Dateiname der Vorschläge';
+
+  @override
+  String get notesFilename => 'Dateiname der Notizen';
+
+  @override
+  String get editFilenames => 'Dateinamen bearbeiten';
+
+  @override
+  String get showNotesBeforeWorkplan =>
+      'Zeige Notizen immer vor dem Arbeitsplan';
+
+  @override
+  String get editShowNotesBeforeWorkplan => 'Notizen oder Arbeitsplan zuerst?';
 
   @override
   String get save => 'Speichern';
@@ -91,26 +137,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editBlock => 'Block bearbeiten';
 
   @override
-  String get editFilenames => 'Dateinamen bearbeiten';
-
-  @override
-  String get workplanFilename => 'Dateiname des Arbeitsplans';
-
-  @override
-  String get suggestionsFilename => 'Dateiname der Vorschläge';
-
-  @override
-  String get notesFilename => 'Dateiname der Notizen';
-
-  @override
-  String get showNotesBeforeWorkplan =>
-      'Zeige Notizen immer vor dem Arbeitsplan';
-
-  @override
   String get color => 'Farbe:';
-
-  @override
-  String get className => 'Klassenname';
 
   @override
   String get schoolNameLabel => 'Schulname';
@@ -205,6 +232,16 @@ class AppLocalizationsDe extends AppLocalizations {
       'Speichern der Vorschläge ist fehlgeschlagen';
 
   @override
+  String get saveNotesButton => 'Speichern';
+
+  @override
+  String get savedNotesData => 'Die Notiz Daten wurden gespeichert';
+
+  @override
+  String get failedToSaveNotesData =>
+      'Speichern der Notiz Daten ist fehlgeschlagen';
+
+  @override
   String get failedToCreateZipFile => 'Fehler beim erzeugen der ZIP-Datei';
 
   @override
@@ -250,4 +287,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get bothListsHidden =>
       'Bitte eine Liste wieder sichtbar machen (oben rechts)!';
+
+  @override
+  String get printingFailed => 'Printing failed';
+
+  @override
+  String get printingSuccess => 'Printing started';
 }
