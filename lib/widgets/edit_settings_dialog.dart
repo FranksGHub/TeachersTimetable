@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:teachers_timetable/models/export_import_files.dart';
 import '../models/lesson_block.dart';
 import '../l10n/app_localizations.dart';
 
 class EditSettingsDialog extends StatefulWidget {
   final LessonBlock block;
+  final int col;
   final Function(LessonBlock) onSave;
 
-  const EditSettingsDialog({super.key, required this.block, required this.onSave});
+  const EditSettingsDialog({super.key, required this.block, required this.col, required this.onSave});
 
   @override
   State<EditSettingsDialog> createState() => _EditSettingsDialogState();
@@ -41,9 +43,9 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
     lessonNameController = TextEditingController(text: widget.block.lessonName);
     classNameController = TextEditingController(text: widget.block.className);
     schoolNameController = TextEditingController(text: widget.block.schoolName);
-    leftListFilenameController = TextEditingController(text: widget.block.workplanFilename);
-    rightListFilenameController = TextEditingController(text: widget.block.suggestionsFilename);
-    notesFilenameController = TextEditingController(text: widget.block.notesFilename);
+    leftListFilenameController = TextEditingController(text: widget.block.workplanFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultLeftFilename()) : widget.block.workplanFilename);
+    rightListFilenameController = TextEditingController(text: widget.block.suggestionsFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultRightFilename()) : widget.block.suggestionsFilename);
+    notesFilenameController = TextEditingController(text: widget.block.notesFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultNotesFilename()) : widget.block.notesFilename);
   }
 
   @override
@@ -57,6 +59,70 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
     super.dispose();
   }
 
+  String getDefaultLeftFilename() { 
+    return '${widget.block.lessonName}_${widget.block.className}_${widget.block.schoolName}.json';
+  }
+
+  String getDefaultRightFilename() { 
+    return '${widget.block.lessonName}.json';
+  }
+
+  String getDefaultNotesFilename() { 
+    return 'notes_col_${widget.col}.json';
+  }
+
+  Widget buildSettingRow({ required String label, required TextEditingController controller,}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          const SizedBox(width: 6),
+          SizedBox( width: 120, child: Text(label)),
+          //Expanded( flex: 2, child: Text(label)),
+          const SizedBox(width: 6),
+          Expanded(
+            flex: 3,
+            child: TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                isDense: true, // macht das TextField kompakter
+                contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildColorRow({ required String label }) {
+    // Color display
+    return Row(
+      children: [
+        const SizedBox(width: 6),
+        SizedBox( width: 122, child: Text(label)),
+        Wrap(
+          children: 
+            colors.map((color) {
+            return GestureDetector(
+              onTap: () => setState(() => selectedColor = color),
+              child: Container(
+                margin: const EdgeInsets.all(4),
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: color,
+                  border: selectedColor == color ? Border.all(color: Colors.black, width: 3) : Border.all(color: Colors.black, width: 1),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ]
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold( 
@@ -65,61 +131,43 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
         padding: const EdgeInsets.all(6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Setting 1
-            Text(AppLocalizations.of(context)!.lessonName),
-            TextField(
+          children: [ 
+
+            // Color setting
+            buildColorRow( label: AppLocalizations.of(context)!.color),
+
+            // 6 Text lines
+            buildSettingRow(
+              label: AppLocalizations.of(context)!.lessonName,
               controller: lessonNameController,
-              decoration: const InputDecoration( border: OutlineInputBorder()),
             ),
-
-            const SizedBox(height: 8),
-
-            // Setting 2
-            Text(AppLocalizations.of(context)!.className),
-            TextField(
+            buildSettingRow(
+              label: AppLocalizations.of(context)!.className,
               controller: classNameController,
-              decoration: const InputDecoration( border: OutlineInputBorder()),
             ),
-
-            const SizedBox(height: 8),
-
-            // Setting 3
-            Text(AppLocalizations.of(context)!.schoolName),
-            TextField(
+            buildSettingRow(
+              label: AppLocalizations.of(context)!.schoolName,
               controller: schoolNameController,
-              decoration: const InputDecoration( border: OutlineInputBorder()),
             ),
-            
-            const SizedBox(height: 8),
-
-            // Setting 4
-            Text(AppLocalizations.of(context)!.workplanFilename),
-            TextField(
+            buildSettingRow(
+              label: AppLocalizations.of(context)!.workplanFilename,
               controller: leftListFilenameController,
-              decoration: const InputDecoration( border: OutlineInputBorder()),
             ),
-            const SizedBox(height: 8),
-
-            // Setting 5
-            Text(AppLocalizations.of(context)!.suggestionsFilename),
-            TextField(
+            buildSettingRow(
+              label: AppLocalizations.of(context)!.suggestionsFilename,
               controller: rightListFilenameController,
-              decoration: const InputDecoration( border: OutlineInputBorder()),
             ),
-            const SizedBox(height: 8),
-
-            // Setting 6
-            Text(AppLocalizations.of(context)!.notesFilename),
-            TextField(
+            buildSettingRow(
+              label: AppLocalizations.of(context)!.notesFilename,
               controller: notesFilenameController,
-              decoration: const InputDecoration( border: OutlineInputBorder()),
             ),
-            const SizedBox(height: 8),
 
-            // Checkbox Setting
+            //const SizedBox(height: 8),
+
+            // Checkbox for notes setting
             Row(
               children: [
+                const SizedBox(width: 122),
                 Checkbox(
                   value: showNotesBeforeWorkplan,
                   onChanged: (value) {

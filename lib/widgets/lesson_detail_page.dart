@@ -312,6 +312,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
       MaterialPageRoute(
         builder: (context) => EditSettingsDialog(
           block: widget.block,
+          col: widget.col,
           onSave: (updatedBlock) {
             bool changed = false;
             if(widget.block.color != updatedBlock.color) { changed = true; widget.block.color = updatedBlock.color; }
