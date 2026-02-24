@@ -5,6 +5,7 @@ import 'package:teachers_timetable/models/print.dart';
 import 'package:path/path.dart' as p;
 import 'package:teachers_timetable/widgets/edit_checkbox_dialog.dart';
 import 'package:teachers_timetable/widgets/edit_color_dialog.dart';
+import 'package:teachers_timetable/widgets/edit_settings_dialog.dart';
 import 'package:teachers_timetable/widgets/edit_text_dialog.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -305,6 +306,33 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
     setState(() {});
   }
 
+  void _editSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditSettingsDialog(
+          block: widget.block,
+          onSave: (updatedBlock) {
+            bool changed = false;
+            if(widget.block.color != updatedBlock.color) { changed = true; widget.block.color = updatedBlock.color; }
+            if(widget.block.lessonName != updatedBlock.lessonName) { changed = true; widget.block.lessonName = updatedBlock.lessonName; }
+            if(widget.block.className != updatedBlock.className) { changed = true; widget.block.className = updatedBlock.className; }
+            if(widget.block.schoolName != updatedBlock.schoolName) { changed = true; widget.block.schoolName = updatedBlock.schoolName; }
+            if(widget.block.workplanFilename != updatedBlock.workplanFilename) { changed = true; widget.block.workplanFilename = updatedBlock.workplanFilename; }
+            if(widget.block.suggestionsFilename != updatedBlock.suggestionsFilename) { changed = true; widget.block.suggestionsFilename = updatedBlock.suggestionsFilename; }
+            if(widget.block.notesFilename != updatedBlock.notesFilename) { changed = true; widget.block.notesFilename = updatedBlock.notesFilename; }
+            if(widget.block.showNotesBeforeWorkplan != updatedBlock.showNotesBeforeWorkplan) { changed = true; widget.block.showNotesBeforeWorkplan = updatedBlock.showNotesBeforeWorkplan; }
+            if(changed) {
+              setState(() {});
+              widget.onSave(widget.block);
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+
   void _editBlockText(String tag) {
     final dialogTitle = AppLocalizations.of(context)!.editText; 
     final currentTextValue;
@@ -579,6 +607,18 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                 _editCheckbox('showNotesBeforeWorkplan');
               },
             ),
+
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(AppLocalizations.of(context)!.editBlock),
+              onTap: () {
+                Navigator.pop(context);
+                _editSettings();
+              },
+            ),
+
+            SizedBox(height: 80,) // on some devices the last menu line is otherwise not touchable
           ],
         ),
       ),
@@ -589,13 +629,13 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
             Row(
               children: [
 
-                if(showNotesIsActive)
-                  ElevatedButton(
-                    onPressed: () {
-                      _saveNotesData();
-                    },
-                    child: Text(AppLocalizations.of(context)!.saveNotesButton),
-                  ),
+                //if(showNotesIsActive)
+                  //ElevatedButton(
+                    //onPressed: () {
+                      //_saveNotesData();
+                    //},
+                    //child: Text(AppLocalizations.of(context)!.saveNotesButton),
+                  //),
 
                 // Help Text, if booth lists are hidden
                 if(!showNotesIsActive && widget.block.hideRightList && widget.block.hideLeftList)
@@ -1020,15 +1060,18 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                       SizedBox( width: double.infinity, // to fill the whole line and make the editor show up in the next line
                         child: quill.QuillSimpleToolbar(
                           controller: controllerQuill,
-                          config: const quill.QuillSimpleToolbarConfig( showAlignmentButtons: true, showBackgroundColorButton: true, 
-                                                                        showColorButton: true, showListNumbers: true, showListBullets: true, 
-                                                                        showListCheck: true, showCodeBlock: true, showQuote: true, 
-                                                                        showLink: true, showUndo: true, showRedo: true, 
-                                                                        showBoldButton: true, showItalicButton: true, showUnderLineButton: true, 
-                                                                        showStrikeThrough: true, showInlineCode: true, showClearFormat: true,
-                                                                        showFontSize: true, showSearchButton: true,
-                                                                        showClipboardCopy: true, showClipboardCut: true, showClipboardPaste: true,
-                                                                        showIndent: true, showFontFamily: false)
+                          config: const quill.QuillSimpleToolbarConfig( multiRowsDisplay: true, showDividers: false, toolbarRunSpacing: 2, showSmallButton: false,
+                                                                        showUndo: true, showRedo: true, showFontFamily: false, showFontSize: true,
+                                                                        showBoldButton: true, showItalicButton: true, showUnderLineButton: true, showStrikeThrough: true,
+                                                                        showSubscript: false, showSuperscript: false, showInlineCode: false,
+                                                                        showColorButton: true, showBackgroundColorButton: true, showClearFormat: false,
+                                                                        showAlignmentButtons: true, showLeftAlignment: false, showCenterAlignment: true, 
+                                                                        showRightAlignment: true, showJustifyAlignment: true,
+                                                                        showHeaderStyle: false, showListNumbers: true, showListBullets: true, showListCheck: true, 
+                                                                        showCodeBlock: false, showQuote: false, showIndent: true,
+                                                                        showLink: true, showSearchButton: true,
+                                                                        showClipboardCopy: false, showClipboardCut: false, showClipboardPaste: false,
+                                                                        showLineHeightButton: false, showDirection: false )
                         ),
                       ),
                     // Der eigentliche Editor

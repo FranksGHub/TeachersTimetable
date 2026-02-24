@@ -315,6 +315,8 @@ class _TimetablePageState extends State<TimetablePage> {
                   _showLanguage('en');
                 },
               ),
+
+              SizedBox(height: 80,) // on some devices the last menu line is otherwise not touchable
             ],
           ),
         ),
