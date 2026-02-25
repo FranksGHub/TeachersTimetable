@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:teachers_timetable/models/export_import_files.dart';
 import '../models/lesson_block.dart';
+import '../models/filename_helper.dart';
 import '../l10n/app_localizations.dart';
+import 'dart:async';
 
 class EditSettingsDialog extends StatefulWidget {
   final LessonBlock block;
@@ -23,16 +25,20 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
   late TextEditingController leftListFilenameController;
   late TextEditingController rightListFilenameController;
   late TextEditingController notesFilenameController;
+  Timer? _debounce;
 
   final List<Color> colors = [
     Colors.white,
-    Colors.red,
-    Colors.blue,
-    Colors.green,
-    Colors.yellow,
-    Colors.purple,
-    Colors.orange,
     Colors.pink,
+    Colors.red,
+    Colors.orange,
+    Colors.yellow,
+    Colors.lightGreen,
+    Colors.green,
+    Colors.lightBlue,
+    Colors.blue,
+    Colors.purple,
+    Colors.brown,
   ];
 
   @override
@@ -43,13 +49,20 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
     lessonNameController = TextEditingController(text: widget.block.lessonName);
     classNameController = TextEditingController(text: widget.block.className);
     schoolNameController = TextEditingController(text: widget.block.schoolName);
-    leftListFilenameController = TextEditingController(text: widget.block.workplanFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultLeftFilename()) : widget.block.workplanFilename);
-    rightListFilenameController = TextEditingController(text: widget.block.suggestionsFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultRightFilename()) : widget.block.suggestionsFilename);
-    notesFilenameController = TextEditingController(text: widget.block.notesFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultNotesFilename()) : widget.block.notesFilename);
+    leftListFilenameController = TextEditingController(text: widget.block.workplanFilename.length == 0 ? FilenameHelper.getDefaultLeftFilename(widget.block, false) : widget.block.workplanFilename);
+    rightListFilenameController = TextEditingController(text: widget.block.suggestionsFilename.length == 0 ? FilenameHelper.getDefaultRightFilename(widget.block, false) : widget.block.suggestionsFilename);
+    notesFilenameController = TextEditingController(text: widget.block.notesFilename.length == 0 ? FilenameHelper.getDefaultNotesFilename(widget.col, false) : widget.block.notesFilename);
+    lessonNameController.addListener(() { _onSettingChanged(); });
+    classNameController.addListener(() { _onSettingChanged(); });
+    schoolNameController.addListener(() { _onSettingChanged(); });
+    leftListFilenameController.addListener(() { _onSettingChanged(); });
+    rightListFilenameController.addListener(() { _onSettingChanged(); });
+    notesFilenameController.addListener(() { _onSettingChanged(); });
   }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     lessonNameController.dispose();
     classNameController.dispose();
     schoolNameController.dispose();
@@ -59,16 +72,74 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
     super.dispose();
   }
 
-  String getDefaultLeftFilename() { 
-    return '${widget.block.lessonName}_${widget.block.className}_${widget.block.schoolName}.json';
-  }
+  void _onSettingChanged() { 
+    if (_debounce?.isActive ?? false) _debounce!.cancel(); 
+    _debounce = Timer(const Duration(milliseconds: 900), () { 
+      // this happens after the timer elapsed
+      // e.g. validiate, store, setState, and so on })
+      _debounce!.cancel();
+      bool changed = false;
+      if(widget.block.color != selectedColor) { changed = true; widget.block.color = selectedColor; }
+      
+      if(widget.block.lessonName != lessonNameController.text) { 
+        changed = true;
+        // check if we change the filenames too
+        bool leftFileNameDefault = FilenameHelper.getDefaultLeftFilename(widget.block, false) == leftListFilenameController.text;
+        bool rightFileNameDefault = FilenameHelper.getDefaultRightFilename(widget.block, false) == rightListFilenameController.text;
+        widget.block.lessonName = lessonNameController.text; 
+        if( leftFileNameDefault) {  leftListFilenameController.text = FilenameHelper.getDefaultLeftFilename(widget.block, false); }
+        if( rightFileNameDefault) { rightListFilenameController.text = FilenameHelper.getDefaultRightFilename(widget.block, false); }
+      }
 
-  String getDefaultRightFilename() { 
-    return '${widget.block.lessonName}.json';
-  }
+      if(widget.block.className != classNameController.text) { 
+        changed = true; 
+        // check if we change the filename too
+        bool leftFileNameDefault = FilenameHelper.getDefaultLeftFilename(widget.block, false) == leftListFilenameController.text;
+        widget.block.className = classNameController.text; 
+        if( leftFileNameDefault) {  leftListFilenameController.text = FilenameHelper.getDefaultLeftFilename(widget.block, false); }
+      }
 
-  String getDefaultNotesFilename() { 
-    return 'notes_col_${widget.col}.json';
+      if(widget.block.schoolName != schoolNameController.text) { 
+        changed = true; 
+        // check if we change the filename too
+        bool leftFileNameDefault = FilenameHelper.getDefaultLeftFilename(widget.block, false) == leftListFilenameController.text;
+        widget.block.schoolName = schoolNameController.text; 
+        if( leftFileNameDefault) {  leftListFilenameController.text = FilenameHelper.getDefaultLeftFilename(widget.block, false); }
+      }
+      
+      if(widget.block.workplanFilename != leftListFilenameController.text) { 
+        if( FilenameHelper.getDefaultLeftFilename(widget.block, false) == leftListFilenameController.text) {
+          if(widget.block.workplanFilename.length != 0) { changed = true; widget.block.workplanFilename = ''; }
+          } else { 
+          changed = true; widget.block.workplanFilename = leftListFilenameController.text; 
+        }
+      }
+      
+      if(widget.block.suggestionsFilename != rightListFilenameController.text) { 
+        if( FilenameHelper.getDefaultRightFilename(widget.block, false) == rightListFilenameController.text) {
+          if(widget.block.suggestionsFilename.length != 0) { changed = true; widget.block.suggestionsFilename = ''; }
+          } else { 
+          changed = true; widget.block.suggestionsFilename = rightListFilenameController.text; 
+        }
+      }
+      
+      if(widget.block.notesFilename != notesFilenameController.text) { 
+        if( FilenameHelper.getDefaultNotesFilename(widget.col, false) == notesFilenameController.text) {
+          if(widget.block.notesFilename.length != 0) { changed = true; widget.block.notesFilename = ''; }
+          } else { 
+          changed = true; widget.block.notesFilename = notesFilenameController.text;
+        }
+      }
+      
+      if(widget.block.showNotesBeforeWorkplan != showNotesBeforeWorkplan) { 
+        changed = true; widget.block.showNotesBeforeWorkplan = showNotesBeforeWorkplan; 
+      }
+      
+      if(changed) {
+        setState(() {});
+        widget.onSave(widget.block);
+      }
+    });
   }
 
   Widget buildSettingRow({ required String label, required TextEditingController controller,}) {
@@ -106,11 +177,11 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
           children: 
             colors.map((color) {
             return GestureDetector(
-              onTap: () => setState(() => selectedColor = color),
+              onTap: () { selectedColor = color; _onSettingChanged(); },
               child: Container(
                 margin: const EdgeInsets.all(4),
-                width: 30,
-                height: 30,
+                width: 20,
+                height: 20,
                 decoration: BoxDecoration(
                   color: color,
                   border: selectedColor == color ? Border.all(color: Colors.black, width: 3) : Border.all(color: Colors.black, width: 1),
@@ -170,11 +241,7 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
                 const SizedBox(width: 122),
                 Checkbox(
                   value: showNotesBeforeWorkplan,
-                  onChanged: (value) {
-                    setState(() {
-                      showNotesBeforeWorkplan = value ?? false;
-                    });
-                  },
+                  onChanged: (value) { showNotesBeforeWorkplan = value ?? false; _onSettingChanged(); }
                 ),
                 Text(AppLocalizations.of(context)!.showNotesBeforeWorkplan),
               ],

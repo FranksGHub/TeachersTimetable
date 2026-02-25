@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/widgets.dart' as pw;
+import 'package:teachers_timetable/models/filename_helper.dart';
 import 'package:teachers_timetable/models/print.dart';
 import 'package:path/path.dart' as p;
 import 'package:teachers_timetable/widgets/edit_checkbox_dialog.dart';
@@ -71,7 +72,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
     dataPath = await ExportImportFiles.GetPrivateDirectoryPath();
     
     if(widget.block.className.isEmpty && widget.block.schoolName.isEmpty && widget.block.lessonName.isEmpty) {
-      _editBlockColor();
+      _editSettings();
     }
 
     if(widget.block.showNotesBeforeWorkplan) { showNotesIsActive = true; _loadNotesData(); } 
@@ -82,23 +83,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
     return p.join(dataPath, ExportImportFiles.GetSaveFilename(fileName));
   }
 
-  String getDefaultLeftFilename() { 
-    return '${widget.block.lessonName}_${widget.block.className}_${widget.block.schoolName}.json';
-  }
-
-  String getDefaultRightFilename() { 
-    return '${widget.block.lessonName}.json';
-  }
-
-  String getDefaultNotesFilename() { 
-    return 'notes_col_${widget.col}.json';
-  }
-
   void _loadNotesData() {
     setState(() => isLoading = true);
 
     try {
-      String filePath = widget.block.notesFilename.length == 0 ? getFilePath(getDefaultNotesFilename()) : getFilePath(widget.block.notesFilename + '.json');
+      String filePath = widget.block.notesFilename.length == 0 ? getFilePath(FilenameHelper.getDefaultNotesFilename(widget.col, true)) : getFilePath(widget.block.notesFilename + '.json');
       if (File(filePath).existsSync()) {
         final content = File(filePath).readAsStringSync();
         final jsonData = jsonDecode(content);
@@ -145,7 +134,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
   void _loadWorkplanData() {
     // load the right list data from file
     try {
-      String filePath = widget.block.suggestionsFilename.length == 0 ? getFilePath(getDefaultRightFilename()) : getFilePath(widget.block.suggestionsFilename + '.json');
+      String filePath = widget.block.suggestionsFilename.length == 0 ? getFilePath(FilenameHelper.getDefaultRightFilename(widget.block, true)) : getFilePath(widget.block.suggestionsFilename + '.json');
       if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
@@ -166,7 +155,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
 
     // load the left list data from file
     try {
-      String filePath = (widget.block.workplanFilename.length == 0 ? getFilePath(getDefaultLeftFilename()) : getFilePath(widget.block.workplanFilename)) + '.json';
+      String filePath = (widget.block.workplanFilename.length == 0 ? getFilePath(FilenameHelper.getDefaultLeftFilename(widget.block, true)) : getFilePath(widget.block.workplanFilename)) + '.json';
       if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
@@ -191,7 +180,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
 
   void _saveNotesData() {
     try {
-      final filePath = widget.block.notesFilename.length == 0 ? getFilePath(getDefaultNotesFilename()) : getFilePath(widget.block.notesFilename + '.json');
+      final filePath = widget.block.notesFilename.length == 0 ? getFilePath(FilenameHelper.getDefaultNotesFilename(widget.col, true)) : getFilePath(widget.block.notesFilename + '.json');
       final jsonData = {"document": controllerQuill.document.toDelta().toJson()};
       final jsonString = jsonEncode(jsonData);
       File(filePath).writeAsStringSync(jsonString);
@@ -232,7 +221,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
 
   void _saveRightData() {
     try {
-      String filePath = widget.block.suggestionsFilename.length == 0 ? getFilePath(getDefaultRightFilename()) : getFilePath(widget.block.suggestionsFilename + '.json');
+      String filePath = widget.block.suggestionsFilename.length == 0 ? getFilePath(FilenameHelper.getDefaultRightFilename(widget.block, true)) : getFilePath(widget.block.suggestionsFilename + '.json');
       String json = jsonEncode(rightItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
     } catch (e) {
@@ -242,7 +231,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
 
   void _saveLeftData() {
     try {
-      String filePath = (widget.block.workplanFilename.length == 0 ? getFilePath(getDefaultLeftFilename()) : getFilePath(widget.block.workplanFilename)) + '.json';
+      String filePath = (widget.block.workplanFilename.length == 0 ? getFilePath(FilenameHelper.getDefaultLeftFilename(widget.block, true)) : getFilePath(widget.block.workplanFilename)) + '.json';
       String json = jsonEncode(leftItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
     } catch (e) {
@@ -314,156 +303,19 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
           block: widget.block,
           col: widget.col,
           onSave: (updatedBlock) {
-            bool changed = false;
-            if(widget.block.color != updatedBlock.color) { changed = true; widget.block.color = updatedBlock.color; }
-            if(widget.block.lessonName != updatedBlock.lessonName) { changed = true; widget.block.lessonName = updatedBlock.lessonName; }
-            if(widget.block.className != updatedBlock.className) { changed = true; widget.block.className = updatedBlock.className; }
-            if(widget.block.schoolName != updatedBlock.schoolName) { changed = true; widget.block.schoolName = updatedBlock.schoolName; }
-            if(widget.block.workplanFilename != updatedBlock.workplanFilename) { changed = true; widget.block.workplanFilename = updatedBlock.workplanFilename; }
-            if(widget.block.suggestionsFilename != updatedBlock.suggestionsFilename) { changed = true; widget.block.suggestionsFilename = updatedBlock.suggestionsFilename; }
-            if(widget.block.notesFilename != updatedBlock.notesFilename) { changed = true; widget.block.notesFilename = updatedBlock.notesFilename; }
-            if(widget.block.showNotesBeforeWorkplan != updatedBlock.showNotesBeforeWorkplan) { changed = true; widget.block.showNotesBeforeWorkplan = updatedBlock.showNotesBeforeWorkplan; }
-            if(changed) {
-              setState(() {});
-              widget.onSave(widget.block);
-            }
+            if(widget.block.color != updatedBlock.color) { widget.block.color = updatedBlock.color; }
+            if(widget.block.lessonName != updatedBlock.lessonName) { widget.block.lessonName = updatedBlock.lessonName; }
+            if(widget.block.className != updatedBlock.className) { widget.block.className = updatedBlock.className; }
+            if(widget.block.schoolName != updatedBlock.schoolName) { widget.block.schoolName = updatedBlock.schoolName; }
+            if(widget.block.workplanFilename != updatedBlock.workplanFilename) { widget.block.workplanFilename = updatedBlock.workplanFilename; }
+            if(widget.block.suggestionsFilename != updatedBlock.suggestionsFilename) { widget.block.suggestionsFilename = updatedBlock.suggestionsFilename; }
+            if(widget.block.notesFilename != updatedBlock.notesFilename) { widget.block.notesFilename = updatedBlock.notesFilename; }
+            if(widget.block.showNotesBeforeWorkplan != updatedBlock.showNotesBeforeWorkplan) { widget.block.showNotesBeforeWorkplan = updatedBlock.showNotesBeforeWorkplan; }
+            
+            setState(() {});
+            widget.onSave(widget.block);
           },
         ),
-      ),
-    );
-  }
-
-
-  void _editBlockText(String tag) {
-    final dialogTitle = AppLocalizations.of(context)!.editText; 
-    final currentTextValue;
-    final dialogText;
-    switch(tag) {
-      case 'lessonName':
-        currentTextValue = widget.block.lessonName;
-        dialogText = AppLocalizations.of(context)!.lessonName;
-        break;
-      case 'className':
-        currentTextValue = widget.block.className;
-        dialogText = AppLocalizations.of(context)!.className;
-        break;
-      case 'schoolName':
-        currentTextValue = widget.block.schoolName;
-        dialogText = AppLocalizations.of(context)!.schoolNameLabel;
-        break;
-      case 'workplanFilename':
-        currentTextValue = widget.block.workplanFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultLeftFilename()) : widget.block.workplanFilename;
-        dialogText = AppLocalizations.of(context)!.workplanFilename;
-        break;
-      case 'suggestionsFilename':
-        currentTextValue = widget.block.suggestionsFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultRightFilename()) : widget.block.suggestionsFilename;
-        dialogText = AppLocalizations.of(context)!.suggestionsFilename;
-        break;
-      case 'notesFilename':
-        currentTextValue = widget.block.notesFilename.length == 0 ? ExportImportFiles.GetSaveFilename(getDefaultNotesFilename()) : widget.block.notesFilename;
-        dialogText = AppLocalizations.of(context)!.notesFilename;
-        break;
-      default:
-        _showError('Invalid Tag: ' + tag);
-        return; // invalid tag
-    }
-    showDialog(
-      context: context,
-      builder: (context) => EditTextDialog(
-        dialogTitle: dialogTitle,
-        dialogText: dialogText,
-        currentTextValue: currentTextValue,
-
-        onSave: (currentTextValue) {
-          switch(tag) {
-            case 'lessonName':
-              if(widget.block.lessonName != currentTextValue) { 
-                widget.block.lessonName = currentTextValue;
-                widget.onSave(widget.block);
-              }
-              break;
-            case 'className':
-              if(widget.block.className != currentTextValue) { 
-                widget.block.className = currentTextValue;
-                widget.onSave(widget.block);
-              }
-              break;
-            case 'schoolName':
-              if(widget.block.schoolName != currentTextValue) {
-                widget.block.schoolName = currentTextValue;
-                widget.onSave(widget.block);
-              }
-              break;
-              case 'workplanFilename':
-              if(widget.block.workplanFilename != currentTextValue) {
-                widget.block.workplanFilename = (currentTextValue == getDefaultLeftFilename() || currentTextValue.length == 0) ? '' : currentTextValue;
-                widget.onSave(widget.block);
-              }
-              break;
-              case 'suggestionsFilename':
-              if(widget.block.suggestionsFilename != currentTextValue) {
-                widget.block.suggestionsFilename = (currentTextValue == getDefaultRightFilename() || currentTextValue.length == 0) ? '' : currentTextValue;
-                widget.onSave(widget.block);
-              }
-              break;
-              case 'notesFilename':
-              if(widget.block.notesFilename != currentTextValue) {
-                widget.block.notesFilename = (currentTextValue == getDefaultNotesFilename() || currentTextValue.length == 0) ? '' : currentTextValue;
-                widget.onSave(widget.block);
-              }
-              break;
-          }
-        }
-      ),
-    );
-
-    setState(() {});
-            
-    // reload data with new names, if data are already visible
-    if (listDataLoaded) { _loadWorkplanData(); }
-    if (notesLoaded) { _loadNotesData(); }
-  }
-
-  void _editBlockColor() {
-    showDialog(
-      context: context,
-      builder: (context) => EditColorDialog(
-        block: widget.block,
-        onSave: (updatedBlock) {
-          // Reload if names changed
-          if( widget.block.color != updatedBlock.color) {
-            setState(() {
-              widget.block.color = updatedBlock.color;
-            });
-            widget.onSave(widget.block);
-          }
-        },
-      ),
-    );
-  }
-
-  void _editCheckbox(String tag) {
-    showDialog(
-      context: context,
-      builder: (context) => EditCheckboxDialog(
-        checkValue: widget.block.showNotesBeforeWorkplan, 
-        dialogTitle: AppLocalizations.of(context)!.editShowNotesBeforeWorkplan, 
-        dialogText: AppLocalizations.of(context)!.showNotesBeforeWorkplan,
-
-        onSave: (checkValue) {
-          // Reload if names changed
-          if( widget.block.showNotesBeforeWorkplan != checkValue) { 
-            setState(() {
-              widget.block.showNotesBeforeWorkplan = checkValue;
-              widget.onSave(widget.block);
-            });
-
-            
-            // reload data with new names, if data are already visible
-            if (listDataLoaded) { _loadWorkplanData(); }
-            if (notesLoaded) { _loadNotesData(); }
-          }
-        }, 
       ),
     );
   }
@@ -519,6 +371,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
             ),
 
             const Divider(),
+
             ListTile(
               leading: const Icon(Icons.print),
               title: Text(showNotesIsActive ? AppLocalizations.of(context)!.printNotes : AppLocalizations.of(context)!.printWorkplan),
@@ -532,6 +385,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
             ),
 
             const Divider(),
+
             ListTile(
               leading: showNotesIsActive ? const Icon(Icons.work) : const Icon(Icons.notes),
               title: Text(showNotesIsActive ? AppLocalizations.of(context)!.showWorkplan : AppLocalizations.of(context)!.showNotes),
@@ -544,72 +398,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
             ),
 
             const Divider(),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(AppLocalizations.of(context)!.editBlockColor),
-              onTap: () {
-                Navigator.pop(context);
-                _editBlockColor();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(AppLocalizations.of(context)!.editLessonName),
-              onTap: () {
-                Navigator.pop(context);
-                _editBlockText('lessonName');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(AppLocalizations.of(context)!.editClassName),
-              onTap: () {
-                Navigator.pop(context);
-                _editBlockText('className');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(AppLocalizations.of(context)!.editSchoolName),
-              onTap: () {
-                Navigator.pop(context);
-                _editBlockText('schoolName');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(AppLocalizations.of(context)!.editWorkplanFilename),
-              onTap: () {
-                Navigator.pop(context);
-                _editBlockText('workplanFilename');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(AppLocalizations.of(context)!.editSuggestionsFilename),
-              onTap: () {
-                Navigator.pop(context);
-                _editBlockText('suggestionsFilename');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(AppLocalizations.of(context)!.editNotesFilename),
-              onTap: () {
-                Navigator.pop(context);
-                _editBlockText('notesFilename');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(AppLocalizations.of(context)!.editShowNotesBeforeWorkplan),
-              onTap: () {
-                Navigator.pop(context);
-                _editCheckbox('showNotesBeforeWorkplan');
-              },
-            ),
 
-            const Divider(),
             ListTile(
               leading: const Icon(Icons.settings),
               title: Text(AppLocalizations.of(context)!.editBlock),

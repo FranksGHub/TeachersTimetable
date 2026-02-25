@@ -26,7 +26,7 @@ class _EditDaysDialogState extends State<EditDaysDialog> {
       title: Text(AppLocalizations.of(context)!.editDays),
       content: TextField(
         controller: daysController,
-        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.days),
+        //decoration: InputDecoration(labelText: AppLocalizations.of(context)!.days),
       ),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
