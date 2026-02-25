@@ -7,9 +7,6 @@ import 'dart:convert';
 import '../l10n/app_localizations.dart';
 import '../models/lesson_block.dart';
 import '../models/export_import_files.dart';
-import 'edit_title_dialog.dart';
-import 'edit_days_dialog.dart';
-import 'edit_times_dialog.dart';
 import 'lesson_detail_page.dart';
 import 'version_menu.dart';
 
