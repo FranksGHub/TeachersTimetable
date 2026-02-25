@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teachers_timetable/models/print.dart';
+import 'package:teachers_timetable/widgets/edit_text_dialog.dart';
 import 'package:teachers_timetable/widgets/help_page.dart';
 import 'dart:convert';
 import '../l10n/app_localizations.dart';
@@ -140,8 +141,10 @@ class _TimetablePageState extends State<TimetablePage> {
   void _editTitle() {
     showDialog(
       context: context,
-      builder: (context) => EditTitleDialog(
-        currentTitle: title,
+      builder: (context) => EditTextDialog(
+        currentTextValue: title,
+        dialogTitle: AppLocalizations.of(context)!.editTitle,
+        dialogText: '',
         onSave: (newTitle) {
           setState(() {
             title = newTitle;
@@ -155,11 +158,13 @@ class _TimetablePageState extends State<TimetablePage> {
   void _editDays() {
     showDialog(
       context: context,
-      builder: (context) => EditDaysDialog(
-        days: days,
+      builder: (context) => EditTextDialog(
+        currentTextValue: days.join(', '),
+        dialogTitle: AppLocalizations.of(context)!.editDays,
+        dialogText: '',
         onSave: (newDays) {
           setState(() {
-            days = newDays;
+            days = newDays.split(', ');
           });
           saveData();
         },
@@ -170,11 +175,13 @@ class _TimetablePageState extends State<TimetablePage> {
   void _editTimes() {
     showDialog(
       context: context,
-      builder: (context) => EditTimesDialog(
-        times: times,
+      builder: (context) => EditTextDialog(
+        currentTextValue: times.join(', '),
+        dialogTitle: AppLocalizations.of(context)!.editTimes,
+        dialogText: '',
         onSave: (newTimes) {
           setState(() {
-            times = newTimes;
+            times = newTimes.split(', ');
           });
           saveData();
         },
@@ -315,6 +322,8 @@ class _TimetablePageState extends State<TimetablePage> {
                   _showLanguage('en');
                 },
               ),
+
+              SizedBox(height: 80,) // on some devices the last menu line is otherwise not touchable
             ],
           ),
         ),
