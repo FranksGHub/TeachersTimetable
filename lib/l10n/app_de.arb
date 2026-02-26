@@ -10,6 +10,8 @@
   "editTitle": "Titel bearbeiten",
   "editDays": "Tage bearbeiten",
   "editTimes": "Zeiten bearbeiten",
+  "editBlocksPerDay": "Stunden pro Tag bearbeiten",
+  "editBlocksPerDayText": "Bitte einen Wert von 1 bis 9 eingeben:",
   "printPdf": "Stundenplan Drucken",
   "printWorkplan": "Arbeitsplan drucken",
   "printNotes": "Notizen drucken",

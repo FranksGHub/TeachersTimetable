@@ -42,6 +42,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editTimes => 'Edit Times';
 
   @override
+  String get editBlocksPerDay => 'Edit Lessons per day';
+
+  @override
+  String get editBlocksPerDayText => 'Please enter a value from 1 to 9:';
+
+  @override
   String get printPdf => 'Print timetable';
 
   @override

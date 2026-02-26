@@ -10,6 +10,8 @@
   "editTitle": "Edit Title",
   "editDays": "Edit Days",
   "editTimes": "Edit Times",
+  "editBlocksPerDay": "Edit Lessons per day",
+  "editBlocksPerDayText": "Please enter a value from 1 to 9:",
   "printPdf": "Print timetable",
   "printWorkplan": "Print work plan",
   "printNotes": "Print notes",

@@ -42,6 +42,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editTimes => 'Zeiten bearbeiten';
 
   @override
+  String get editBlocksPerDay => 'Stunden pro Tag bearbeiten';
+
+  @override
+  String get editBlocksPerDayText => 'Bitte einen Wert von 1 bis 9 eingeben:';
+
+  @override
   String get printPdf => 'Stundenplan Drucken';
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teachers_timetable/models/print.dart';
+import 'package:teachers_timetable/widgets/edit_combo_dialog.dart';
 import 'package:teachers_timetable/widgets/edit_text_dialog.dart';
 import 'package:teachers_timetable/widgets/help_page.dart';
 import 'dart:convert';
@@ -21,10 +22,11 @@ class TimetablePage extends StatefulWidget {
 }
 
 class _TimetablePageState extends State<TimetablePage> {
-  List<List<LessonBlock>> timetable = List.generate(6, (_) => List.generate(5, (_) => LessonBlock()));
+  List<List<LessonBlock>> timetable = List.generate(9, (_) => List.generate(5, (_) => LessonBlock()));
   List<String> days = ['Mo', 'Di', 'Mi', 'Do', 'Fr'];
-  List<String> times = ['   1', '   2', '   3', '   4', '   5', '   6'];
+  List<String> times = ['   1', '   2', '   3', '   4', '   5', '   6', '   7', '   8', '   9'];
   String title = 'Lehrer Stundenplan';
+  int countOfBlocksPerDay = 6;  // 1..9 lesson blocks each day in vertical direction
   late SharedPreferences prefs;
   late FocusNode _focusNode;
 
@@ -49,6 +51,14 @@ class _TimetablePageState extends State<TimetablePage> {
         title = titleJson;
       });
     }
+
+    int? count = prefs.getInt('countOfBlocksPerDay');
+    if (count != null && count != countOfBlocksPerDay && count > 0 && count < 10) {
+      setState(() {
+        countOfBlocksPerDay = count;
+      });
+    }
+
     days[0] = prefs.getString('mon') != null ? prefs.getString('mon')! : 'Mo';
     days[1] = prefs.getString('tue') != null ? prefs.getString('tue')! : 'Di';
     days[2] = prefs.getString('wed') != null ? prefs.getString('wed')! : 'Mi';
@@ -64,6 +74,9 @@ class _TimetablePageState extends State<TimetablePage> {
     times[3] = prefs.getString('time4') != null ? prefs.getString('time4')! : '   4';
     times[4] = prefs.getString('time5') != null ? prefs.getString('time5')! : '   5';
     times[5] = prefs.getString('time6') != null ? prefs.getString('time6')! : '   6';
+    times[6] = prefs.getString('time7') != null ? prefs.getString('time7')! : '   7';
+    times[7] = prefs.getString('time8') != null ? prefs.getString('time8')! : '   8';
+    times[8] = prefs.getString('time9') != null ? prefs.getString('time9')! : '   9';
     setState(() {
       times = times;
     });
@@ -84,16 +97,22 @@ class _TimetablePageState extends State<TimetablePage> {
           suggestionsFilename: block['suggestionsFilename'] ?? '',
           notesFilename: block['notesFilename'] ?? '',
         )).toList()).toList();
+
+        while(timetable.length < 9) {
+          timetable.add(List.generate(5, (_) => LessonBlock()));
+        }
       });
     }
   }
 
   void saveData() {
     prefs.setString('title', title);
+    prefs.setInt('countOfBlocksPerDay', countOfBlocksPerDay);
     prefs.setString('mon', days[0]);  prefs.setString('tue', days[1]);  prefs.setString('wed', days[2]);  
     prefs.setString('thu', days[3]);  prefs.setString('fri', days[4]);
     prefs.setString('time1', times[0]);  prefs.setString('time2', times[1]);  prefs.setString('time3', times[2]);
     prefs.setString('time4', times[3]);  prefs.setString('time5', times[4]);  prefs.setString('time6', times[5]);
+    prefs.setString('time7', times[6]);  prefs.setString('time8', times[7]);  prefs.setString('time9', times[8]);
     prefs.setString('timetable', jsonEncode(timetable.map((row) => row.map((block) => {
       'color': block.color.toARGB32(),
       'lessonName': block.lessonName,
@@ -186,6 +205,23 @@ class _TimetablePageState extends State<TimetablePage> {
     );
   }
 
+  void _editBlocksPerDay() {
+    showDialog(
+      context: context,
+      builder: (context) => EditComboDialog(
+        currentValue: countOfBlocksPerDay,
+        dialogTitle: AppLocalizations.of(context)!.editBlocksPerDay,
+        dialogText: AppLocalizations.of(context)!.editBlocksPerDayText,
+        onSave: (newCount) {
+          setState(() {
+            countOfBlocksPerDay = newCount;
+          });
+          saveData();
+        },
+      ),
+    );
+  }
+
   void _showLanguage(String langCode) {
     Locale newLocale = langCode == 'en' ? const Locale('en') : const Locale('de');
     if(widget.currentLocale == newLocale){
@@ -252,7 +288,9 @@ class _TimetablePageState extends State<TimetablePage> {
                   );
                 },
               ),
+              
               const Divider(),
+              
               ListTile(
                 leading: const Icon(Icons.edit),
                 title: Text(AppLocalizations.of(context)!.editTitle),
@@ -277,13 +315,23 @@ class _TimetablePageState extends State<TimetablePage> {
                   _editTimes();
                 },
               ),
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: Text(AppLocalizations.of(context)!.editBlocksPerDay),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  _editBlocksPerDay();
+                },
+              ),
+
               const Divider(),
+
               ListTile(
                 leading: const Icon(Icons.print),
                 title: Text(AppLocalizations.of(context)!.printPdf),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
-                  PrintPdf().PrintTimetable(context, title, days, times, timetable);
+                  PrintPdf().PrintTimetable(context, title, days, times, countOfBlocksPerDay, timetable);
                 },
               ),
               ListTile(
@@ -334,7 +382,7 @@ class _TimetablePageState extends State<TimetablePage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 6,
+              itemCount: countOfBlocksPerDay,
               itemBuilder: (context, row) {
                 return Row(
                   children: [

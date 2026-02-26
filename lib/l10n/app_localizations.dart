@@ -164,6 +164,18 @@ abstract class AppLocalizations {
   /// **'Edit Times'**
   String get editTimes;
 
+  /// No description provided for @editBlocksPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Lessons per day'**
+  String get editBlocksPerDay;
+
+  /// No description provided for @editBlocksPerDayText.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a value from 1 to 9:'**
+  String get editBlocksPerDayText;
+
   /// No description provided for @printPdf.
   ///
   /// In en, this message translates to:
