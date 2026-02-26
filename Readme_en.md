@@ -4,7 +4,7 @@
 The Teachers Timetable project offers a simple and user-friendly way to manage and organize the schedules of teachers. It allows teachers to track the tasks for each class. But of course this is not only for teachers...  
 
 - **Short Description:**  
-With this app, you can create and print your timetable, task lists, and notes on Windows and Android. Currently, the timetable consists of a table of 5 days × 6 blocks (hours). Clicking on one of the blocks takes you to the detailed view with configuration options.  
+With this app, you can create and print your timetable, task lists, and notes on Windows and Android. The timetable consists of a table of 5 days and up to 9 blocks (hours) per day. Clicking on one of the blocks takes you to the detailed view with configuration options.  
   
 - **Multilingualism:**
 German and English  
@@ -24,8 +24,7 @@ As long as the app is not yet visible in the Google Play Store, save the APK fil
 ## **App Features**  
   
 ### **Homepage - Timetable View**  
-  
-Currently, 5 days × 6 blocks are set up.  
+The default configuration is 5 days × 6 blocks. The number of blocks per day can be adjusted from 1 to 9.  
 > **Settings in the Main Menu:**  
 > The app version is displayed here.  
 > A help window can be displayed.  
@@ -54,8 +53,7 @@ Furthermore, notes for the block can be displayed here via a menu item. The orde
 > The task list can be printed or saved as a PDF  
 > Notes can be opened (when tasks are currently displayed)  
 > Tasks can be opened (when notes are currently displayed)  
-> The file names and display order for the lists and notes can be changed  
-> The text and the color of the block on the main page can be set  
+> The block settings for color, names, filenames and the display order for the lists and notes can be changed  
   
 All options in this view are described below.  
   
@@ -79,10 +77,12 @@ All changes are saved automatically and cannot be undone.
 - **Using Status Management in the Task List**  
 The task list features a colored status indicator and a letter, at the beginning of the task step line, to represent the current status of the step. Currently, the colored circles are yellow with a "(P)" for "Planned," yellow with a "(W)" for "Working," and green with a "(F)" for "Finished." Clicking the colored circle changes the status in the sequence P, W, F, and back to P. This makes it easy to see which steps have already been completed and which are still pending for each task. Once all steps for a task are complete, the task is displayed collapsed when the window is opened, improving clarity.  
   
-
+- **The Notes View**  
+Instead of the task list, a page for notes can also be displayed. Text can be formatted via the editors menu bar. When returning to the timetable view or opening the task list, all changes are saved automatically. Whether the notes or the work plan are displayed first in the detail view, can be selected separately for each block via the settings menu.
   
-### **Others**
-- License  
+### **Others**  
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY, without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+  
 - Frequently Asked Questions (FAQ)  
   
   

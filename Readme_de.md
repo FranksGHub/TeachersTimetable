@@ -4,7 +4,7 @@
 Das Projekt "Teachers Timetable" bietet eine sehr einfache und benutzerfreundliche Möglichkeit, die Stundenpläne von Lehrkräften zu verwalten und zu organisieren. Es ermöglicht Lehrkräften, die Aufgaben für jede Unterrichtsstunde zu verfolgen. Aber natürlich ist dies nicht nur für Lehrkräfte gedacht…  
 
 - **Kurzbeschreibung:**  
-Mit dieser App kannst du unter Windows und Android deinen Stundenplan, Aufgabenlisten und Notizen erstellen und ausdrucken. Momentan besteht der Stundenplan aus einer Tabelle von 5 Tagen × 6 Blöcke (Stunden). Ein Klick auf einen der Blöcke bringt dich in die detailierte Ansicht dieses Blocks mit den Konfigurationsmöglichkeiten.  
+Mit dieser App kannst du unter Windows und Android deinen Stundenplan, Aufgabenlisten und Notizen erstellen und ausdrucken. Der Stundenplan besteht aus einer Tabelle von 5 Tagen und bis zu 9 Blöcken (Stunden) pro Tag. Ein Klick auf einen der Blöcke bringt dich in die detailierte Ansicht dieses Blocks mit den Konfigurationsmöglichkeiten.  
 
 - **Mehrsprachigkeit:**  
 Deutsch und Englisch  
@@ -23,13 +23,14 @@ So lange die APP noch nicht im Google Play Store sichtbar ist, speichere die APK
 
 ## **Die APP-Funktionen**
 ### **Startseite - Die Stundenplan Ansicht**  
-Momentan sind 5 Tage × 6 Blöcke angelegt   
+Es sind 5 Tage × 6 Blöcke als Standard angelegt. Es sind 1 bis 9 Blöcke pro Tag einstellbar.   
 > **Die Einstellungen im Hauptmenü:**  
 > Die Version der APP wird hier angezeigt  
 > Ein Hilfe Fenster kann angezeigt werden  
 > Der Titel der Seite kann geändert werden  
 > Spalten Überschriften (Tage) editieren  
 > Zeileneinteilung (Zeiten) editieren  
+> Die Anzahl der Stunden (Blöcke) pro Tag editieren  
 > Der Stundenplan kann ausgedruckt oder als PDF gespeichert werden  
 > Export der Einstellungen und Daten als ZIP-Datei als Backup und zum Datenaustausch  
 > Import der Einstellungen und Daten über eine vorher exportierte ZIP-Datei  
@@ -50,9 +51,9 @@ Alle Möglichkeiten in dieser Ansicht werden weiter unten beschrieben.
 > Die Aufgabenliste kann gedruckt, oder als PDF gespeichert werden  
 > Die Notizen können geöffnet werden (wenn gerade die Aufgaben angezeigt werden)  
 > Die Aufgaben können geöffnet werden (wenn gerade die Notizen angezeigt werden)  
-> Die Dateinamen und die Anzeigereihenfolge für die Listen und Notizen können geändert werden  
-> Die Texte und die Farbe des Blocks auf der Hauptseite können eingestellt werden  
-  
+> Die Einstellungen für die Farbe, Namen, Dateinamen und Anzeigereihenfolge für die Listen und Notizen können geändert werden  
+   
+Alle Optionen in dieser Ansicht sind weiter unten beschrieben.  
   
 ### **Detaillierte Bedienungsanleitung**
 
@@ -73,9 +74,13 @@ Alle Änderungen werden automatisch gespeichert und lassen sich nicht rückgäng
 - **Status-Verwaltung in der Aufgabenliste nutzen**  
 In der Aufgabenliste gibt es vorne eine farbige Statusanzeige und einen Buchstaben für den aktuellen Status. Zur Zeit ist es die Farbe Gelb und ein "(P)" für in Planung, Gelb und ein "(W)" für weiterarbeiten und Grün und ein "(F)" für fertig. Wenn man auf den farbigen Kreis klickt, dann ändert sich der Status, in der Reihenfolge P, W, F und wieder P. Damit kann man leicht überschauen, welche Arbeitsschritte schon durchgeführt wurden und welche Arbeitsschritte für die jeweilige Aufgabe noch ausstehen. Sind alle Arbeitsschritte für eine Aufgabe fertig, dann wird diese Aufgabe beim Öffnen des Fensters zugeklappt dargestellt. Das erhöht die Übersicht.  
 
-
-
-### **Sonstiges**
-- Lizenz
-- Häufig gestellte Fragen (FAQ)
+- **Die Notizen Ansicht**  
+Statt der Aufgabenliste kann auch eine Seite für Notizen angezeigt werden. Die Texte können dabei über eine Menüzeile im Editor formatiert werden. Beim Sprung zurück in die Stundenplanansicht, oder dem Öffnen der Aufgabenliste werden alle Änderungen automatisch gespeichert. Ob in der Detail Ansicht zuerst die Notizen oder der Arbeitsplan angezeigt werden, kann über die Einstellungen im Menü für jeden Block getrennt ausgewählt werden.  
+  
+  
+### **Sonstiges**  
+Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch OHNE JEDE GEWÄHR, sogar ohne die implizite Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.  
+  
+- Häufig gestellte Fragen (FAQ)  
+  
 
