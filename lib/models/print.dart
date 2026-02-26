@@ -115,7 +115,7 @@ class PrintPdf {
   }
 
 
-  Future<bool> PrintTimetable(BuildContext context, String title, List<String> days, List<String> times, List<List<LessonBlock>> timetable) async {
+  Future<bool> PrintTimetable(BuildContext context, String title, List<String> days, List<String> times, int countOfBlocksPerDay, List<List<LessonBlock>> timetable) async {
 
     // Defensive checks: dimensions
     if (days.isEmpty || times.isEmpty) return false;
@@ -165,7 +165,7 @@ class PrintPdf {
                     ],
                   ),
                   // Data rows: one row with time label for each time period + 5 blocks
-                  for (int r = 0; r < times.length; r++)
+                  for (int r = 0; r < countOfBlocksPerDay; r++)
                     pw.TableRow(
                       verticalAlignment: pw.TableCellVerticalAlignment.middle,
                       children: [
