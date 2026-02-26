@@ -1,7 +1,8 @@
-Block Dateinamen in Settings
-Notizen pro Klasse
+see project issues also
 
 ~~~~ OK ~~~~~~~~~~~~~~~~
+Block Dateinamen in Settings
+Notizen pro Klasse
 Block Setting automatisch öffnen, wenn noch keine Daten im Block eingetragen wurden
 Auch die Settings ins Backup
 Settings auch als Datei speichern im privaten Directory
