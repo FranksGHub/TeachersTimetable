@@ -36,9 +36,9 @@ The default configuration is 5 days × 6 blocks. The number of blocks per day ca
 > Export settings and data as a ZIP file for backup and data exchange.  
 > Import settings and data from a previously exported ZIP file.  
   
-Clicking on a block takes you to the block's detail view.  
-If the block has never been edited, you will be taken directly to the settings for its color and text. These settings can also be changed later at any time via the menu in the detail view.  
-In this detail view, depending on the settings, you will first see the work schedule with the lists, or the notes for this block.  
+**Clicking** on a block takes you to the block's detail view.  
+If the block has never been edited, you will be taken directly to the settings for its color and text. These settings can also be changed later at any time via the menu in the detail view. In this detail view, depending on the settings, you will first see the work schedule with the lists, or the notes for this block.  
+A **long click** or a **right-click** on a block opens a context menu with the option to directly edit the block's settings, copy the block's settings, delete the block's settings, or, if settings have already been copied, paste them into this block.  
   
   
 ### **Details Page - The Block View**  

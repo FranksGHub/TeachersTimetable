@@ -78,7 +78,6 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
       // e.g. validiate, store, setState, and so on })
       _debounce!.cancel();
       bool changed = false;
-      if(widget.block.color != selectedColor) { changed = true; widget.block.color = selectedColor; }
       
       if(widget.block.lessonName != lessonNameController.text) { 
         changed = true;
@@ -130,10 +129,6 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
         }
       }
       
-      if(widget.block.showNotesBeforeWorkplan != showNotesBeforeWorkplan) { 
-        changed = true; widget.block.showNotesBeforeWorkplan = showNotesBeforeWorkplan; 
-      }
-      
       if(changed) {
         setState(() {});
         widget.onSave(widget.block);
@@ -141,7 +136,17 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
     });
   }
 
-  Widget buildSettingRow({ required String label, required TextEditingController controller,}) {
+  void _onSettingChangedDirectly() { 
+    bool changed = false;
+    if(widget.block.color != selectedColor) { changed = true; widget.block.color = selectedColor; }
+    if(widget.block.showNotesBeforeWorkplan != showNotesBeforeWorkplan) { changed = true; widget.block.showNotesBeforeWorkplan = showNotesBeforeWorkplan; }
+    if(changed) {
+      setState(() {});
+      widget.onSave(widget.block);
+    }
+  }
+
+  Widget _buildSettingRow({ required String label, required TextEditingController controller,}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -166,7 +171,7 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
     );
   }
 
-  Widget buildColorRow({ required String label }) {
+  Widget _buildColorRow({ required String label }) {
     // Color display
     return Row(
       children: [
@@ -176,7 +181,7 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
           children: 
             colors.map((color) {
             return GestureDetector(
-              onTap: () { selectedColor = color; _onSettingChanged(); },
+              onTap: () { selectedColor = color; _onSettingChangedDirectly(); },
               child: Container(
                 margin: const EdgeInsets.all(4),
                 width: 20,
@@ -204,30 +209,30 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
           children: [ 
 
             // Color setting
-            buildColorRow( label: AppLocalizations.of(context)!.color),
+            _buildColorRow( label: AppLocalizations.of(context)!.color),
 
             // 6 Text lines
-            buildSettingRow(
+            _buildSettingRow(
               label: AppLocalizations.of(context)!.lessonName,
               controller: lessonNameController,
             ),
-            buildSettingRow(
+            _buildSettingRow(
               label: AppLocalizations.of(context)!.className,
               controller: classNameController,
             ),
-            buildSettingRow(
+            _buildSettingRow(
               label: AppLocalizations.of(context)!.schoolName,
               controller: schoolNameController,
             ),
-            buildSettingRow(
+            _buildSettingRow(
               label: AppLocalizations.of(context)!.workplanFilename,
               controller: leftListFilenameController,
             ),
-            buildSettingRow(
+            _buildSettingRow(
               label: AppLocalizations.of(context)!.suggestionsFilename,
               controller: rightListFilenameController,
             ),
-            buildSettingRow(
+            _buildSettingRow(
               label: AppLocalizations.of(context)!.notesFilename,
               controller: notesFilenameController,
             ),
@@ -240,7 +245,7 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
                 const SizedBox(width: 122),
                 Checkbox(
                   value: showNotesBeforeWorkplan,
-                  onChanged: (value) { showNotesBeforeWorkplan = value ?? false; _onSettingChanged(); }
+                  onChanged: (value) { showNotesBeforeWorkplan = value ?? false; _onSettingChangedDirectly(); }
                 ),
                 Text(AppLocalizations.of(context)!.showNotesBeforeWorkplan),
               ],

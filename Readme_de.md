@@ -35,9 +35,9 @@ Es sind 5 Tage × 6 Blöcke als Standard angelegt. Es sind 1 bis 9 Blöcke pro T
 > Export der Einstellungen und Daten als ZIP-Datei als Backup und zum Datenaustausch  
 > Import der Einstellungen und Daten über eine vorher exportierte ZIP-Datei  
 
-Durch den Klick auf einen Block kommt man in die Detailansicht des Blocks.  
-Ist der Block noch nie bearbeitet worden, öffnen sich direkt die Einstellungen zur Farbe und den Texten dieses Blocks. Das kann später auch jederzeit über das Menü in der Detailansicht geändert werden.
-In dieser Detailansicht sieht man, je nach Einstellung zuerst den Arbeitsplan mit den Listen, oder die Notizen zu diesem Block.  
+Durch den **Klick** auf einen Block kommt man in die Detailansicht des Blocks.  
+Ist der Block noch nie bearbeitet worden, öffnen sich direkt die Einstellungen zur Farbe und den Texten dieses Blocks. Das kann später auch jederzeit über das Menü in der Detailansicht geändert werden. In dieser Detailansicht sieht man, je nach Einstellung zuerst den Arbeitsplan mit den Listen, oder die Notizen zu diesem Block.  
+Durch einen **langen Klick**, oder einen **Klick mit der rechten Maustaste** auf einen Block, öffnet sich ein Kontextmenu mit der Möglichkeit die Einstellungen des Blocks direkt zu bearbeiten, die Einstellungen des Blocks zu kopieren, die Einstellungen des Blocks zu löschen oder, wenn schon Einstellungen kopiert wurden, diese in diesen Block einzufügen.  
   
 ### **Detailseite - Die Block Ansicht**  
 Hier gibt es im Arbeitsplan eine Liste (die Aufgabenliste) für die geplanten, gerade in Arbeit befindlichen, oder schon erledigten Aufgaben und Arbeitsschritte, mit einer entsprechenden Status-Verwaltung (**P**lanung, **W**eiterarbeit, **F**ertig). Eine weitere, genauso aufgebaute, Liste (die Vorschlagsliste), die einmal erstellt, über die Jahre, immer gleich bleiben kann als Vorrat an möglichen Aufgaben. Aus der Vorschlagsliste können jederzeit Aufgaben und Arbeitsschritte in die Aufgabenliste übernommen werden.  

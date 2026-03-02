@@ -21,11 +21,11 @@ class ExportImportFiles {
     return '$base\_$stamp$ext'; 
   }
 
-  static String GetSaveFilename(String originalFilename) { 
+  static String getSaveFilename(String originalFilename) { 
     return originalFilename.replaceAll(RegExp(r'[\\/:*?" <>|]'), '_');
   }
 
-  static Future<String> GetPrivateDirectoryPath() async {
+  static Future<String> getPrivateDirectoryPath() async {
     // Get applications private data directory
     final directory = await getApplicationDocumentsDirectory();
     final timetablePath = p.join(directory.path, 'Timetable');
@@ -34,7 +34,7 @@ class ExportImportFiles {
     return timetablePath;
   }
 
-  Future<bool> CopyFile(BuildContext context, String sourcePathFilename, String destPathFilename) async { 
+  Future<bool> copyFile(BuildContext context, String sourcePathFilename, String destPathFilename) async { 
     final source = File(sourcePathFilename); 
     if (!await source.exists()) throw Exception(AppLocalizations.of(context)!.fileNotFound); 
     // Zielverzeichnis sicherstellen 
@@ -54,7 +54,7 @@ class ExportImportFiles {
     }
   }
 
-  Future<bool> SaveOrShareFile(BuildContext context, String filename) async {
+  Future<bool> saveOrShareFile(BuildContext context, String filename) async {
     if (Platform.isAndroid) {
       // Share on Android
       await SharePlus.instance.share(ShareParams(files: [XFile(filename)], subject: AppLocalizations.of(context)!.saveTimetableDataSubject, title: AppLocalizations.of(context)!.saveTimetableData));
@@ -69,14 +69,14 @@ class ExportImportFiles {
       allowedExtensions: [p.extension(filename)],
     );
 
-    if (outputFile != null && await CopyFile(context, filename, outputFile)) {
+    if (outputFile != null && await copyFile(context, filename, outputFile)) {
       return true;
     }
     return false;
   }
 
 
-  Future<void> SavePrefsData(BuildContext context, SharedPreferences prefs, bool silent) async {
+  Future<void> savePrefsData(BuildContext context, SharedPreferences prefs, bool silent) async {
     // get the prefs data as strings
     Map<String, dynamic> data = {};
     Set<String> keys = prefs.getKeys();
@@ -88,7 +88,7 @@ class ExportImportFiles {
 
     // Save the data into the private data path
     // Get or create target directory
-    final timetablePath = await GetPrivateDirectoryPath();
+    final timetablePath = await getPrivateDirectoryPath();
     final targetFilePathName = p.join(timetablePath, _prefsSettingsFilename);
     final targetFile = File(targetFilePathName); 
     final backupFilePathName = p.join(timetablePath, _prefsSettingsBackupFilename);
@@ -113,10 +113,10 @@ class ExportImportFiles {
     if(!silent) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.dataExported(targetFilePathName)), backgroundColor: Colors.green));
   }
 
-  Future<bool> ImportPrefsData(BuildContext context, SharedPreferences prefs) async {
+  Future<bool> importPrefsData(BuildContext context, SharedPreferences prefs) async {
     try {
       // Get or create target directory
-      final timetablePath = await GetPrivateDirectoryPath();
+      final timetablePath = await getPrivateDirectoryPath();
       final sourceFilePathName = p.join(timetablePath, _prefsSettingsFilename);
       final sourceFile = File(sourceFilePathName); 
       String jsonData = await sourceFile.readAsString();
@@ -141,13 +141,13 @@ class ExportImportFiles {
     return true;
   }
 
-  Future<void> ExportAllFilesAsZip(BuildContext context, SharedPreferences prefs) async {
+  Future<void> exportAllFilesAsZip(BuildContext context, SharedPreferences prefs) async {
     try {
       // Get or create target directory
-      final timetablePath = await GetPrivateDirectoryPath();
+      final timetablePath = await getPrivateDirectoryPath();
       final timetableDir = Directory(timetablePath);
 
-      await SavePrefsData(context, prefs, false);
+      await savePrefsData(context, prefs, false);
 
       // Get all files in the Timetable directory
       final files = timetableDir.listSync();
@@ -177,7 +177,7 @@ class ExportImportFiles {
       await zipFile.writeAsBytes(zipData);
 
       // Share the zip file if running on android, or copy it at a user defined location on other platforms
-      await SaveOrShareFile(context, zipFile.path);
+      await saveOrShareFile(context, zipFile.path);
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.backupInZipFileOk), backgroundColor: Colors.green));
     } catch (e) {
@@ -185,7 +185,7 @@ class ExportImportFiles {
     }
   }
 
-  Future<bool> ImportAllFilesFromZip(BuildContext context) async {
+  Future<bool> importAllFilesFromZip(BuildContext context) async {
     try {
       final FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['zip']);
 
@@ -199,7 +199,7 @@ class ExportImportFiles {
       final archive = ZipDecoder().decodeBytes(zipBytes);
 
       // Get or create target directory
-      final timetablePath = await GetPrivateDirectoryPath();
+      final timetablePath = await getPrivateDirectoryPath();
       final timetableDir = Directory(timetablePath);
 
       // Extract all files

@@ -29,4 +29,18 @@ class LessonBlock {
 
   /// Convert Flutter Color to PDF Color
   PdfColor get pdfColor => PdfColor.fromInt(color.toARGB32());
+
+  void copy(LessonBlock block) {
+    color = block.color;
+    lessonName = block.lessonName;
+    className = block.className;
+    schoolName = block.schoolName;
+    hideLeftList = block.hideLeftList;
+    hideRightList = block.hideRightList;
+    showNotesBeforeWorkplan = block.showNotesBeforeWorkplan;
+    workplanFilename = block.workplanFilename;
+    suggestionsFilename = block.suggestionsFilename;
+    notesFilename = block.notesFilename;
+  }
+  
 }

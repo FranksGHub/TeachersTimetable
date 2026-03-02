@@ -329,3 +329,125 @@ controllerQuill.changes.listen((event) {
     hasNoteChanges = true;
   }
 });
+
+
+
+Step long press and right mouse click
+Hier ist ein vollständiges, sofort einsatzbereites Beispiel. Ich habe showSecondaryMenu (für den Rechtsklick unter Windows) und onLongPress (für Android) kombiniert, damit es sich auf beiden Plattformen "nativ" anfühlt.
+Zusätzlich zeige ich dir, wie du den Text tatsächlich in die Zwischenablage (Clipboard) kopierst.
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Wichtig für Clipboard
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Multi-Plattform Kontextmenü')),
+        body: const Center(child: ContextMenuWidget()),
+      ),
+    );
+  }
+}
+
+class ContextMenuWidget extends StatelessWidget {
+  const ContextMenuWidget({super.key});
+
+  // Zentrale Funktion zum Anzeigen des Menüs
+  void _showContextMenu(BuildContext context, Offset offset) async {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    final String? selectedAction = await showMenu<String>(
+      context: context,
+      // Positioniert das Menü genau dort, wo geklickt/gedrückt wurde
+      position: RelativeRect.fromRect(
+        Rect.fromLTWH(offset.dx, offset.dy, 0, 0),
+        Offset.zero & overlay.size,
+      ),
+      items: const [
+        PopupMenuItem(
+          value: 'copy',
+          child: ListTile(
+            leading: Icon(Icons.copy, size: 20),
+            title: Text('Kopieren'),
+          ),
+        ),
+        PopupMenuItem(
+          value: 'paste',
+          child: ListTile(
+            leading: Icon(Icons.paste, size: 20),
+            title: Text('Einfügen'),
+          ),
+        ),
+        PopupMenuItem(
+          value: 'share',
+          child: ListTile(
+            leading: Icon(Icons.share, size: 20),
+            title: Text('Teilen'),
+          ),
+        ),
+        PopupMenuItem(
+          value: 'delete',
+          child: ListTile(
+            leading: Icon(Icons.delete, color: Colors.red, size: 20),
+            title: Text('Löschen', style: TextStyle(color: Colors.red)),
+          ),
+        ),
+      ],
+    );
+
+    // Logik für die gewählte Aktion
+    if (selectedAction == 'copy') {
+      await Clipboard.setData(const ClipboardData(text: "Dieser Text wurde kopiert!"));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('In Zwischenablage kopiert')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      // 1. Für Android: Reagiert auf langes Drücken
+      onLongPressStart: (details) => _showContextMenu(context, details.globalPosition),
+     
+      // 2. Für Windows: Reagiert auf den Rechtsklick (Secondary Tap)
+      onSecondaryTapDown: (details) => _showContextMenu(context, details.globalPosition),
+     
+      child: Container(
+        width: 250,
+        height: 150,
+        decoration: BoxDecoration(
+          color: Colors.blue.shade100,
+          border: Border.all(color: Colors.blue, width: 2),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Center(
+          child: Text(
+            "Rechtsklick (Win) oder\nLanger Druck (Android)",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Warum diese Lösung gut funktioniert:
+* Präzision: Durch die Verwendung von globalPosition aus den details öffnet sich das Menü exakt unter der Mausspitze (Windows) oder unter dem Finger (Android).
+* Adaptive UX: Die ListTile innerhalb der PopupMenuItem sorgt dafür, dass die Einträge genug Platz zum Tippen haben (wichtig für Android), aber auch kompakt genug für die Mausbedienung sind.
+* Clipboard-Integration: Mit Clipboard.setData nutzt du die System-Schnittstelle, die auf Windows und Android gleichermaßen funktioniert.
+* Plattform-Check: onSecondaryTapDown ist der Standard-Weg in Flutter, um den Rechtsklick abzufangen, ohne dass du manuell prüfen musst, ob die App gerade auf Windows läuft.
+Kleiner Hinweis für Android
+Standardmäßig gibt Android beim onLongPress ein kurzes haptisches Feedback (Vibration). Falls du das Menü noch "echter" wirken lassen willst, kannst du zusätzlich HapticFeedback.vibrate() aus dem services-Paket aufrufen.
+Soll ich dir noch zeigen, wie du das Menü optisch an das jeweilige Systemdesign (Material vs. Fluent/Windows) anpasst?
+

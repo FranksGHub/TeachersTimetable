@@ -13,7 +13,7 @@ import 'dart:typed_data';
 
 class PrintPdf {
 
-  Future<bool> PrintNotes(BuildContext context, Uint8List doc) async {
+  Future<bool> printNotes(BuildContext context, Uint8List doc) async {
     try {
       await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => doc);
       return true;
@@ -22,12 +22,12 @@ class PrintPdf {
     }
   }
 
-  Future<bool> PrintBlockDetails(BuildContext context, LessonBlock block) async {
+  Future<bool> printBlockDetails(BuildContext context, LessonBlock block) async {
     // Header title
     String title = '${block.lessonName} - ${block.className} - ${block.schoolName}';
     // try to load list data
-    String dataPath = await ExportImportFiles.GetPrivateDirectoryPath();
-    String filePathName = p.join(dataPath, ExportImportFiles.GetSaveFilename('${block.lessonName}_${block.className}_${block.schoolName}.json'));
+    String dataPath = await ExportImportFiles.getPrivateDirectoryPath();
+    String filePathName = p.join(dataPath, ExportImportFiles.getSaveFilename('${block.lessonName}_${block.className}_${block.schoolName}.json'));
     List<LessonItem> leftItems = <LessonItem>[];
     try {
       if (File(filePathName).existsSync()) {
@@ -115,7 +115,7 @@ class PrintPdf {
   }
 
 
-  Future<bool> PrintTimetable(BuildContext context, String title, List<String> days, List<String> times, int countOfBlocksPerDay, List<List<LessonBlock>> timetable) async {
+  Future<bool> printTimetable(BuildContext context, String title, List<String> days, List<String> times, int countOfBlocksPerDay, List<List<LessonBlock>> timetable) async {
 
     // Defensive checks: dimensions
     if (days.isEmpty || times.isEmpty) return false;

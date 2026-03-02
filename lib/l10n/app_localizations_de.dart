@@ -125,6 +125,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editShowNotesBeforeWorkplan => 'Notizen oder Arbeitsplan zuerst?';
 
   @override
+  String get copy => 'Kopieren';
+
+  @override
+  String get paste => 'Einfügen';
+
+  @override
+  String get reset => 'Zurücksetzen';
+
+  @override
   String get save => 'Speichern';
 
   @override

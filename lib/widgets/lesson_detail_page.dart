@@ -66,7 +66,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
 
   Future<void> loadPrefsAndData() async {
     // get or create data path
-    dataPath = await ExportImportFiles.GetPrivateDirectoryPath();
+    dataPath = await ExportImportFiles.getPrivateDirectoryPath();
     
     if(widget.block.className.isEmpty && widget.block.schoolName.isEmpty && widget.block.lessonName.isEmpty) {
       _editSettings();
@@ -77,7 +77,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
   }
 
   String getFilePath(String fileName) {
-    return p.join(dataPath, ExportImportFiles.GetSaveFilename(fileName));
+    return p.join(dataPath, ExportImportFiles.getSaveFilename(fileName));
   }
 
   void _loadNotesData() {
@@ -204,7 +204,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
 
       if(doc != null) {
         final printDoc = await doc.save();
-        if( await PrintPdf().PrintNotes(context, printDoc) == false) {
+        if( await PrintPdf().printNotes(context, printDoc) == false) {
           _showError(AppLocalizations.of(context)!.printingFailed);
           return;
         }
@@ -237,11 +237,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red, duration: const Duration(seconds: 4)));
+    if (context.mounted) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red, duration: const Duration(seconds: 4)));}
   }
 
   void _showInfo(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green, duration: const Duration(seconds: 4)));
+    if (context.mounted) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green, duration: const Duration(seconds: 2)));}
   }
 
   void _editText(String currentText, Function(String) onSave) {
@@ -299,23 +299,26 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
         builder: (context) => EditSettingsDialog(
           block: widget.block,
           col: widget.col,
-          onSave: (updatedBlock) {
-            if(widget.block.color != updatedBlock.color) { widget.block.color = updatedBlock.color; }
-            if(widget.block.lessonName != updatedBlock.lessonName) { widget.block.lessonName = updatedBlock.lessonName; }
-            if(widget.block.className != updatedBlock.className) { widget.block.className = updatedBlock.className; }
-            if(widget.block.schoolName != updatedBlock.schoolName) { widget.block.schoolName = updatedBlock.schoolName; }
-            if(widget.block.workplanFilename != updatedBlock.workplanFilename) { widget.block.workplanFilename = updatedBlock.workplanFilename; }
-            if(widget.block.suggestionsFilename != updatedBlock.suggestionsFilename) { widget.block.suggestionsFilename = updatedBlock.suggestionsFilename; }
-            if(widget.block.notesFilename != updatedBlock.notesFilename) { widget.block.notesFilename = updatedBlock.notesFilename; }
-            if(widget.block.showNotesBeforeWorkplan != updatedBlock.showNotesBeforeWorkplan) { widget.block.showNotesBeforeWorkplan = updatedBlock.showNotesBeforeWorkplan; }
-            
-            setState(() {});
-            widget.onSave(widget.block);
-          },
+          onSave: (updatedBlock) { _saveUpdatedBlock(updatedBlock); }
         ),
-      ),
+      )
     );
   }
+
+  void _saveUpdatedBlock(updatedBlock){
+    if(widget.block.color != updatedBlock.color) { widget.block.color = updatedBlock.color; }
+    if(widget.block.lessonName != updatedBlock.lessonName) { widget.block.lessonName = updatedBlock.lessonName; }
+    if(widget.block.className != updatedBlock.className) { widget.block.className = updatedBlock.className; }
+    if(widget.block.schoolName != updatedBlock.schoolName) { widget.block.schoolName = updatedBlock.schoolName; }
+    if(widget.block.workplanFilename != updatedBlock.workplanFilename) { widget.block.workplanFilename = updatedBlock.workplanFilename; }
+    if(widget.block.suggestionsFilename != updatedBlock.suggestionsFilename) { widget.block.suggestionsFilename = updatedBlock.suggestionsFilename; }
+    if(widget.block.notesFilename != updatedBlock.notesFilename) { widget.block.notesFilename = updatedBlock.notesFilename; }
+    if(widget.block.showNotesBeforeWorkplan != updatedBlock.showNotesBeforeWorkplan) { widget.block.showNotesBeforeWorkplan = updatedBlock.showNotesBeforeWorkplan; }
+    
+    setState(() {});
+    widget.onSave(widget.block);
+  }
+
 
 
   @override
@@ -377,7 +380,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                 if(showNotesIsActive)
                   _printNotes();
                 else
-                  PrintPdf().PrintBlockDetails(context, widget.block);
+                  PrintPdf().printBlockDetails(context, widget.block);
               },
             ),
 

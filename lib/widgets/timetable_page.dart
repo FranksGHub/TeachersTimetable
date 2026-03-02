@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teachers_timetable/models/print.dart';
 import 'package:teachers_timetable/widgets/edit_combo_dialog.dart';
+import 'package:teachers_timetable/widgets/edit_settings_dialog.dart';
 import 'package:teachers_timetable/widgets/edit_text_dialog.dart';
 import 'package:teachers_timetable/widgets/help_page.dart';
 import 'dart:convert';
@@ -29,12 +30,13 @@ class _TimetablePageState extends State<TimetablePage> {
   int countOfBlocksPerDay = 6;  // 1..9 lesson blocks each day in vertical direction
   late SharedPreferences prefs;
   late FocusNode _focusNode;
+  LessonBlock? clipboardLessonBlock = null;
 
   @override
   void initState() {
     super.initState();
     _focusNode = FocusNode();
-    loadData();
+    _loadData();
   }
 
   @override
@@ -43,7 +45,7 @@ class _TimetablePageState extends State<TimetablePage> {
     super.dispose();
   }
 
-  Future<void> loadData() async {
+  Future<void> _loadData() async {
     prefs = await SharedPreferences.getInstance();
     String? titleJson = prefs.getString('title');
     if (titleJson != null) {
@@ -105,7 +107,7 @@ class _TimetablePageState extends State<TimetablePage> {
     }
   }
 
-  void saveData() {
+  void _saveData() {
     prefs.setString('title', title);
     prefs.setInt('countOfBlocksPerDay', countOfBlocksPerDay);
     prefs.setString('mon', days[0]);  prefs.setString('tue', days[1]);  prefs.setString('wed', days[2]);  
@@ -127,7 +129,7 @@ class _TimetablePageState extends State<TimetablePage> {
     }).toList()).toList()));
 
     // save into file as well
-    ExportImportFiles().SavePrefsData(context, prefs, true);
+    ExportImportFiles().savePrefsData(context, prefs, true);
   }
 
   bool isDark(Color color) {
@@ -135,7 +137,7 @@ class _TimetablePageState extends State<TimetablePage> {
     return luminance < 0.5;
   }
 
-  void _editBlock(int row, int col) {
+  void _showBlockDetails(int row, int col) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -147,7 +149,25 @@ class _TimetablePageState extends State<TimetablePage> {
             setState(() {
               timetable[row][col] = updatedBlock;
             });
-            saveData();
+            _saveData();
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showBlockSettings(int row, int col) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditSettingsDialog(
+          block: timetable[row][col],
+          col: col,
+          onSave: (updatedBlock) {
+            setState(() {
+              timetable[row][col] = updatedBlock;
+            });
+            _saveData();
           },
         ),
       ),
@@ -165,7 +185,7 @@ class _TimetablePageState extends State<TimetablePage> {
           setState(() {
             title = newTitle;
           });
-          saveData();
+          _saveData();
         },
       ),
     );
@@ -182,7 +202,7 @@ class _TimetablePageState extends State<TimetablePage> {
           setState(() {
             days = newDays.split(', ');
           });
-          saveData();
+          _saveData();
         },
       ),
     );
@@ -199,7 +219,7 @@ class _TimetablePageState extends State<TimetablePage> {
           setState(() {
             times = newTimes.split(', ');
           });
-          saveData();
+          _saveData();
         },
       ),
     );
@@ -216,7 +236,7 @@ class _TimetablePageState extends State<TimetablePage> {
           setState(() {
             countOfBlocksPerDay = newCount;
           });
-          saveData();
+          _saveData();
         },
       ),
     );
@@ -234,9 +254,9 @@ class _TimetablePageState extends State<TimetablePage> {
   }
 
   Future<void> _importData() async {
-    if(await ExportImportFiles().ImportAllFilesFromZip(context)) {
-      if( await ExportImportFiles().ImportPrefsData(context, prefs)) {
-        await loadData(); // Reload data
+    if(await ExportImportFiles().importAllFilesFromZip(context)) {
+      if( await ExportImportFiles().importPrefsData(context, prefs)) {
+        await _loadData(); // Reload data
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.importbackupZipFileOk), backgroundColor: Colors.green));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToImportData), backgroundColor: Colors.red));
@@ -245,6 +265,51 @@ class _TimetablePageState extends State<TimetablePage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToImportZipFile), backgroundColor: Colors.red));
     }
   }
+
+  void _showInfo(String message) {
+    if (context.mounted) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green, duration: const Duration(seconds: 2)));}
+  }
+
+  // Zentrale Funktion zum Anzeigen des Menüs
+  void _showContextMenu(BuildContext context, Offset offset, int row, int col) async {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    final String? selectedAction = await showMenu<String>(
+      context: context,
+      // Positioniert das Menü genau dort, wo geklickt/gedrückt wurde
+      position: RelativeRect.fromRect( Rect.fromLTWH(offset.dx, offset.dy, 0, 0), Offset.zero & overlay.size, ),
+      items: [
+        PopupMenuItem( value: 'settings', child: ListTile( leading: Icon(Icons.settings, size: 20), title: Text(AppLocalizations.of(context)!.editBlock),),),
+        PopupMenuItem( value: 'copy', child: ListTile( leading: Icon(Icons.copy, size: 20), title: Text(AppLocalizations.of(context)!.copy),),),
+        if(clipboardLessonBlock != null) PopupMenuItem( value: 'paste', child: ListTile( leading: Icon(Icons.paste, size: 20), title: Text(AppLocalizations.of(context)!.paste),),),
+        PopupMenuItem( value: 'delete', child: ListTile(leading: Icon(Icons.delete, color: Colors.red, size: 20), title: Text(AppLocalizations.of(context)!.reset, style: TextStyle(color: Colors.red)),),),
+      ],
+    );
+
+    // Logik für die gewählte Aktion
+    if (selectedAction == 'copy') {
+      clipboardLessonBlock = timetable[row][col];
+      _showInfo('Einstellungen wurden kopiert');
+    }
+    else if (selectedAction == 'paste' && clipboardLessonBlock != null) {
+      setState(() {
+        timetable[row][col].copy(clipboardLessonBlock as LessonBlock);
+      });
+      _saveData();
+      _showInfo('Einstellungen wurden eingefügt');
+    }
+    else if (selectedAction == 'delete') {
+      setState(() {
+        timetable[row][col] = new LessonBlock();
+      });
+      _saveData();
+      _showInfo('Einstellungen wurden zurückgesetzt');
+    }
+    else if (selectedAction == 'settings') {
+      _showBlockSettings(row, col);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -331,7 +396,7 @@ class _TimetablePageState extends State<TimetablePage> {
                 title: Text(AppLocalizations.of(context)!.printPdf),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
-                  PrintPdf().PrintTimetable(context, title, days, times, countOfBlocksPerDay, timetable);
+                  PrintPdf().printTimetable(context, title, days, times, countOfBlocksPerDay, timetable);
                 },
               ),
               ListTile(
@@ -339,7 +404,7 @@ class _TimetablePageState extends State<TimetablePage> {
                 title: Text(AppLocalizations.of(context)!.exportAllFilesZip),
                 onTap: () {
                   Navigator.pop(context); // Close drawer
-                  ExportImportFiles().ExportAllFilesAsZip(context, prefs);
+                  ExportImportFiles().exportAllFilesAsZip(context, prefs);
                 },
               ),
               ListTile(
@@ -391,7 +456,13 @@ class _TimetablePageState extends State<TimetablePage> {
                       final block = timetable[row][col];
                       return Expanded(
                         child: GestureDetector(
-                          onTap: () => _editBlock(row, col),
+                          // for Android and Windows Touch -> react on short press
+                          onTap: () => _showBlockDetails(row, col), 
+                          // for Android and Windows Touch -> react on long press
+                          onLongPressStart: (details) => _showContextMenu(context, details.globalPosition, row, col),
+                          // for Windows desktop -> react on right mouse click
+                          onSecondaryTapDown: (details) => _showContextMenu(context, details.globalPosition, row, col),
+
                           child: Container(
                             margin: const EdgeInsets.all(4),
                             height: 80,

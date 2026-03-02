@@ -320,6 +320,24 @@ abstract class AppLocalizations {
   /// **'Notizen oder Arbeitsplan zuerst?'**
   String get editShowNotesBeforeWorkplan;
 
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @paste.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste'**
+  String get paste;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
   /// No description provided for @save.
   ///
   /// In en, this message translates to:
