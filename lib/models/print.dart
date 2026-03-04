@@ -3,6 +3,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:path/path.dart' as p;
+import 'package:teachers_timetable/models/filename_helper.dart';
 import '../l10n/app_localizations.dart';
 import '../models/lesson_block.dart';
 import '../models/lesson_item.dart';
@@ -22,12 +23,17 @@ class PrintPdf {
     }
   }
 
+  Future<String> getFilePath(String fileName) async {
+    late String dataPath;
+    dataPath = await ExportImportFiles.getPrivateDirectoryPath();
+    return p.join(dataPath, ExportImportFiles.getSaveFilename(fileName));
+  }
+
   Future<bool> printBlockDetails(BuildContext context, LessonBlock block) async {
     // Header title
     String title = '${block.lessonName} - ${block.className} - ${block.schoolName}';
     // try to load list data
-    String dataPath = await ExportImportFiles.getPrivateDirectoryPath();
-    String filePathName = p.join(dataPath, ExportImportFiles.getSaveFilename('${block.lessonName}_${block.className}_${block.schoolName}.json'));
+    String filePathName = await (block.workplanFilename.length == 0 ? getFilePath(FilenameHelper.getDefaultLeftFilename(block, true)) : getFilePath(block.workplanFilename)) + '.json';
     List<LessonItem> leftItems = <LessonItem>[];
     try {
       if (File(filePathName).existsSync()) {
