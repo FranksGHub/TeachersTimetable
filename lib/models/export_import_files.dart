@@ -10,6 +10,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/src/shared_preferences_legacy.dart';
 import '../l10n/app_localizations.dart';
 
+enum ReturnValue { Ok, Aborted, Errors }
+
 class ExportImportFiles {
   static String _prefsSettingsFilename = 'timetable_settings.json';
   static String _prefsSettingsBackupFilename = 'timetable_settings.json.bak';
@@ -185,19 +187,27 @@ class ExportImportFiles {
     }
   }
 
-  Future<bool> importAllFilesFromZip(BuildContext context) async {
+  Future<ReturnValue> importAllFilesFromZip(BuildContext context) async {
     try {
       final FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['zip']);
 
-      if (result == null) return false; // User canceled the picker
+      if (result == null) return ReturnValue.Aborted; // User canceled the picker
 
       final zipFilePath = result.files.single.path!;
       final zipFile = File(zipFilePath);
+      int filelength = await zipFile.length();
+      if(filelength > 1000000) {
+        return ReturnValue.Errors;
+      }
+
       final zipBytes = await zipFile.readAsBytes();
 
       // Decode the archive
       final archive = ZipDecoder().decodeBytes(zipBytes);
-
+      if(archive.isEmpty || archive.files.length == 0) {
+        return ReturnValue.Errors;
+      }
+      
       // Get or create target directory
       final timetablePath = await getPrivateDirectoryPath();
       final timetableDir = Directory(timetablePath);
@@ -217,8 +227,8 @@ class ExportImportFiles {
       }
 
     } catch (e) {
-      return false;
+      return ReturnValue.Errors;
     }
-    return true;
+    return ReturnValue.Ok;
   }
 }

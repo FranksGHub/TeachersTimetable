@@ -254,14 +254,15 @@ class _TimetablePageState extends State<TimetablePage> {
   }
 
   Future<void> _importData() async {
-    if(await ExportImportFiles().importAllFilesFromZip(context)) {
+    ReturnValue ret = await ExportImportFiles().importAllFilesFromZip(context);
+    if( ret == ReturnValue.Ok) {
       if( await ExportImportFiles().importPrefsData(context, prefs)) {
         await _loadData(); // Reload data
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.importbackupZipFileOk), backgroundColor: Colors.green));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToImportData), backgroundColor: Colors.red));
       }
-    } else {
+    } else if (ret == ReturnValue.Errors) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToImportZipFile), backgroundColor: Colors.red));
     }
   }
