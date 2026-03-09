@@ -78,55 +78,50 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
       // e.g. validiate, store, setState, and so on })
       _debounce!.cancel();
       bool changed = false;
+      String defaultLeftFilename = FilenameHelper.getDefaultLeftFilename(widget.block, false);
+      String defaultRightFilename = FilenameHelper.getDefaultRightFilename(widget.block, false);
+      String leftFilename = leftListFilenameController.text;
+      String rightFilename = rightListFilenameController.text;
+      if(leftFilename.endsWith('.json')) { leftFilename = leftFilename.replaceAll('.json', ''); }
+      if(rightFilename.endsWith('.json')) { rightFilename = rightFilename.replaceAll('.json', ''); }
       
-      if(widget.block.lessonName != lessonNameController.text) { 
+      if(widget.block.lessonName != lessonNameController.text ||
+         widget.block.className != classNameController.text   ||
+         widget.block.schoolName != schoolNameController.text) { 
+
         changed = true;
-        // check if we change the filenames too
-        bool leftFileNameDefault = FilenameHelper.getDefaultLeftFilename(widget.block, false) == leftListFilenameController.text;
-        bool rightFileNameDefault = FilenameHelper.getDefaultRightFilename(widget.block, false) == rightListFilenameController.text;
-        widget.block.lessonName = lessonNameController.text; 
-        if( leftFileNameDefault) {  leftListFilenameController.text = FilenameHelper.getDefaultLeftFilename(widget.block, false); }
-        if( rightFileNameDefault) { rightListFilenameController.text = FilenameHelper.getDefaultRightFilename(widget.block, false); }
-      }
-
-      if(widget.block.className != classNameController.text) { 
-        changed = true; 
-        // check if we change the filename too
-        bool leftFileNameDefault = FilenameHelper.getDefaultLeftFilename(widget.block, false) == leftListFilenameController.text;
+        widget.block.lessonName = lessonNameController.text;
         widget.block.className = classNameController.text; 
-        if( leftFileNameDefault) {  leftListFilenameController.text = FilenameHelper.getDefaultLeftFilename(widget.block, false); }
+        widget.block.schoolName = schoolNameController.text; 
+
+        // check if we have to change the default filenames too
+        // get the new default filenames, if we had the defaults, before changing the lesson, class or school name
+        if( defaultLeftFilename == leftFilename)   { leftFilename = FilenameHelper.getDefaultLeftFilename(widget.block, false); }
+        if( defaultRightFilename == rightFilename) { rightFilename = FilenameHelper.getDefaultRightFilename(widget.block, false); }
+        // update the defaults
+        defaultLeftFilename = FilenameHelper.getDefaultLeftFilename(widget.block, false);
+        defaultRightFilename = FilenameHelper.getDefaultRightFilename(widget.block, false);
       }
 
-      if(widget.block.schoolName != schoolNameController.text) { 
-        changed = true; 
-        // check if we change the filename too
-        bool leftFileNameDefault = FilenameHelper.getDefaultLeftFilename(widget.block, false) == leftListFilenameController.text;
-        widget.block.schoolName = schoolNameController.text; 
-        if( leftFileNameDefault) {  leftListFilenameController.text = FilenameHelper.getDefaultLeftFilename(widget.block, false); }
-      }
-      
-      if(widget.block.workplanFilename != leftListFilenameController.text) { 
-        if( FilenameHelper.getDefaultLeftFilename(widget.block, false) == leftListFilenameController.text) {
+      if(widget.block.workplanFilename != leftFilename) { 
+        if( defaultLeftFilename == leftFilename) {
           if(widget.block.workplanFilename.length != 0) { changed = true; widget.block.workplanFilename = ''; }
-          } else { 
-          changed = true; widget.block.workplanFilename = leftListFilenameController.text; 
-        }
+          } else { changed = true; widget.block.workplanFilename = leftFilename; }
       }
       
-      if(widget.block.suggestionsFilename != rightListFilenameController.text) { 
-        if( FilenameHelper.getDefaultRightFilename(widget.block, false) == rightListFilenameController.text) {
+      if(widget.block.suggestionsFilename != rightFilename) { 
+        if( defaultRightFilename == rightFilename) {
           if(widget.block.suggestionsFilename.length != 0) { changed = true; widget.block.suggestionsFilename = ''; }
-          } else { 
-          changed = true; widget.block.suggestionsFilename = rightListFilenameController.text; 
-        }
+          } else { changed = true; widget.block.suggestionsFilename = rightFilename; }
       }
       
-      if(widget.block.notesFilename != notesFilenameController.text) { 
-        if( FilenameHelper.getDefaultNotesFilename(widget.col, false) == notesFilenameController.text) {
+      
+      String notesFilename = notesFilenameController.text;
+      if(notesFilename.endsWith('.json')) { notesFilename = notesFilename.replaceAll('.json', ''); }
+      if(widget.block.notesFilename != notesFilename) { 
+        if( FilenameHelper.getDefaultNotesFilename(widget.col, false) == notesFilename) {
           if(widget.block.notesFilename.length != 0) { changed = true; widget.block.notesFilename = ''; }
-          } else { 
-          changed = true; widget.block.notesFilename = notesFilenameController.text;
-        }
+          } else { changed = true; widget.block.notesFilename = notesFilename; }
       }
       
       if(changed) {

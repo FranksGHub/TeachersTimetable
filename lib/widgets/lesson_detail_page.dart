@@ -152,7 +152,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
 
     // load the left list data from file
     try {
-      String filePath = (widget.block.workplanFilename.length == 0 ? getFilePath(FilenameHelper.getDefaultLeftFilename(widget.block, true)) : getFilePath(widget.block.workplanFilename)) + '.json';
+      String filePath = widget.block.workplanFilename.length == 0 ? getFilePath(FilenameHelper.getDefaultLeftFilename(widget.block, true)) : getFilePath(widget.block.workplanFilename + '.json');
       if (File(filePath).existsSync()) {
         String json = File(filePath).readAsStringSync();
         List<dynamic> data = jsonDecode(json);
@@ -228,7 +228,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
 
   void _saveLeftData() {
     try {
-      String filePath = (widget.block.workplanFilename.length == 0 ? getFilePath(FilenameHelper.getDefaultLeftFilename(widget.block, true)) : getFilePath(widget.block.workplanFilename)) + '.json';
+      String filePath = widget.block.workplanFilename.length == 0 ? getFilePath(FilenameHelper.getDefaultLeftFilename(widget.block, true)) : getFilePath(widget.block.workplanFilename + '.json');
       String json = jsonEncode(leftItems.map((e) => e.toJson()).toList());
       File(filePath).writeAsStringSync(json);
     } catch (e) {
@@ -306,15 +306,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
   }
 
   void _saveUpdatedBlock(updatedBlock){
-    if(widget.block.color != updatedBlock.color) { widget.block.color = updatedBlock.color; }
-    if(widget.block.lessonName != updatedBlock.lessonName) { widget.block.lessonName = updatedBlock.lessonName; }
-    if(widget.block.className != updatedBlock.className) { widget.block.className = updatedBlock.className; }
-    if(widget.block.schoolName != updatedBlock.schoolName) { widget.block.schoolName = updatedBlock.schoolName; }
-    if(widget.block.workplanFilename != updatedBlock.workplanFilename) { widget.block.workplanFilename = updatedBlock.workplanFilename; }
-    if(widget.block.suggestionsFilename != updatedBlock.suggestionsFilename) { widget.block.suggestionsFilename = updatedBlock.suggestionsFilename; }
-    if(widget.block.notesFilename != updatedBlock.notesFilename) { widget.block.notesFilename = updatedBlock.notesFilename; }
-    if(widget.block.showNotesBeforeWorkplan != updatedBlock.showNotesBeforeWorkplan) { widget.block.showNotesBeforeWorkplan = updatedBlock.showNotesBeforeWorkplan; }
-    
+    if(notesLoaded) { _loadNotesData(); } 
+    if(listDataLoaded) { _loadWorkplanData(); }
     setState(() {});
     widget.onSave(widget.block);
   }
