@@ -181,6 +181,10 @@ class ExportImportFiles {
       // Share the zip file if running on android, or copy it at a user defined location on other platforms
       await saveOrShareFile(context, zipFile.path);
 
+      // delete the temporary file if still available
+      try { if (zipFile.existsSync()) { zipFile.delete(); }
+      } catch (e) { }
+
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.backupInZipFileOk), backgroundColor: Colors.green));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToBackupInZipFile + ': $e'), backgroundColor: Colors.red) );

@@ -853,6 +853,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                                                         showHeaderStyle: false, showListNumbers: true, showListBullets: true, showListCheck: true, 
                                                                         showCodeBlock: false, showQuote: false, showIndent: true,
                                                                         showLink: true, showSearchButton: true,
+                                                                        // ignore: experimental_member_use
                                                                         showClipboardCopy: false, showClipboardCut: false, showClipboardPaste: false,
                                                                         showLineHeightButton: false, showDirection: false )
                         ),
