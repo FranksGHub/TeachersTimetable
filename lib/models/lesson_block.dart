@@ -20,7 +20,7 @@ class LessonBlock {
     this.className = '',
     this.schoolName = '',
     this.hideLeftList = false,
-    this.hideRightList = false,
+    this.hideRightList = true,
     this.showNotesBeforeWorkplan = false,
     this.workplanFilename = '',
     this.suggestionsFilename = '',
