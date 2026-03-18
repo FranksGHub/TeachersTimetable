@@ -451,3 +451,22 @@ Kleiner Hinweis für Android
 Standardmäßig gibt Android beim onLongPress ein kurzes haptisches Feedback (Vibration). Falls du das Menü noch "echter" wirken lassen willst, kannst du zusätzlich HapticFeedback.vibrate() aus dem services-Paket aufrufen.
 Soll ich dir noch zeigen, wie du das Menü optisch an das jeweilige Systemdesign (Material vs. Fluent/Windows) anpasst?
 
+Version 1.4.3
+Wie kann ich den Pfad "com.example", der ja wohl nur ein default ist, sauber auf meinen eigenen Pfad ändern, zum Beispiel "dieEichenApps"?
+
+android/app/build.gradle:
+defaultConfig { applicationId "dieEichenApps.budget_info" }
+namespace = "dieEichenApps.budget_info"
+
+Ordnerstruktur anpassen
+android/app/src/main/kotlin/com/example/budget_info/MainActivity.kt
+ändern in
+android/app/src/main/kotlin/dieEichenApps/budget_info/MainActivity.kt
+
+android\app\src\main\kotlin\dieEichenApps\budget_info\MainActivity.kt:
+package dieEichenApps.budget_info
+
+Projekt neu bauen:
+flutter clean
+flutter pub get
+flutter run

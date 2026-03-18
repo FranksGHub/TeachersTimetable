@@ -82,6 +82,7 @@ Instead of the task list, a page for notes can also be displayed. Text can be fo
 ### **Others**  
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY, without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
   
-- Frequently Asked Questions (FAQ)  
+Copyright 2026 dieEichenApps - https://dieEichenApps.de  
   
+- Frequently Asked Questions (FAQ)  
   

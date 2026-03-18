@@ -81,6 +81,7 @@ Statt der Aufgabenliste kann auch eine Seite für Notizen angezeigt werden. Die 
 ### **Sonstiges**  
 Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch OHNE JEDE GEWÄHR, sogar ohne die implizite Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.  
   
+Copyright 2026 dieEichenApps - https://dieEichenApps.de  
+  
 - Häufig gestellte Fragen (FAQ)  
   
-

@@ -1,4 +1,4 @@
-package com.example.teachers_timetable
+package dieEichenApps.teachers_timetable
 
 import io.flutter.embedding.android.FlutterActivity
 
