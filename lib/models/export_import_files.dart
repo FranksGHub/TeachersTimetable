@@ -68,7 +68,7 @@ class ExportImportFiles {
       dialogTitle: AppLocalizations.of(context)!.saveTimetableData,
       fileName: p.basename(filename),
       type: FileType.custom,
-      allowedExtensions: [p.extension(filename)],
+      allowedExtensions: ['zip'],
     );
 
     if (outputFile != null && await copyFile(context, filename, outputFile)) {
