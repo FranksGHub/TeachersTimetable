@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:teachers_timetable/models/filename_helper.dart';
 import 'package:teachers_timetable/models/print.dart';
@@ -600,13 +601,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                         splashRadius: 48,
                                         onPressed: () {
                                           setState(() {
-                                            if (sub.status == '(P)') {
-                                              sub.status = '(W)';
-                                            } else if (sub.status == '(W)') {
-                                              sub.status = '(F)';
-                                            } else {
-                                              sub.status = '(P)';
-                                            }
+                                            sub.status = sub.status == '(P)' ? '(W)' : sub.status == '(W)' ? '(F)' : '(P)';
+                                            sub.timestamp = DateFormat('dd.MM.yy').format(DateTime.now());
                                           });
                                           _saveLeftData();
                                         },
@@ -620,7 +616,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                             setState(() => sub.text = newText);
                                             _saveLeftData();
                                           }),
-                                          child: Text(sub.text, style: const TextStyle(height: 1.0, fontSize: 16)),
+                                          child: Text(sub.GetText(), style: const TextStyle(height: 1.0, fontSize: 16)),
                                         ),
                                       ),
                                     ],
