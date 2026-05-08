@@ -181,7 +181,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveTimetableDataSubject => 'Timetable Data Backup';
 
   @override
-  String get editText => 'Edit Text';
+  String get editText => 'Edit Task';
 
   @override
   String get addItemLeft => '+ Task';
@@ -295,8 +295,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please make one list visible again (top right)!';
 
   @override
-  String get printingFailed => 'Drucken fehlgeschlagen';
+  String get printingFailed => 'Printing failed';
 
   @override
-  String get printingSuccess => 'Drucken gestartet';
+  String get printingSuccess => 'Printing started';
+
+  @override
+  String get text => 'Text';
+
+  @override
+  String get timestamp => 'Timestamp';
 }

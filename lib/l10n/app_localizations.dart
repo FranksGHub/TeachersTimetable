@@ -437,7 +437,7 @@ abstract class AppLocalizations {
   /// No description provided for @editText.
   ///
   /// In en, this message translates to:
-  /// **'Edit Text'**
+  /// **'Edit Task'**
   String get editText;
 
   /// No description provided for @addItemLeft.
@@ -659,14 +659,26 @@ abstract class AppLocalizations {
   /// No description provided for @printingFailed.
   ///
   /// In en, this message translates to:
-  /// **'Drucken fehlgeschlagen'**
+  /// **'Printing failed'**
   String get printingFailed;
 
   /// No description provided for @printingSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Drucken gestartet'**
+  /// **'Printing started'**
   String get printingSuccess;
+
+  /// No description provided for @text.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get text;
+
+  /// No description provided for @timestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Timestamp'**
+  String get timestamp;
 }
 
 class _AppLocalizationsDelegate

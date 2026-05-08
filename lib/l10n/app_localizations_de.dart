@@ -183,7 +183,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get saveTimetableDataSubject => 'Stundenplan Daten Backup';
 
   @override
-  String get editText => 'Text bearbeiten';
+  String get editText => 'Aufgabe bearbeiten';
 
   @override
   String get addItemLeft => '+ Aufgabe';
@@ -304,8 +304,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Bitte eine Liste wieder sichtbar machen (oben rechts)!';
 
   @override
-  String get printingFailed => 'Printing failed';
+  String get printingFailed => 'Drucken fehlgeschlagen';
 
   @override
-  String get printingSuccess => 'Printing started';
+  String get printingSuccess => 'Drucken gestartet';
+
+  @override
+  String get text => 'Text';
+
+  @override
+  String get timestamp => 'Zeitstempel';
 }

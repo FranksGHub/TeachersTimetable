@@ -56,7 +56,7 @@
   "restartToApply": "Starten Sie die App neu, um die Sprachänderung anzuwenden.",
   "saveTimetableData": "Speichern der Stundenplan Daten",
   "saveTimetableDataSubject": "Stundenplan Daten Backup",
-  "editText": "Text bearbeiten",
+  "editText": "Aufgabe bearbeiten",
   "addItemLeft": "+ Aufgabe",
   "addSubitemLeft": "+ Arbeitsschritt",
   "addItemRight": "+ Aufgabe",
@@ -93,6 +93,8 @@
   "appNameWithSpaces": "Teachers Timetable App",
   "printingFooter": "Erstellt mit der Teachers Timetable App am {date}",
   "bothListsHidden": "Bitte eine Liste wieder sichtbar machen (oben rechts)!",
-  "printingFailed": "Printing failed",
-  "printingSuccess": "Printing started"
+  "printingFailed": "Drucken fehlgeschlagen",
+  "printingSuccess": "Drucken gestartet",
+  "text": "Text",
+  "timestamp": "Zeitstempel"
 }

@@ -245,28 +245,45 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
     if (context.mounted) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green, duration: const Duration(seconds: 2)));}
   }
 
-  void _editText(String currentText, Function(String) onSave) {
-    TextEditingController controller = TextEditingController(text: currentText);
+  void _editText(String text, Function(String) onSave) {
+    TextEditingController ctrlText = TextEditingController(text: text);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.editText),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField( controller: ctrlText, autofocus: true, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.text),),
+          ],
         ),
+
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              onSave(controller.text);
-              Navigator.pop(context);
-            },
-            child: Text(AppLocalizations.of(context)!.save),
-          ),
+          TextButton( onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel), ),
+          TextButton( onPressed: () { onSave(ctrlText.text); Navigator.pop(context); }, child: Text(AppLocalizations.of(context)!.save),),
+        ],
+      ),
+    );
+  }
+
+  void _editSubItem(LessonItem item, Function(LessonItem) onSave) {
+    TextEditingController ctrlText = TextEditingController(text: item.text);
+    TextEditingController ctrlTime = TextEditingController(text: item.timestamp ?? '');
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.editText),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField( controller: ctrlText, autofocus: true, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.text),),
+            TextField( controller: ctrlTime, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.timestamp), ),
+          ],
+        ),
+
+        actions: [
+          TextButton( onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel), ),
+          TextButton( onPressed: () { onSave( new LessonItem(text: ctrlText.text, timestamp: ctrlTime.text)); Navigator.pop(context); }, child: Text(AppLocalizations.of(context)!.save),),
         ],
       ),
     );
@@ -544,6 +561,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                   child: Row(
                                     children: [
                                       Expanded(child: Text(item.text, style: const TextStyle(height: 1.0, fontSize: 16, fontWeight: FontWeight.bold))),
+
+                                      IconButton(
+                                        icon: const Icon(Icons.edit, size: 20, color: Colors.green),
+                                        onPressed: () { setState(() { _editText(item.text, (newText) { setState(() => item.text = newText); _saveLeftData(); }); }); },
+                                      ),
+                                      
                                       IconButton(
                                         icon: const Icon(Icons.remove_circle_outline_rounded, size: 22, color: Colors.red),
                                         onPressed: () {
@@ -555,6 +578,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                           _saveLeftData();
                                         },
                                       ),
+
                                       IconButton(
                                         icon: const Icon(Icons.arrow_upward, size: 22),
                                         onPressed: index > 0 ? () {
@@ -570,6 +594,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                           _saveLeftData();
                                         } : null,
                                       ),
+
                                       IconButton(
                                         icon: const Icon(Icons.arrow_downward, size: 22),
                                         onPressed: index < leftItems.length - 1 ? () {
@@ -588,21 +613,23 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                     ],
                                   ),
                                 ),
+
                                 children: item.subitems.map((sub) => ListTile(
                                   tileColor: null,  // selectedLeftIndex == index ? Color.fromARGB(255, 136, 134, 121) : null,
                                   contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
                                   visualDensity: VisualDensity(vertical: -4),
                                   title: Row(
                                     children: [
+
                                       IconButton(
-                                        icon: Icon(Icons.circle, size: 16, color: sub.status == '(F)' ? Colors.green : Colors.yellow),
+                                        icon: Icon(Icons.circle, size: 16, color: sub.status == '(F)' ? Colors.green : sub.status == '(P)' ? Colors.grey : Colors.yellow),
                                         padding: EdgeInsets.zero,
                                         constraints: const BoxConstraints(minWidth: 24, minHeight: 24),  // reduziert die Mindestgröße
                                         splashRadius: 48,
                                         onPressed: () {
                                           setState(() {
                                             sub.status = sub.status == '(P)' ? '(W)' : sub.status == '(W)' ? '(F)' : '(P)';
-                                            sub.timestamp = DateFormat('dd.MM.yy').format(DateTime.now());
+                                            sub.timestamp = sub.status == '(P)' ? '' : DateFormat('dd.MM.yy').format(DateTime.now());
                                           });
                                           _saveLeftData();
                                         },
@@ -612,8 +639,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                       const SizedBox(width: 8, height: 8),
                                       Expanded(
                                         child: GestureDetector(
-                                          onDoubleTap: () => _editText(sub.text, (newText) {
-                                            setState(() => sub.text = newText);
+                                          onDoubleTap: () => _editSubItem(sub, (newSub) {
+                                            setState(() { sub.text = newSub.text; sub.timestamp = newSub.timestamp; });
                                             _saveLeftData();
                                           }),
                                           child: Text(sub.GetText(), style: const TextStyle(height: 1.0, fontSize: 16)),
@@ -629,9 +656,16 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                     // selectedRightSubIndex = null;
                                     });
                                   },
+
                                   trailing: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
+
+                                      IconButton(
+                                        icon: const Icon(Icons.edit, size: 20, color: Colors.green),
+                                        onPressed: () { setState(() { _editSubItem(sub, (newSub) { setState(() { sub.text = newSub.text; sub.timestamp = newSub.timestamp; }); _saveLeftData(); }); }); },
+                                      ),
+                                      
                                       IconButton(
                                         icon: const Icon(Icons.remove_circle_outline_rounded, size: 20, color: Colors.red),
                                         onPressed: () {
@@ -642,6 +676,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                           _saveLeftData();
                                         },
                                       ),
+
                                       IconButton(
                                         icon: const Icon(Icons.arrow_upward, size: 20),
                                         onPressed: () {
@@ -656,6 +691,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                           }
                                         },
                                       ),
+
                                       IconButton(
                                         icon: const Icon(Icons.arrow_downward, size: 20),
                                         onPressed: () {
@@ -716,6 +752,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                   child: Row(
                                     children: [
                                       Expanded(child: Text(item.text, style: const TextStyle(height: 1.0, fontSize: 16, fontWeight: FontWeight.bold))),
+                                      
+                                      IconButton(
+                                        icon: const Icon(Icons.edit, size: 20, color: Colors.green),
+                                        onPressed: () { setState(() { _editText(item.text, (newText) { setState(() => item.text = newText); _saveRightData(); }); }); },
+                                      ),
+                                      
                                       IconButton(
                                         icon: const Icon(Icons.remove_circle_outline_rounded, size: 22, color: Colors.red),
                                         onPressed: () {
@@ -760,6 +802,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                     ],
                                   ),
                                 ),
+                                
                                 children: item.subitems.map((sub) => ListTile(
                                   tileColor: selectedRightIndex == index && selectedRightSubIndex == item.subitems.indexOf(sub) ? Color.fromARGB(255, 136, 134, 121) : null,
                                   contentPadding: const EdgeInsets.symmetric(horizontal: 70, vertical: 0),
@@ -781,6 +824,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                   trailing: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
+                                      
+                                      IconButton(
+                                        icon: const Icon(Icons.edit, size: 20, color: Colors.green),
+                                        onPressed: () { setState(() { _editText(sub.text, (newText) { setState(() { sub.text = newText; }); _saveRightData(); }); }); },
+                                      ),
+                                      
                                       IconButton(
                                         icon: const Icon(Icons.remove_circle_outline_rounded, size: 20, color: Colors.red),
                                         onPressed: () {
@@ -791,6 +840,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                           _saveRightData();
                                         },
                                       ),
+                                      
                                       IconButton(
                                         icon: const Icon(Icons.arrow_upward, size: 20),
                                         onPressed: () {
@@ -805,6 +855,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> with WidgetsBinding
                                           }
                                         },
                                       ),
+                                      
                                       IconButton(
                                         icon: const Icon(Icons.arrow_downward, size: 20),
                                         onPressed: () {

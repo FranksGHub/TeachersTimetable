@@ -56,7 +56,7 @@
   "restartToApply": "Restart the app to apply the language change.",
   "saveTimetableData": "Save Timetable Data",
   "saveTimetableDataSubject": "Timetable Data Backup",
-  "editText": "Edit Text",
+  "editText": "Edit Task",
   "addItemLeft": "+ Task",
   "addSubitemLeft": "+ Step",
   "addItemRight": "+ Task",
@@ -93,6 +93,8 @@
   "appNameWithSpaces": "Teachers Timetable App",
   "printingFooter": "Created with the Teachers Timetable app at {date}",
   "bothListsHidden": "Please make one list visible again (top right)!",
-  "printingFailed": "Drucken fehlgeschlagen",
-  "printingSuccess": "Drucken gestartet"
+  "printingFailed": "Printing failed",
+  "printingSuccess": "Printing started",
+  "text": "Text",
+  "timestamp": "Timestamp"
 }

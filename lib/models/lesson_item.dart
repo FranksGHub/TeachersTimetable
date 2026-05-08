@@ -23,6 +23,6 @@ class LessonItem {
   );
 
   String GetText() {
-    return (status == '(W)' || status == '(F)') ? '- $timestamp $text' : text;
+    return (timestamp != null && timestamp!.isNotEmpty) ? '- $timestamp $text' : text;
   }
 }
