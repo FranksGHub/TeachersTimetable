@@ -121,7 +121,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showNotesBeforeWorkplan => 'Always show notes before work plan';
 
   @override
-  String get editShowNotesBeforeWorkplan => 'Notizen oder Arbeitsplan zuerst?';
+  String get editShowNotesBeforeWorkplan => 'Notes or work plan first?';
 
   @override
   String get copy => 'Copy';
@@ -130,10 +130,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paste => 'Paste';
 
   @override
+  String get delete => 'Delete file';
+
+  @override
   String get reset => 'Reset';
 
   @override
   String get save => 'Save';
+
+  @override
+  String get ok => 'OK';
 
   @override
   String get cancel => 'Cancel';
@@ -281,6 +287,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fileNotFound => 'Source file not found';
+
+  @override
+  String get myFilePickerTitleNotes => 'Select file for the notes';
+
+  @override
+  String get myFilePickerTitleWorkPlan => 'Select file for the work plan list';
+
+  @override
+  String get myFilePickerTitleSuggestions =>
+      'Select file for the suggestions list';
+
+  @override
+  String get noFilesFoundInAppDir =>
+      'No files are available in the app directory, create one first!';
+
+  @override
+  String get noFilesFoundInAppDirTitle => 'No files found';
 
   @override
   String get appNameWithSpaces => 'Teachers Timetable App';

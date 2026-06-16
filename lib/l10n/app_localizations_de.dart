@@ -131,10 +131,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get paste => 'Einfügen';
 
   @override
+  String get delete => 'Datei löschen';
+
+  @override
   String get reset => 'Zurücksetzen';
 
   @override
   String get save => 'Speichern';
+
+  @override
+  String get ok => 'OK';
 
   @override
   String get cancel => 'Abbrechen';
@@ -290,6 +296,24 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get fileNotFound => 'Quelldatei existiert nicht';
+
+  @override
+  String get myFilePickerTitleNotes => 'Wähle eine Datei für die Notizen';
+
+  @override
+  String get myFilePickerTitleWorkPlan =>
+      'Wähle eine Datei für die Arbeitsplan Liste';
+
+  @override
+  String get myFilePickerTitleSuggestions =>
+      'Wähle eine Datei für die Vorschlagsliste';
+
+  @override
+  String get noFilesFoundInAppDir =>
+      'Es sind keine Datein verfügbar im APP Verzeichnis, erzeuge zuerst eine!';
+
+  @override
+  String get noFilesFoundInAppDirTitle => 'Keine Datei gefunden';
 
   @override
   String get appNameWithSpaces => 'Teachers Timetable App';

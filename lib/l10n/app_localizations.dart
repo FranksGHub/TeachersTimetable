@@ -317,7 +317,7 @@ abstract class AppLocalizations {
   /// No description provided for @editShowNotesBeforeWorkplan.
   ///
   /// In en, this message translates to:
-  /// **'Notizen oder Arbeitsplan zuerst?'**
+  /// **'Notes or work plan first?'**
   String get editShowNotesBeforeWorkplan;
 
   /// No description provided for @copy.
@@ -332,6 +332,12 @@ abstract class AppLocalizations {
   /// **'Paste'**
   String get paste;
 
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete file'**
+  String get delete;
+
   /// No description provided for @reset.
   ///
   /// In en, this message translates to:
@@ -343,6 +349,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get save;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
 
   /// No description provided for @cancel.
   ///
@@ -637,6 +649,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Source file not found'**
   String get fileNotFound;
+
+  /// No description provided for @myFilePickerTitleNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Select file for the notes'**
+  String get myFilePickerTitleNotes;
+
+  /// No description provided for @myFilePickerTitleWorkPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Select file for the work plan list'**
+  String get myFilePickerTitleWorkPlan;
+
+  /// No description provided for @myFilePickerTitleSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Select file for the suggestions list'**
+  String get myFilePickerTitleSuggestions;
+
+  /// No description provided for @noFilesFoundInAppDir.
+  ///
+  /// In en, this message translates to:
+  /// **'No files are available in the app directory, create one first!'**
+  String get noFilesFoundInAppDir;
+
+  /// No description provided for @noFilesFoundInAppDirTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No files found'**
+  String get noFilesFoundInAppDirTitle;
 
   /// No description provided for @appNameWithSpaces.
   ///

@@ -1,8 +1,14 @@
-import 'package:flutter/material.dart';
-import '../models/lesson_block.dart';
-import '../models/filename_helper.dart';
-import '../l10n/app_localizations.dart';
 import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+// import 'package:flutter_quill_to_pdf/flutter_quill_to_pdf.dart';
+import 'package:path/path.dart' as path;
+
+import '../models/export_import_files.dart';
+import '../models/filename_helper.dart';
+import '../models/lesson_block.dart';
+import '../l10n/app_localizations.dart';
 
 class EditSettingsDialog extends StatefulWidget {
   final LessonBlock block;
@@ -166,6 +172,150 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
     );
   }
 
+  Widget _buildFileSettingRow({required String label, required TextEditingController controller, required String title}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          const SizedBox(width: 6),
+          SizedBox( width: 120, child: Text(label)),
+          //Expanded( flex: 2, child: Text(label)),
+          const SizedBox(width: 6),
+          Expanded(
+            flex: 3,
+            child: TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                isDense: true, // macht das TextField kompakter
+                contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // File picker button
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+              icon: const Icon(Icons.folder_open),
+              onPressed: () => _pickJsonFile(controller, title),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickJsonFile(TextEditingController controller, String title) async {
+    try {
+      final privateDirPath = await ExportImportFiles.getPrivateDirectoryPath();
+      final directory = Directory(privateDirPath);
+      final jsonFiles = directory
+        .listSync()
+        .whereType<File>()
+        .where((file) => (file.path.toLowerCase().endsWith('.json') && !file.path.toLowerCase().endsWith('timetable_settings.json')))
+        .toList();
+
+      if (jsonFiles.isEmpty) {
+        if (!mounted) return;
+        await showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(AppLocalizations.of(context)!.noFilesFoundInAppDirTitle),
+            content: Text(AppLocalizations.of(context)!.noFilesFoundInAppDir),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppLocalizations.of(context)!.cancel),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
+      final displayedFilenames = jsonFiles.map((file) => path.basenameWithoutExtension(file.path)).toList()..sort();
+      // final displayedFilenames = filenames.length > 30 ? filenames.sublist(0, 30) : filenames;
+
+      String? selectedFilename;
+
+      final result = await showDialog<String>(
+        context: context,
+        builder: (context) => StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: Text(title),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 320,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: displayedFilenames.length,
+                itemBuilder: (context, index) {
+                  final filename = displayedFilenames[index];
+                  final isSelected = selectedFilename == filename;
+                  return ListTile(
+                    dense: true,
+                    visualDensity: VisualDensity.compact,
+                    title: Text(filename),
+                    selected: isSelected,
+                    selectedTileColor: Colors.blue.withValues(alpha: 0.3),
+                    onTap: () {
+                      setState(() {
+                        selectedFilename = filename;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppLocalizations.of(context)!.cancel),
+              ),
+              TextButton(
+                onPressed: selectedFilename != null ? () => _deleteJsonFile(privateDirPath, selectedFilename, displayedFilenames, setState) : null,
+                child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Colors.red.withValues(alpha: selectedFilename != null ? 0.9 : 0.3))),
+              ),
+              TextButton(
+                onPressed: selectedFilename != null ? () => Navigator.pop(context, selectedFilename) : null,
+                child: Text(AppLocalizations.of(context)!.ok),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      if (result == null) return;
+      controller.text = result;
+    } catch (e) {
+      debugPrint('JSON file selection failed: $e');
+    }
+  }
+
+
+  void _deleteJsonFile(String privateDirPath, String? selectedFilename, List<String> displayedFilenames, Function(VoidCallback) setState) {
+    if (selectedFilename == null) return;
+    try {
+      // Delete the file from the directory
+      final filePath = '$privateDirPath${Platform.pathSeparator}$selectedFilename.json';
+      final file = File(filePath);
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
+
+      // Update the dialog state
+      setState(() {
+        displayedFilenames.remove(selectedFilename);
+      });
+    } catch (e) {
+      debugPrint('Failed to delete file: $e');
+    }
+  }
+  
   Widget _buildColorRow({ required String label }) {
     // Color display
     return Row(
@@ -219,17 +369,17 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
               label: AppLocalizations.of(context)!.schoolName,
               controller: schoolNameController,
             ),
-            _buildSettingRow(
+            _buildFileSettingRow(
               label: AppLocalizations.of(context)!.workplanFilename,
-              controller: leftListFilenameController,
+              controller: leftListFilenameController, title: AppLocalizations.of(context)!.myFilePickerTitleWorkPlan,
             ),
-            _buildSettingRow(
+            _buildFileSettingRow(
               label: AppLocalizations.of(context)!.suggestionsFilename,
-              controller: rightListFilenameController,
+              controller: rightListFilenameController, title: AppLocalizations.of(context)!.myFilePickerTitleSuggestions,
             ),
-            _buildSettingRow(
+            _buildFileSettingRow(
               label: AppLocalizations.of(context)!.notesFilename,
-              controller: notesFilenameController,
+              controller: notesFilenameController, title: AppLocalizations.of(context)!.myFilePickerTitleNotes,
             ),
 
             //const SizedBox(height: 8),
@@ -250,4 +400,5 @@ class _EditSettingsDialogState extends State<EditSettingsDialog> {
       ),
     );
   }
+  
 }
